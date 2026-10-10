@@ -95,3 +95,10 @@
 .ai-in textarea{flex:1;min-height:48px!important}
 .ai-foot{display:flex;justify-content:space-between;font-size:.82rem;color:var(--muted);margin-top:6px}
 #ai-pre{margin-top:8px}
+/* motivation lines you can move between */
+.qod{flex-direction:row;align-items:center;gap:6px;cursor:pointer;user-select:none;touch-action:pan-y}
+.qod .qtext{flex:1;display:flex;flex-direction:column;gap:2px;transition:opacity .16s}
+.qod.fade .qtext{opacity:0}
+.qod p{margin:0}
+.qod .qn{font-size:.72rem;opacity:.55}
+.qarrow{flex:none;width:30px;height:30px;border-radius:50%;border:0;background:rgba(255,255,255,.45);color:var(--joy-ink);font-size:1.3rem;line-height:1;display:grid;place-items:center;padding:0 0 3px}

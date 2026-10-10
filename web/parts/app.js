@@ -235,9 +235,30 @@ function renderHeader(){
   $('hello').textContent=(h<5?'לילה טוב':h<12?'בוקר טוב':h<17?'צהריים טובים':h<21?'ערב טוב':'לילה טוב')+(S.settings.name?' '+S.settings.name:'')+' '+(h<5||h>=21?'🌙':h<12?'☀️':h<17?'🌤️':'🌇');
   $('today-date').textContent=new Date().toLocaleDateString('he-IL',{weekday:'long',day:'numeric',month:'long'})+' · כל צעד נחשב';
   $('task-input').placeholder=G('מה {תרצה|תרצי} לעשות היום?');
-  const pool=QUOTES.filter(q=>!q.f||S.settings.faith);const n=between('2026-01-01',T);const q=pool[((n%pool.length)+pool.length)%pool.length];
-  $('quote').textContent=G(q.t);$('quote-who').textContent=q.w||'';$('quote-who').hidden=!q.w;
+  showQuote(0);
 }
+
+/* motivation lines: swipe, arrows or a tap move between them any time */
+let qIx=null;
+function showQuote(step){
+  const pool=QUOTES.filter(q=>!q.f||S.settings.faith);
+  if(qIx==null){let v=null;try{v=localStorage.getItem(KEY+'-quote')}catch(e){}qIx=v!=null&&Number.isFinite(+v)?+v:between('2026-01-01',T)}
+  qIx=((qIx+step)%pool.length+pool.length)%pool.length;
+  try{localStorage.setItem(KEY+'-quote',qIx)}catch(e){}
+  const q=pool[qIx],box=$('quote').parentNode;
+  const put=()=>{$('quote').textContent=G(q.t);$('quote-who').textContent=q.w||'';$('quote-who').hidden=!q.w;$('quote-n').textContent=(qIx+1)+' / '+pool.length};
+  if(!step||reduce){put();return}
+  box.classList.add('fade');setTimeout(()=>{put();box.classList.remove('fade')},160);
+}
+$('q-next').onclick=e=>{e.stopPropagation();showQuote(1)};
+$('q-prev').onclick=e=>{e.stopPropagation();showQuote(-1)};
+$('quote-box').onclick=()=>showQuote(1);
+(()=>{let x0=null;const el=$('quote-box');
+  el.addEventListener('touchstart',e=>{x0=e.touches[0].clientX},{passive:true});
+  el.addEventListener('touchend',e=>{if(x0==null)return;const dx=e.changedTouches[0].clientX-x0;x0=null;
+    if(Math.abs(dx)>40){showQuote(dx>0?1:-1);el.dataset.swiped='1';setTimeout(()=>delete el.dataset.swiped,300)}});
+  el.addEventListener('click',e=>{if(el.dataset.swiped)e.stopImmediatePropagation()},true);
+})();
 
 /* ---------- TODAY ---------- */
 let addEnergy='mid';
