@@ -373,7 +373,7 @@ function showQuote(step){
   qIx=((qIx+step)%pool.length+pool.length)%pool.length;
   try{localStorage.setItem(KEY+'-quote',qIx)}catch(e){}
   const q=pool[qIx],box=$('quote').parentNode;
-  const put=()=>{$('quote').textContent=G(q.t);$('quote-who').textContent=q.w||'';$('quote-who').hidden=!q.w;$('quote-n').textContent=(qIx+1)+' / '+pool.length};
+  const put=()=>{$('quote').textContent=G(q.t);$('quote-who').textContent=q.w||'';$('quote-who').hidden=!q.w;};
   if(!step||reduce){put();return}
   box.classList.add('fade');setTimeout(()=>{put();box.classList.remove('fade')},160);
 }
@@ -487,7 +487,7 @@ function renderGoals(){
     const isOpen=open.has(g.id);
     return `<article class="goal" data-g="${g.id}">
       <div class="goal-head"><span class="avatar" style="background:${JOYS[(g.color||0)%JOYS.length]}">${g.emoji||emojiFor(g.title)}</span><div class="g"><h3>${esc(g.title)}</h3></div>
-      <button class="del" data-act="delgoal" aria-label="מחיקת המטרה">${X}</button></div>
+      <button class="del gedit" data-act="editgoal" aria-label="עריכת המטרה">✏️</button><button class="del" data-act="delgoal" aria-label="מחיקת המטרה">${X}</button></div>
       ${g.why?`<div class="why-big"><span class="e">💛</span> <b>למה זה חשוב לי:</b> ${esc(g.why)}</div>`:''}
       <div class="chips"><span class="chip">${when}</span><span class="chip">🪜 ${got} מתוך ${total} צעדים</span>${g.auto!==false?'<span class="chip">☀️ צעד כל יום</span>':''}${g.letter?'<span class="chip">💌 מחכה מכתב</span>':''}${g.achievedAt?'<span class="chip joy">🏆 הושגה</span>':''}</div>
       <div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="התקדמות"><span style="width:${pct}%"></span></div>
@@ -561,6 +561,41 @@ $('goal-form').onsubmit=e=>{e.preventDefault();const title=$('g-title').value.tr
     steps:steps.map(s=>({id:uid(),text:s.text.trim(),doneDays:[],done:false}))};
   S.goals.unshift(g);open.add(g.id);inject();save();closeForm();renderAll();
   toast(g.auto?'🌱 המטרה נשמרה. הצעד הראשון כבר מחכה ברשימה של היום.':'🌱 המטרה נשמרה. מתחילים מהצעד הראשון.')};
+
+/* edit an existing goal: name, symbol, why, date, daily step, letter and the steps themselves */
+function openGoalEdit(g){
+  let em=g.emoji||'🌱';const steps=g.steps.map(x=>({id:x.id,text:x.text,done:x.done}));
+  const stepsHtml=()=>steps.map((x,i)=>`<div class="dstep" data-i="${i}"><div class="r"><span style="font-size:.85rem;color:var(--muted);flex:none">${x.done?'✓':(i+1)+'.'}</span>
+    <input class="t-in" style="flex:1;width:auto" value="${esc(x.text)}" aria-label="תיאור הצעד" placeholder="מה עושים בצעד הזה">
+    <button type="button" class="del" data-up="${i}" aria-label="להזיז למעלה" ${i?'':'disabled'}>▲</button>
+    <button type="button" class="del" data-rm="${i}" aria-label="הסרת הצעד">${X}</button></div></div>`).join('');
+  openSheet(sheetHead('✏️ עריכת המטרה')+`<form id="ge-form" class="form" style="box-shadow:none;padding:0">
+    <label>מה המטרה<input id="ge-title" value="${esc(g.title)}" required autocomplete="off"></label>
+    <div class="emojis" id="ge-emojis" role="group" aria-label="סמל למטרה"></div>
+    <label>למה זה חשוב לי (רשות)<input id="ge-why" value="${esc(g.why||'')}" autocomplete="off"></label>
+    <label>תאריך יעד (אפשר להשאיר ריק)<input type="date" id="ge-date" value="${g.deadline||''}"></label>
+    <b style="margin-top:6px">🪜 הצעדים</b><div class="draft" id="ge-steps">${stepsHtml()}</div>
+    <button type="button" class="linkbtn" id="ge-add" style="align-self:flex-start">+ הוספת צעד</button>
+    <label><span>💌 מכתב לעצמי ליום שאגיע (רשות)</span><textarea id="ge-letter">${esc(g.letter||'')}</textarea></label>
+    <label class="check-row"><input type="checkbox" id="ge-auto" ${g.auto!==false?'checked':''}>לשבץ לי כל יום צעד אחד ברשימה של היום</label>
+    <div class="row" style="display:flex;gap:8px;margin-top:8px"><button class="btn" type="submit" style="flex:1">שמירה</button><button class="btn ghost" type="button" data-act="sheet-close">ביטול</button></div></form>`);
+  const drawEm=()=>{$('ge-emojis').innerHTML=GOAL_EMOJIS.map(e=>`<button type="button" data-em="${e}" aria-pressed="${e===em}" aria-label="סמל ${e}">${e}</button>`).join('')};drawEm();
+  $('ge-emojis').onclick=e=>{const b=e.target.closest('[data-em]');if(b){em=b.dataset.em;drawEm()}};
+  const box=$('ge-steps'),redraw=()=>{box.innerHTML=stepsHtml()};
+  box.oninput=e=>{const r=e.target.closest('[data-i]');if(r)steps[+r.dataset.i].text=e.target.value};
+  box.onclick=e=>{const up=e.target.closest('[data-up]'),rm=e.target.closest('[data-rm]');
+    if(up){const i=+up.dataset.up;if(i){[steps[i-1],steps[i]]=[steps[i],steps[i-1]];redraw()}}
+    if(rm){steps.splice(+rm.dataset.rm,1);redraw()}};
+  $('ge-add').onclick=()=>{steps.push({id:null,text:'',done:false});redraw();const ins=box.querySelectorAll('.t-in');ins[ins.length-1].focus()};
+  $('ge-form').onsubmit=e=>{e.preventDefault();const title=$('ge-title').value.trim();if(!title)return;
+    const old=new Map(g.steps.map(x=>[x.id,x]));
+    g.steps=steps.filter(x=>x.text.trim()).map(x=>{const o=x.id&&old.get(x.id);if(o){o.text=x.text.trim();return o}return {id:uid(),text:x.text.trim(),doneDays:[],done:false}});
+    const keep=new Set(g.steps.map(x=>x.id));
+    Object.values(S.tasks).forEach(L=>L.forEach(t=>{if(t.goalId===g.id&&t.stepId&&keep.has(t.stepId)&&!t.done)t.text=stepOf(g,t.stepId).text}));
+    Object.assign(g,{title,emoji:em,why:$('ge-why').value.trim(),deadline:$('ge-date').value||'',letter:$('ge-letter').value.trim(),auto:$('ge-auto').checked});
+    if(g.steps.length&&g.steps.every(x=>x.done)){if(!g.achievedAt)g.achievedAt=Date.now()}else g.achievedAt=null;
+    save();closeSheet();renderAll();toast('✏️ המטרה עודכנה')};
+}
 
 /* ---------- PROGRESS + JOURNAL ---------- */
 let jf='all';
@@ -940,6 +975,7 @@ document.addEventListener('click',e=>{
         if(won)openAchieved(g);else celebrate(document.querySelector(`[data-s="${s.id}"] .check`))}
       else{s.done=false;s.doneAt=null;g.achievedAt=null;save();renderAll()}break}
     case 'delstep':{const i=g.steps.findIndex(s=>s.id===b.closest('[data-s]').dataset.s);const s=g.steps.splice(i,1)[0];save();renderAll();toast('הצעד נמחק',()=>{g.steps.splice(i,0,s);save();renderAll()});break}
+    case 'editgoal':openGoalEdit(g);break;
     case 'delgoal':{const i=S.goals.indexOf(g);S.goals.splice(i,1);tomb(g.id);delete S.askNext[g.id];save();renderAll();toast('המטרה נמחקה',()=>{untomb(g.id);S.goals.splice(i,0,g);save();renderAll()});break}
   }
 });

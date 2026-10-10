@@ -108,3 +108,4 @@
 .qod p{margin:0}
 .qod .qn{font-size:.72rem;opacity:.55;direction:ltr;unicode-bidi:isolate}
 .qarrow{flex:none;width:30px;height:30px;border-radius:50%;border:0;background:rgba(255,255,255,.45);color:var(--joy-ink);font-size:1.3rem;line-height:1;display:grid;place-items:center;padding:0 0 3px}
+.form label.check-row{flex-direction:row;color:var(--fg)}.sheet .check-row input{padding:0;flex:none}
