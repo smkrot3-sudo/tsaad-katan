@@ -137,6 +137,7 @@ function openNewPassword(){
 /* ---------- account menu + settings section ---------- */
 async function signOut(){
   if(meta.dirty&&online){toast('☁️ שומר לפני יציאה...');await push()}
+  if(inApp&&TsaadApp.setAdminFeed)TsaadApp.setAdminFeed('');
   await sb.auth.signOut();
   meta={};saveMeta();
   /* the data belongs to the account: leave a clean page on this device */
@@ -194,6 +195,7 @@ async function roles(){
   if(!user)return;
   const [{data:v},{data:a}]=await Promise.all([sb.rpc('is_vip'),sb.rpc('is_admin')]);isVip=!!v;isAdmin=!!a;
   document.documentElement.classList.toggle('vip',isVip);dot();
+  if(isAdmin&&inApp&&TsaadApp.setAdminFeed){const {data:tk}=await sb.rpc('admin_feed_token');if(tk)TsaadApp.setAdminFeed(tk)}
   let welcomed=null;try{welcomed=localStorage.getItem('tsaad-katan-vip')}catch(e){}
   if(isVip&&!isAdmin&&!welcomed){try{localStorage.setItem('tsaad-katan-vip','1')}catch(e){}
     openSheet(sheetHead('👑 ברוכים הבאים ל-VIP')+`<div style="text-align:center;font-size:3.4rem" class="e">👑</div>

@@ -22,6 +22,8 @@ public class Reminders extends BroadcastReceiver {
     static final String PREFS = "tsaad";
     static final int FLAGS = PendingIntent.FLAG_UPDATE_CURRENT | 0x04000000; // FLAG_IMMUTABLE
     static final long UPDATE_EVERY = 6 * 3600 * 1000L;
+    static final String SB = "https://pzrzwilkloksfxsvcwji.supabase.co";
+    static final String SB_KEY = "sb_publishable_kTKMU6nUUWtGAgb-SJvYyQ_QweS_o60"; // public key, access is limited by the database
 
     static SharedPreferences prefs(Context c) { return c.getSharedPreferences(PREFS, Context.MODE_PRIVATE); }
 
@@ -49,6 +51,46 @@ public class Reminders extends BroadcastReceiver {
         } catch (Exception e) { }
         Intent u = new Intent(c, Reminders.class).setAction("il.tsaadkatan.UPDATE");
         am.setInexactRepeating(AlarmManager.RTC, now + UPDATE_EVERY, UPDATE_EVERY, PendingIntent.getBroadcast(c, 9999, u, FLAGS));
+        // admins: check for new sign-ups about every 15 minutes
+        PendingIntent admin = PendingIntent.getBroadcast(c, 9998, new Intent(c, Reminders.class).setAction("il.tsaadkatan.ADMIN"), FLAGS);
+        if (prefs(c).getString("adminToken", "").length() > 0)
+            am.setInexactRepeating(AlarmManager.RTC_WAKEUP, now + 60000, AlarmManager.INTERVAL_FIFTEEN_MINUTES, admin);
+        else am.cancel(admin);
+    }
+
+    static void setAdmin(Context c, String token) {
+        SharedPreferences.Editor e = prefs(c).edit().putString("adminToken", token == null ? "" : token);
+        if (!prefs(c).contains("adminSince")) e.putString("adminSince", new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.US) {{ setTimeZone(java.util.TimeZone.getTimeZone("UTC")); }}.format(new java.util.Date()));
+        e.apply();
+        arm(c);
+    }
+
+    /** New sign-ups since the last check, one notification each */
+    static void checkSignups(Context c) {
+        SharedPreferences p = prefs(c);
+        String token = p.getString("adminToken", "");
+        if (token.length() == 0) return;
+        try {
+            HttpURLConnection h = (HttpURLConnection) new URL(SB + "/rest/v1/rpc/admin_new_users").openConnection();
+            h.setConnectTimeout(15000); h.setReadTimeout(15000);
+            h.setRequestMethod("POST"); h.setDoOutput(true);
+            h.setRequestProperty("apikey", SB_KEY);
+            h.setRequestProperty("Content-Type", "application/json");
+            JSONObject body = new JSONObject().put("p_token", token).put("p_since", p.getString("adminSince", "2026-01-01T00:00:00Z"));
+            h.getOutputStream().write(body.toString().getBytes("UTF-8"));
+            if (h.getResponseCode() != 200) return;
+            BufferedReader r = new BufferedReader(new InputStreamReader(h.getInputStream(), "UTF-8"));
+            StringBuilder sb = new StringBuilder(); String line;
+            while ((line = r.readLine()) != null) sb.append(line);
+            r.close();
+            JSONArray list = new JSONArray(sb.toString());
+            for (int i = 0; i < list.length(); i++) {
+                JSONObject u = list.getJSONObject(i);
+                String name = u.optString("name", "");
+                notify(c, 100 + (int) (System.currentTimeMillis() % 100000) + i, "🎉 משתמש חדש נרשם", (name.length() > 0 ? name + " · " : "") + u.optString("email", ""));
+                p.edit().putString("adminSince", u.getString("created_at")).apply();
+            }
+        } catch (Exception e) { }
     }
 
     static PendingIntent pending(Context c, JSONObject r) throws Exception {
@@ -61,6 +103,9 @@ public class Reminders extends BroadcastReceiver {
     public void onReceive(final Context c, Intent intent) {
         if ("il.tsaadkatan.NOTIFY".equals(intent.getAction())) {
             notify(c, 1, intent.getStringExtra("title"), intent.getStringExtra("body"));
+        } else if ("il.tsaadkatan.ADMIN".equals(intent.getAction())) {
+            final PendingResult done = goAsync();
+            new Thread(new Runnable() { public void run() { try { checkSignups(c); } finally { done.finish(); } } }).start();
         } else if ("il.tsaadkatan.UPDATE".equals(intent.getAction())) {
             final PendingResult done = goAsync();
             new Thread(new Runnable() { public void run() { try { checkUpdate(c); } finally { done.finish(); } } }).start();

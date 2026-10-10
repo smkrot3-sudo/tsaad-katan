@@ -168,6 +168,7 @@ public class MainActivity extends Activity {
         @JavascriptInterface public void askNotifications() {
             if (Build.VERSION.SDK_INT >= 33) requestPermissions(new String[]{"android.permission.POST_NOTIFICATIONS"}, REQ_NOTIF);
         }
+        @JavascriptInterface public void setAdminFeed(String token) { Reminders.setAdmin(MainActivity.this, token); }
         @JavascriptInterface public void stash(String json) { Reminders.prefs(MainActivity.this).edit().putString("stash", json).apply(); }
         @JavascriptInterface public String takeStash() {
             SharedPreferences p = Reminders.prefs(MainActivity.this);
