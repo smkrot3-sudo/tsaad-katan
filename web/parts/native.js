@@ -56,7 +56,16 @@ async function checkUpdate(){
     const box=$('update-bar');if(!box)return;
     box.innerHTML=`<span>🎁 ${G('יש גרסה חדשה לאפליקציה')} (${v.versionName})${v.notes?'<br><small>'+TK.esc(v.notes)+'</small>':''}</span><button class="btn small" id="upd-go">לעדכן</button>`;
     box.hidden=false;
-    $('upd-go').onclick=()=>{app.openExternal(v.url||SITE+'apk/tsaad-katan.apk');toast('⬇️ ההורדה נפתחת בדפדפן. אחרי שהיא נגמרת, לפתוח את הקובץ ולאשר עדכון')};
+    const url=v.url||SITE+'apk/tsaad-katan.apk';
+    $('upd-go').onclick=()=>{
+      if(!app.installUpdate){app.openExternal(url);toast('⬇️ ההורדה נפתחת בדפדפן. אחרי שהיא נגמרת, לפתוח את הקובץ ולאשר עדכון');return}
+      /* inside the app: download with progress, then Android asks to confirm */
+      $('upd-go').disabled=true;$('upd-go').textContent='מוריד...';
+      window.onUpdateProgress=p=>{const b=$('upd-go');if(!b)return;
+        if(p===-2){b.disabled=false;b.textContent='לנסות שוב';toast('🌧️ ההורדה לא הצליחה. אפשר לנסות שוב');return}
+        b.textContent=p>=100?'מתקין...':p>=0?'מוריד '+p+'%':'מוריד...';
+        if(p>=100)toast('📲 עוד רגע Android ישאל אם לעדכן. ללחוץ "עדכון"')};
+      app.installUpdate(url)};
   }catch(e){}
 }
 

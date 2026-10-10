@@ -97,6 +97,10 @@ public class MainActivity extends Activity {
         pendingAuth = "window.onAndroidAuth&&window.onAndroidAuth(" + JSONObject.quote(at) + "," + JSONObject.quote(rt) + ")";
     }
 
+    private void js(final String code) {
+        runOnUiThread(new Runnable() { public void run() { if (web != null) web.evaluateJavascript(code, null); } });
+    }
+
     private void openExternal(String url) {
         try { startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url))); } catch (Exception e) { }
     }
@@ -167,6 +171,13 @@ public class MainActivity extends Activity {
         @JavascriptInterface public void schedule(String json) { Reminders.schedule(MainActivity.this, json); }
         @JavascriptInterface public void askNotifications() {
             if (Build.VERSION.SDK_INT >= 33) requestPermissions(new String[]{"android.permission.POST_NOTIFICATIONS"}, REQ_NOTIF);
+        }
+        @JavascriptInterface public boolean canInstallUpdates() { return true; }
+        @JavascriptInterface public void installUpdate(String url) {
+            Updater.install(MainActivity.this, url, new Updater.Progress() {
+                public void on(final int pct) { js("window.onUpdateProgress&&window.onUpdateProgress(" + pct + ")"); }
+                public void fail(String why) { js("window.onUpdateProgress&&window.onUpdateProgress(-2)"); }
+            });
         }
         @JavascriptInterface public void setAdminFeed(String token) { Reminders.setAdmin(MainActivity.this, token); }
         @JavascriptInterface public void stash(String json) { Reminders.prefs(MainActivity.this).edit().putString("stash", json).apply(); }
