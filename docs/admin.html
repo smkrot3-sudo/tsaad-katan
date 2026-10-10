@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>צעד קטן · ניהול</title>
+<style>
+:root{--bg:#FFF7EF;--surface:#fff;--soft:#FFEFE0;--fg:#3B2F4A;--muted:#7D708A;--line:#F2E2D2;--accent:#FF7F50;--ok:#3FB58F;--gold:#E9A417}
+@media (prefers-color-scheme:dark){:root{--bg:#1D1A26;--surface:#282434;--soft:#332E42;--fg:#F4EEF8;--muted:#B5A9C2;--line:#3B3550;--accent:#FF9A73}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,"Segoe UI",Arial,sans-serif;line-height:1.5}
+main{max-width:760px;margin:0 auto;padding:16px 16px 60px;display:flex;flex-direction:column;gap:16px}
+h1{font-size:1.4rem;margin:0}h2{font-size:1.1rem;margin:0 0 8px}
+.card{background:var(--surface);border-radius:18px;padding:14px;box-shadow:0 4px 14px rgba(0,0,0,.06)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.u{border-top:1px solid var(--line);padding:10px 0;display:flex;flex-direction:column;gap:4px}
+.u:first-child{border-top:0}
+.meta{color:var(--muted);font-size:.85rem}
+button,.btn{border:0;background:var(--accent);color:#fff;border-radius:999px;padding:7px 14px;font:inherit;font-size:.9rem;cursor:pointer}
+button.ghost{background:var(--soft);color:var(--fg)}
+input,textarea,select{width:100%;border:2px solid var(--line);background:var(--bg);color:var(--fg);border-radius:12px;padding:9px 11px;font:inherit}
+textarea{min-height:80px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.stat{background:var(--soft);border-radius:14px;padding:10px;text-align:center}.stat b{display:block;font-size:1.5rem}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}.tabs button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+.pill{display:inline-block;background:var(--soft);border-radius:999px;padding:1px 8px;font-size:.8rem}
+.vip{color:var(--gold)}
+.fb{border-top:1px solid var(--line);padding:8px 0}
+pre{white-space:pre-wrap;font:inherit;margin:0}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+  <div class="row" style="justify-content:space-between"><h1>🛠️ צעד קטן · ניהול</h1><a href="./" class="meta">← לאפליקציה</a></div>
+  <div class="card" id="gate">טוען...</div>
+  <div id="panel" hidden style="display:flex;flex-direction:column;gap:16px">
+    <div class="grid" id="stats"></div>
+    <div class="tabs" id="tabs">
+      <button data-t="users" aria-pressed="true">👥 משתמשים</button>
+      <button data-t="feedback" aria-pressed="false">💬 משוב</button>
+      <button data-t="bc" aria-pressed="false">📣 הודעה לכולם</button>
+      <button data-t="pm" aria-pressed="false">✉️ הודעה אישית</button>
+      <button data-t="ai" aria-pressed="false">✨ AI</button>
+    </div>
+    <section class="card" data-s="users"><h2>משתמשים</h2><div id="users"></div></section>
+    <section class="card" data-s="feedback" hidden><div class="row" style="justify-content:space-between"><h2>משוב</h2><button id="fb-sum">✨ סיכום AI</button></div><pre id="fb-summary" class="card" style="background:var(--soft)" hidden></pre><div id="feedback"></div></section>
+    <section class="card" data-s="bc" hidden><h2>הודעה לכל המשתמשים</h2>
+      <div style="display:flex;flex-direction:column;gap:8px"><input id="bc-title" placeholder="כותרת"><textarea id="bc-body" placeholder="תוכן ההודעה"></textarea><button id="bc-send">לפרסם</button></div>
+      <h2 style="margin-top:16px">הודעות קיימות</h2><div id="bcs"></div></section>
+    <section class="card" data-s="pm" hidden><h2>הודעה אישית</h2>
+      <div style="display:flex;flex-direction:column;gap:8px"><select id="pm-user"></select><input id="pm-title" placeholder="כותרת"><textarea id="pm-body" placeholder="תוכן"></textarea>
+      <div class="row"><label style="flex:1">מתי להתחיל<input type="datetime-local" id="pm-start"></label><label style="flex:1">עד מתי (רשות)<input type="datetime-local" id="pm-end"></label></div>
+      <div class="row"><input id="pm-al" placeholder="טקסט לכפתור (רשות)" style="flex:1"><input id="pm-au" placeholder="קישור לכפתור (רשות)" dir="ltr" style="flex:1"></div>
+      <button id="pm-send">לשלוח</button></div></section>
+    <section class="card" data-s="ai" hidden><h2>שימוש ב-AI (7 ימים)</h2><div id="ai"></div></section>
+  </div>
+</main>
+<script src="vendor/supabase.js"></script>
+<script>
+const sb=supabase.createClient('https://pzrzwilkloksfxsvcwji.supabase.co','sb_publishable_kTKMU6nUUWtGAgb-SJvYyQ_QweS_o60',{auth:{persistSession:true,storageKey:'tsaad-katan-auth'}});
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const when=t=>t?new Date(t).toLocaleString('he-IL',{timeZone:'Asia/Jerusalem',day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
+let users=[];
+async function start(){
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){$('gate').innerHTML='צריך להתחבר באפליקציה קודם. <a href="./">לאפליקציה</a>';return}
+  const {data:isAdmin}=await sb.rpc('is_admin');
+  if(!isAdmin){$('gate').textContent='הדף הזה רק לבעלת האפליקציה 🙂';return}
+  $('gate').hidden=true;$('panel').hidden=false;
+  loadUsers();loadFeedback();loadBroadcasts();loadAI();
+}
+async function loadUsers(){
+  const {data,error}=await sb.rpc('admin_users');if(error){$('users').textContent=error.message;return}
+  users=data||[];
+  const day=Date.now()-864e5,week=Date.now()-7*864e5;
+  $('stats').innerHTML=[['משתמשים',users.length],['פעילים היום',users.filter(u=>u.last_seen&&Date.parse(u.last_seen)>day).length],['פעילים השבוע',users.filter(u=>u.last_seen&&Date.parse(u.last_seen)>week).length],['VIP',users.filter(u=>u.is_vip).length]]
+    .map(([l,n])=>`<div class="stat"><b>${n}</b>${l}</div>`).join('');
+  $('users').innerHTML=users.map(u=>`<div class="u"><div class="row" style="justify-content:space-between"><b>${u.is_vip?'<span class="vip">👑</span> ':''}${esc(u.name||u.email)}</b>
+      <button class="ghost" data-vip="${u.user_id}" data-on="${u.is_vip}">${u.is_vip?'להסיר VIP':'👑 להפוך ל-VIP'}</button></div>
+    <span class="meta" dir="ltr" style="text-align:right">${esc(u.email)}</span>
+    <span class="meta">${u.provider==='google'?'Google':'מייל'} · נרשם/ה ${when(u.created_at)} · נראה/תה לאחרונה ${when(u.last_seen)}</span>
+    <span class="meta">${esc(u.platform||'')} ${esc(u.version||'')} · ✅ ${u.tasks_done} משימות · 🎯 ${u.goals_count} מטרות · ✨ ${u.ai_today} שאלות היום</span></div>`).join('')||'<span class="meta">עוד אין משתמשים</span>';
+  $('pm-user').innerHTML=users.map(u=>`<option value="${u.user_id}">${esc(u.name||u.email)}</option>`).join('');
+}
+$('users').onclick=async e=>{const b=e.target.closest('[data-vip]');if(!b)return;b.disabled=true;
+  const id=b.dataset.vip;const r=b.dataset.on==='true'?await sb.from('vip_users').delete().eq('user_id',id):await sb.from('vip_users').insert({user_id:id});
+  if(r.error)alert(r.error.message);loadUsers()};
+async function loadFeedback(){
+  const {data}=await sb.from('feedback').select('kind,body,created_at,app_version,platform,user_id').order('created_at',{ascending:false}).limit(60);
+  const name=id=>{const u=users.find(x=>x.user_id===id);return u?(u.name||u.email):''};
+  const k={idea:'💡 רעיון',bug:'🐞 תקלה',other:'💬 אחר'};
+  $('feedback').innerHTML=(data||[]).map(f=>`<div class="fb"><div class="row"><span class="pill">${k[f.kind]}</span><span class="meta">${when(f.created_at)} · ${esc(name(f.user_id))} · ${esc(f.platform||'')} ${esc(f.app_version||'')}</span></div><pre>${esc(f.body)}</pre></div>`).join('')||'<span class="meta">עוד אין משוב</span>';
+}
+$('fb-sum').onclick=async()=>{const box=$('fb-summary');box.hidden=false;box.textContent='מסכם...';
+  const {data:{session}}=await sb.auth.getSession();
+  const r=await fetch('https://pzrzwilkloksfxsvcwji.supabase.co/functions/v1/coach',{method:'POST',headers:{'Content-Type':'application/json',apikey:'sb_publishable_kTKMU6nUUWtGAgb-SJvYyQ_QweS_o60',Authorization:'Bearer '+session.access_token},body:JSON.stringify({mode:'feedback_summary'})});
+  if(!r.ok){const e=await r.json().catch(()=>({}));box.textContent=e.error==='no_key'?'צריך להגדיר את מפתח Gemini ב-Supabase קודם':'לא הצלחתי לסכם כרגע';return}
+  box.textContent='';const rd=r.body.getReader(),dec=new TextDecoder();while(true){const {value,done}=await rd.read();if(done)break;box.textContent+=dec.decode(value,{stream:true})}};
+async function loadBroadcasts(){
+  const {data}=await sb.from('broadcasts').select('*').order('created_at',{ascending:false}).limit(20);
+  $('bcs').innerHTML=(data||[]).map(b=>`<div class="fb"><b>${esc(b.title)}</b> <span class="pill">${b.active?'פעילה':'כבויה'}</span><pre>${esc(b.body)}</pre>
+    <div class="row"><span class="meta">${when(b.created_at)}</span><button class="ghost" data-bc="${b.id}" data-on="${b.active}">${b.active?'לכבות':'להפעיל'}</button></div></div>`).join('')||'<span class="meta">אין עדיין</span>';
+}
+$('bc-send').onclick=async()=>{const title=$('bc-title').value.trim(),body=$('bc-body').value.trim();if(!title&&!body)return;
+  const {error}=await sb.from('broadcasts').insert({title,body,active:true});if(error){alert(error.message);return}
+  $('bc-title').value=$('bc-body').value='';loadBroadcasts()};
+$('bcs').onclick=async e=>{const b=e.target.closest('[data-bc]');if(!b)return;await sb.from('broadcasts').update({active:b.dataset.on!=='true'}).eq('id',b.dataset.bc);loadBroadcasts()};
+$('pm-send').onclick=async()=>{const iso=v=>v?new Date(v).toISOString():null;
+  const row={user_id:$('pm-user').value,title:$('pm-title').value.trim(),body:$('pm-body').value.trim(),starts_at:iso($('pm-start').value)||new Date().toISOString(),ends_at:iso($('pm-end').value),action_label:$('pm-al').value.trim()||null,action_url:$('pm-au').value.trim()||null};
+  if(!row.title&&!row.body)return;const {error}=await sb.from('personal_msgs').insert(row);
+  if(error)alert(error.message);else{alert('נשלח 💛');['pm-title','pm-body','pm-al','pm-au','pm-start','pm-end'].forEach(i=>$(i).value='')}};
+async function loadAI(){
+  const since=new Date(Date.now()-7*864e5).toISOString();
+  const [{data:use},{data:log}]=await Promise.all([sb.from('ai_usage').select('user_id,day,count').gte('day',since.slice(0,10)),sb.from('ai_log').select('model,ok').gte('at',since)]);
+  const per={};(use||[]).forEach(u=>per[u.user_id]=(per[u.user_id]||0)+u.count);
+  const models={};(log||[]).forEach(l=>{const k=l.model+(l.ok?'':' (נכשל)');models[k]=(models[k]||0)+1});
+  $('ai').innerHTML=`<div class="grid">${Object.entries(models).map(([m,n])=>`<div class="stat"><b>${n}</b>${esc(m)}</div>`).join('')||'<span class="meta">עוד לא היה שימוש</span>'}</div>
+    <div style="margin-top:10px">${Object.entries(per).sort((a,b)=>b[1]-a[1]).map(([id,n])=>{const u=users.find(x=>x.user_id===id);return `<div class="u"><span>${esc(u?(u.name||u.email):id)} · ${n} שאלות</span></div>`}).join('')}</div>`;
+}
+$('tabs').onclick=e=>{const b=e.target.closest('[data-t]');if(!b)return;document.querySelectorAll('#tabs [data-t]').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  document.querySelectorAll('[data-s]').forEach(s=>s.hidden=s.dataset.s!==b.dataset.t)};
+start();
+</script>
+</body>
+</html>

@@ -158,7 +158,7 @@ function openDelete(){
     <button class="btn wide" id="del-go" style="background:#D9534F">למחוק לתמיד</button><button class="btn ghost wide" data-act="sheet-close">ביטול</button></div>`);
   $('del-go').onclick=async()=>{if($('del-w').value.trim()!=='מחק'){$('del-w').focus();return}
     $('del-go').disabled=true;const {error}=await sb.rpc('delete_my_account');
-    if(error){$('del-msg').textContent=heErr(error);$('del-msg').hidden=false;$('del-go').disabled=false;return}
+    if(error){$('del-msg').textContent=/function|schema cache|not find/i.test(error.message||'')?'מחיקת חשבון מתוך האפליקציה עוד לא פעילה. אפשר לכתוב לנו ונמחק ידנית 💛':heErr(error);$('del-msg').hidden=false;$('del-go').disabled=false;return}
     await sb.auth.signOut();meta={};saveMeta();try{localStorage.removeItem('tsaad-katan-v2')}catch(e){}
     closeSheet();toast('החשבון נמחק. שמחנו ללכת איתך 💛');setTimeout(()=>location.reload(),1500)};
 }
@@ -194,6 +194,13 @@ async function roles(){
   if(!user)return;
   const [{data:v},{data:a}]=await Promise.all([sb.rpc('is_vip'),sb.rpc('is_admin')]);isVip=!!v;isAdmin=!!a;
   document.documentElement.classList.toggle('vip',isVip);dot();
+  let welcomed=null;try{welcomed=localStorage.getItem('tsaad-katan-vip')}catch(e){}
+  if(isVip&&!isAdmin&&!welcomed){try{localStorage.setItem('tsaad-katan-vip','1')}catch(e){}
+    openSheet(sheetHead('👑 ברוכים הבאים ל-VIP')+`<div style="text-align:center;font-size:3.4rem" class="e">👑</div>
+      <p>${G('{אתה|את} חלק מהחוג הקרוב של צעד קטן 💛 מה מחכה לך:')}</p>
+      <ul class="newlist"><li>✨ המאמן העדין בלי הגבלת שאלות</li><li>🎨 ערכת צבעים זהובה</li><li>🎁 גישה ראשונה לדברים חדשים</li></ul>
+      <div class="actions"><button class="btn" id="vip-gold" style="flex:1">להפעיל את הזהב</button><button class="btn ghost" data-act="sheet-close">אחר כך</button></div>`);
+    document.getElementById('vip-gold').onclick=()=>{TK.setAccent('gold');closeSheet();toast('👑 זהב!')}}
 }
 
 /* ---------- start ---------- */

@@ -598,7 +598,7 @@ function openLetterRead(){
 }
 
 /* look: theme, accent, text size */
-const ACCENTS={coral:['#FF7F50','#FFE1D3','#FF9A73','#4A3030','🧡'],pink:['#F2709C','#FFDDEA','#FF96BA','#4A2836','🩷'],lavender:['#9B7BEA','#E9E0FF','#B8A0FF','#352B52','💜'],mint:['#2FAE86','#D6F4EA','#5DD3AA','#1F3F35','💚'],sky:['#3C9BE8','#DCEEFF','#7BBEF5','#1F3550','💙'],sun:['#E9A417','#FFF0C7','#F6C64E','#47391A','💛']};
+const ACCENTS={coral:['#FF7F50','#FFE1D3','#FF9A73','#4A3030','🧡'],pink:['#F2709C','#FFDDEA','#FF96BA','#4A2836','🩷'],lavender:['#9B7BEA','#E9E0FF','#B8A0FF','#352B52','💜'],mint:['#2FAE86','#D6F4EA','#5DD3AA','#1F3F35','💚'],sky:['#3C9BE8','#DCEEFF','#7BBEF5','#1F3550','💙'],sun:['#E9A417','#FFF0C7','#F6C64E','#47391A','💛'],gold:['#C8961E','#FBEFC9','#E8C15A','#3F3415','👑']};
 const SIZES=[[1,'רגיל'],[1.12,'גדול'],[1.25,'גדול מאוד']];
 function isDark(){const t=S.settings.theme||'system';return t==='dark'||(t==='system'&&matchMedia('(prefers-color-scheme: dark)').matches)}
 function applyLook(size){
@@ -668,7 +668,7 @@ function openSettings(){
     ${sw('faith','🕯️ משפטים מהמקורות')}
     <h3>🎨 מראה</h3>
     <div class="setrow"><span>🌗 תצוגה</span><div class="seg" id="set-theme">${[['light','☀️ בהיר'],['dark','🌙 כהה'],['system','📱 כמו בטלפון']].map(([k,l])=>`<button data-th="${k}" aria-pressed="${(S.settings.theme||'system')===k}">${l}</button>`).join('')}</div></div>
-    <div class="setrow"><span>🖍️ צבע מועדף</span><div class="swatches" id="set-accent">${Object.entries(ACCENTS).map(([k,a])=>`<button data-ac="${k}" aria-pressed="${(S.settings.accent||'coral')===k}" style="background:${a[0]}" aria-label="צבע ${a[4]}"></button>`).join('')}</div></div>
+    <div class="setrow"><span>🖍️ צבע מועדף</span><div class="swatches" id="set-accent">${Object.entries(ACCENTS).filter(([k])=>k!=='gold'||document.documentElement.classList.contains('vip')).map(([k,a])=>`<button data-ac="${k}" aria-pressed="${(S.settings.accent||'coral')===k}" style="background:${a[0]}" aria-label="צבע ${a[4]}"></button>`).join('')}</div></div>
     <div class="setrow"><span>🔠 גודל טקסט</span><div class="seg" id="set-size">${SIZES.map(([v,l])=>`<button data-sz="${v}" aria-pressed="${size===v}">${l}</button>`).join('')}</div></div>
     <div id="size-confirm" class="actions" hidden><span style="font-size:.9rem;color:var(--muted)">ככה נוח?</span><button class="btn small" id="size-ok">לשמור</button><button class="btn small ghost" id="size-cancel">ביטול</button></div>
     <h3>🏡 מה מופיע במסך היום</h3>
@@ -730,6 +730,13 @@ window.TK={
     ['moods','hard','askNext','injectSkip','reviewed','del'].forEach(k=>S[k]=S[k]||{});S.journal=S.journal||[];
     quiet=!!fromCloud;rollover();inject();save();quiet=false;lastStage=-1;applyLook();renderAll()},
   markSaved(){quiet=true;save();quiet=false},
+  addTask(text,energy){today().push({id:uid(),text:String(text).slice(0,120),energy:ENERGY[energy]?energy:'light',done:false,color:nextColor()});save();renderAll()},
+  addGoal(o){const steps=(o.steps||[]).map(x=>String(x).trim()).filter(Boolean);if(!o.title)return;
+    const g={id:uid(),emoji:emojiFor(o.title),color:nextColor(),title:String(o.title).slice(0,80),why:String(o.why||'').slice(0,160),letter:'',deadline:'',auto:true,createdAt:Date.now(),
+      steps:(steps.length?steps:localBreakdown(o.title).map(x=>x.text)).map(text=>({id:uid(),text,doneDays:[],done:false}))};
+    S.goals.unshift(g);inject();save();renderAll()},
+  tab:()=>curTab,
+  setAccent(a){S.settings.accent=a;save();applyLook()},
 };
 
 /* ---------- one click handler ---------- */

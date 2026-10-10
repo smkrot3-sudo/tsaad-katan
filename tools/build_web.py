@@ -51,6 +51,8 @@ def page(asset_prefix=''):
 <script>
 {read('web/parts/native.js')}</script>
 <script>
+{read('web/parts/ai.js')}</script>
+<script>
 if('serviceWorker' in navigator&&location.protocol==='https:')addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{{}}));
 </script>
 </body>

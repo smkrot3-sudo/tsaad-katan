@@ -83,3 +83,15 @@
 .top .hd{min-width:0}
 .sets .setrow:has(.seg),.sets .setrow:has(.swatches){flex-direction:column;align-items:stretch;gap:8px}
 .sets .setrow .swatches{justify-content:flex-start}
+/* the gentle coach */
+.ai-fab{position:fixed;inset-inline-start:16px;bottom:calc(84px + env(safe-area-inset-bottom,0px));width:52px;height:52px;border-radius:50%;border:0;background:linear-gradient(135deg,var(--joy5),var(--joy4));box-shadow:var(--shadow);font-size:1.5rem;z-index:15;display:grid;place-items:center;zoom:var(--fs)}
+.ai-log{display:flex;flex-direction:column;gap:8px;max-height:46vh;overflow:auto;padding:4px 0}
+.ai-msg{max-width:88%;padding:10px 12px;border-radius:16px;white-space:pre-wrap;line-height:1.6}
+.ai-msg.me{align-self:flex-start;background:var(--accent-soft)}
+.ai-msg.bot{align-self:flex-end;background:var(--soft)}
+.ai-act{display:flex;gap:8px;align-items:center;justify-content:space-between;background:var(--ok-soft);border-radius:14px;padding:8px 10px;font-size:.92rem}
+.ai-act.done{color:var(--muted)}
+.ai-in{display:flex;gap:8px;align-items:flex-end;margin-top:10px}
+.ai-in textarea{flex:1;min-height:48px!important}
+.ai-foot{display:flex;justify-content:space-between;font-size:.82rem;color:var(--muted);margin-top:6px}
+#ai-pre{margin-top:8px}

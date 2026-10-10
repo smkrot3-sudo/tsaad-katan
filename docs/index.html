@@ -303,6 +303,18 @@ button:disabled{opacity:.6;cursor:default}
 .top .hd{min-width:0}
 .sets .setrow:has(.seg),.sets .setrow:has(.swatches){flex-direction:column;align-items:stretch;gap:8px}
 .sets .setrow .swatches{justify-content:flex-start}
+/* the gentle coach */
+.ai-fab{position:fixed;inset-inline-start:16px;bottom:calc(84px + env(safe-area-inset-bottom,0px));width:52px;height:52px;border-radius:50%;border:0;background:linear-gradient(135deg,var(--joy5),var(--joy4));box-shadow:var(--shadow);font-size:1.5rem;z-index:15;display:grid;place-items:center;zoom:var(--fs)}
+.ai-log{display:flex;flex-direction:column;gap:8px;max-height:46vh;overflow:auto;padding:4px 0}
+.ai-msg{max-width:88%;padding:10px 12px;border-radius:16px;white-space:pre-wrap;line-height:1.6}
+.ai-msg.me{align-self:flex-start;background:var(--accent-soft)}
+.ai-msg.bot{align-self:flex-end;background:var(--soft)}
+.ai-act{display:flex;gap:8px;align-items:center;justify-content:space-between;background:var(--ok-soft);border-radius:14px;padding:8px 10px;font-size:.92rem}
+.ai-act.done{color:var(--muted)}
+.ai-in{display:flex;gap:8px;align-items:flex-end;margin-top:10px}
+.ai-in textarea{flex:1;min-height:48px!important}
+.ai-foot{display:flex;justify-content:space-between;font-size:.82rem;color:var(--muted);margin-top:6px}
+#ai-pre{margin-top:8px}
 </style>
 </head>
 <body>
@@ -430,7 +442,7 @@ button:disabled{opacity:.6;cursor:default}
 <section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" hidden></section>
 
 <div class="toast" id="toast" role="status"><span id="toast-msg"></span><button id="toast-undo" hidden>ביטול</button></div>
-<script>window.TK_SITE="https://smkrot3-sudo.github.io/tsaad-katan/";window.TK_BUILD=1791658610449;</script>
+<script>window.TK_SITE="https://smkrot3-sudo.github.io/tsaad-katan/";window.TK_BUILD=1791658929707;</script>
 <script>
 (function(){
 const KEY='tsaad-katan-v2';
@@ -1032,7 +1044,7 @@ function openLetterRead(){
 }
 
 /* look: theme, accent, text size */
-const ACCENTS={coral:['#FF7F50','#FFE1D3','#FF9A73','#4A3030','🧡'],pink:['#F2709C','#FFDDEA','#FF96BA','#4A2836','🩷'],lavender:['#9B7BEA','#E9E0FF','#B8A0FF','#352B52','💜'],mint:['#2FAE86','#D6F4EA','#5DD3AA','#1F3F35','💚'],sky:['#3C9BE8','#DCEEFF','#7BBEF5','#1F3550','💙'],sun:['#E9A417','#FFF0C7','#F6C64E','#47391A','💛']};
+const ACCENTS={coral:['#FF7F50','#FFE1D3','#FF9A73','#4A3030','🧡'],pink:['#F2709C','#FFDDEA','#FF96BA','#4A2836','🩷'],lavender:['#9B7BEA','#E9E0FF','#B8A0FF','#352B52','💜'],mint:['#2FAE86','#D6F4EA','#5DD3AA','#1F3F35','💚'],sky:['#3C9BE8','#DCEEFF','#7BBEF5','#1F3550','💙'],sun:['#E9A417','#FFF0C7','#F6C64E','#47391A','💛'],gold:['#C8961E','#FBEFC9','#E8C15A','#3F3415','👑']};
 const SIZES=[[1,'רגיל'],[1.12,'גדול'],[1.25,'גדול מאוד']];
 function isDark(){const t=S.settings.theme||'system';return t==='dark'||(t==='system'&&matchMedia('(prefers-color-scheme: dark)').matches)}
 function applyLook(size){
@@ -1102,7 +1114,7 @@ function openSettings(){
     ${sw('faith','🕯️ משפטים מהמקורות')}
     <h3>🎨 מראה</h3>
     <div class="setrow"><span>🌗 תצוגה</span><div class="seg" id="set-theme">${[['light','☀️ בהיר'],['dark','🌙 כהה'],['system','📱 כמו בטלפון']].map(([k,l])=>`<button data-th="${k}" aria-pressed="${(S.settings.theme||'system')===k}">${l}</button>`).join('')}</div></div>
-    <div class="setrow"><span>🖍️ צבע מועדף</span><div class="swatches" id="set-accent">${Object.entries(ACCENTS).map(([k,a])=>`<button data-ac="${k}" aria-pressed="${(S.settings.accent||'coral')===k}" style="background:${a[0]}" aria-label="צבע ${a[4]}"></button>`).join('')}</div></div>
+    <div class="setrow"><span>🖍️ צבע מועדף</span><div class="swatches" id="set-accent">${Object.entries(ACCENTS).filter(([k])=>k!=='gold'||document.documentElement.classList.contains('vip')).map(([k,a])=>`<button data-ac="${k}" aria-pressed="${(S.settings.accent||'coral')===k}" style="background:${a[0]}" aria-label="צבע ${a[4]}"></button>`).join('')}</div></div>
     <div class="setrow"><span>🔠 גודל טקסט</span><div class="seg" id="set-size">${SIZES.map(([v,l])=>`<button data-sz="${v}" aria-pressed="${size===v}">${l}</button>`).join('')}</div></div>
     <div id="size-confirm" class="actions" hidden><span style="font-size:.9rem;color:var(--muted)">ככה נוח?</span><button class="btn small" id="size-ok">לשמור</button><button class="btn small ghost" id="size-cancel">ביטול</button></div>
     <h3>🏡 מה מופיע במסך היום</h3>
@@ -1164,6 +1176,13 @@ window.TK={
     ['moods','hard','askNext','injectSkip','reviewed','del'].forEach(k=>S[k]=S[k]||{});S.journal=S.journal||[];
     quiet=!!fromCloud;rollover();inject();save();quiet=false;lastStage=-1;applyLook();renderAll()},
   markSaved(){quiet=true;save();quiet=false},
+  addTask(text,energy){today().push({id:uid(),text:String(text).slice(0,120),energy:ENERGY[energy]?energy:'light',done:false,color:nextColor()});save();renderAll()},
+  addGoal(o){const steps=(o.steps||[]).map(x=>String(x).trim()).filter(Boolean);if(!o.title)return;
+    const g={id:uid(),emoji:emojiFor(o.title),color:nextColor(),title:String(o.title).slice(0,80),why:String(o.why||'').slice(0,160),letter:'',deadline:'',auto:true,createdAt:Date.now(),
+      steps:(steps.length?steps:localBreakdown(o.title).map(x=>x.text)).map(text=>({id:uid(),text,doneDays:[],done:false}))};
+    S.goals.unshift(g);inject();save();renderAll()},
+  tab:()=>curTab,
+  setAccent(a){S.settings.accent=a;save();applyLook()},
 };
 
 /* ---------- one click handler ---------- */
@@ -1404,7 +1423,7 @@ function openDelete(){
     <button class="btn wide" id="del-go" style="background:#D9534F">למחוק לתמיד</button><button class="btn ghost wide" data-act="sheet-close">ביטול</button></div>`);
   $('del-go').onclick=async()=>{if($('del-w').value.trim()!=='מחק'){$('del-w').focus();return}
     $('del-go').disabled=true;const {error}=await sb.rpc('delete_my_account');
-    if(error){$('del-msg').textContent=heErr(error);$('del-msg').hidden=false;$('del-go').disabled=false;return}
+    if(error){$('del-msg').textContent=/function|schema cache|not find/i.test(error.message||'')?'מחיקת חשבון מתוך האפליקציה עוד לא פעילה. אפשר לכתוב לנו ונמחק ידנית 💛':heErr(error);$('del-msg').hidden=false;$('del-go').disabled=false;return}
     await sb.auth.signOut();meta={};saveMeta();try{localStorage.removeItem('tsaad-katan-v2')}catch(e){}
     closeSheet();toast('החשבון נמחק. שמחנו ללכת איתך 💛');setTimeout(()=>location.reload(),1500)};
 }
@@ -1440,6 +1459,13 @@ async function roles(){
   if(!user)return;
   const [{data:v},{data:a}]=await Promise.all([sb.rpc('is_vip'),sb.rpc('is_admin')]);isVip=!!v;isAdmin=!!a;
   document.documentElement.classList.toggle('vip',isVip);dot();
+  let welcomed=null;try{welcomed=localStorage.getItem('tsaad-katan-vip')}catch(e){}
+  if(isVip&&!isAdmin&&!welcomed){try{localStorage.setItem('tsaad-katan-vip','1')}catch(e){}
+    openSheet(sheetHead('👑 ברוכים הבאים ל-VIP')+`<div style="text-align:center;font-size:3.4rem" class="e">👑</div>
+      <p>${G('{אתה|את} חלק מהחוג הקרוב של צעד קטן 💛 מה מחכה לך:')}</p>
+      <ul class="newlist"><li>✨ המאמן העדין בלי הגבלת שאלות</li><li>🎨 ערכת צבעים זהובה</li><li>🎁 גישה ראשונה לדברים חדשים</li></ul>
+      <div class="actions"><button class="btn" id="vip-gold" style="flex:1">להפעיל את הזהב</button><button class="btn ghost" data-act="sheet-close">אחר כך</button></div>`);
+    document.getElementById('vip-gold').onclick=()=>{TK.setAccent('gold');closeSheet();toast('👑 זהב!')}}
 }
 
 /* ---------- start ---------- */
@@ -1541,6 +1567,94 @@ setTimeout(()=>{
   reschedule();checkUpdate();
 },1500);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){reschedule();checkUpdate()}});
+})();
+</script>
+<script>
+/* The gentle coach: a ✨ button on every screen, preset questions per screen, answers streamed from the coach Edge Function.
+   The conversation stays on this phone; the server keeps only a daily counter. */
+(function(){
+if(!window.TK||!window.TKcloud)return;
+const SB_URL='https://pzrzwilkloksfxsvcwji.supabase.co',SB_KEY='sb_publishable_kTKMU6nUUWtGAgb-SJvYyQ_QweS_o60';
+const KEY='tsaad-katan-ai';
+const $=id=>document.getElementById(id);
+const {G,esc,toast,openSheet,closeSheet,sheetHead}=TK;
+let chat=[];try{chat=JSON.parse(localStorage.getItem(KEY))||[]}catch(e){}
+const keep=()=>{chat=chat.slice(-30);try{localStorage.setItem(KEY,JSON.stringify(chat))}catch(e){}};
+let busy=false,left=null;
+
+const PRESETS={
+  today:['מה הדבר הכי קטן שאפשר לעשות עכשיו?','אין לי כוח היום. מה כן אפשר?','{תעזור|תעזרי} לי לבחור במה להתחיל'],
+  goals:['{תעזור|תעזרי} לי לבחור מטרה חדשה','הצעד הנוכחי מרגיש גדול מדי','איך שומרים על מוטיבציה בימים קשים?'],
+  progress:['מה הלך טוב השבוע?','{תכתוב|תכתבי} לי מילה טובה על הדרך שעשיתי','מה אפשר ללמוד מהשבוע הזה?'],
+};
+const MOODS=['קשה','לא משהו','בסדר','טוב','מצוין'];
+
+function context(){
+  const S=TK.get(),st=S.settings,d=new Date(),k=x=>x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0');
+  const T=k(d),L=S.tasks[T]||[];const lines=[];
+  lines.push(`שם: ${st.name||'לא ידוע'}. מגדר לפנייה: ${st.address}. היום: ${d.toLocaleDateString('he-IL',{weekday:'long',day:'numeric',month:'long'})}, שעה ${d.getHours()}:00.`);
+  if(S.moods[T]!=null)lines.push('מצב רוח היום: '+MOODS[S.moods[T]]);
+  if(S.hard&&S.hard[T])lines.push('סימן היום "יום קשה".');
+  lines.push('משימות היום:'+(L.length?'':' אין'));
+  L.forEach(t=>lines.push(`- ${t.text} [${t.done?'בוצע':t.partial?'התחיל':'פתוח'}, כוח: ${t.energy||'mid'}${t.carried?', עובר כבר '+t.carried+' ימים':''}]`));
+  lines.push('מטרות:'+(S.goals.length?'':' אין'));
+  S.goals.forEach(g=>{const cur=g.steps.find(s=>!s.done);lines.push(`- ${g.title}${g.why?' (למה: '+g.why+')':''}: ${g.steps.filter(s=>s.done).length}/${g.steps.length} צעדים${cur?', הצעד הנוכחי: '+cur.text:', הושגה'}${g.deadline?', עד '+g.deadline:''}`)});
+  const wk=[];for(let i=1;i<=7;i++){const x=new Date(d);x.setDate(x.getDate()-i);const kk=k(x);const n=(S.tasks[kk]||[]).filter(t=>t.done).length;wk.push(`${kk}: ${n} בוצעו${S.moods[kk]!=null?', מצב רוח '+MOODS[S.moods[kk]]:''}`)}
+  lines.push('השבוע שעבר:\n'+wk.join('\n'));
+  const j=(S.journal||[]).filter(x=>x.type!=='letter').slice(0,8);if(j.length)lines.push('מהיומן:\n'+j.map(x=>'- '+x.text).join('\n'));
+  return lines.join('\n');
+}
+
+function parse(text){const actions=[];const clean=text.split('\n').filter(l=>{const m=l.trim().match(/^ACTION\s+(\{.*\})\s*$/);if(m){try{actions.push(JSON.parse(m[1]))}catch(e){}return false}return true}).join('\n').trim();return {clean,actions}}
+function actionCard(a,i,mi){
+  if(a.type==='add_task')return `<div class="ai-act"><span>☀️ להוסיף להיום: <b>${esc(a.text)}</b></span><button class="btn small" data-ai-act="${mi}:${i}">להוסיף</button></div>`;
+  if(a.type==='add_goal')return `<div class="ai-act"><span>🎯 מטרה חדשה: <b>${esc(a.title)}</b>${(a.steps||[]).length?'<br><small>'+a.steps.map(esc).join(' · ')+'</small>':''}</span><button class="btn small" data-ai-act="${mi}:${i}">ליצור</button></div>`;
+  return '';
+}
+function bubbles(){
+  return chat.map((m,mi)=>{if(m.role==='user')return `<div class="ai-msg me">${esc(m.text)}</div>`;
+    const {clean,actions}=parse(m.text);
+    return `<div class="ai-msg bot">${esc(clean)||'<span class="thinking">חושב...</span>'}</div>${actions.map((a,i)=>m.done&&m.done.includes(i)?'<div class="ai-act done">✓ נוסף</div>':actionCard(a,i,mi)).join('')}`}).join('');
+}
+function draw(){
+  const user=TKcloud.user();
+  const tab=TK.tab?TK.tab():'today';
+  openSheet(sheetHead('✨ המאמן העדין')+(!user?`<p>${G('המאמן יכול לעזור לפרק משימה, לבחור צעד, או סתם לדבר על היום. כדי להשתמש בו צריך להתחבר (זה בחינם).')}</p><button class="btn wide" data-cloud="login">${G('{התחבר|התחברי}')}</button>`:
+    `<div class="ai-log" id="ai-log">${chat.length?bubbles():`<div class="ai-msg bot">${G('היי'+(TK.get().settings.name?' '+esc(TK.get().settings.name):'')+' 🌱 על מה {תרצה|תרצי} לדבר? אפשר לבחור למטה או לכתוב חופשי.')}</div>`}</div>
+    <div class="chiprow" id="ai-pre">${PRESETS[tab].map(q=>`<button class="chipbtn" data-q="${esc(G(q))}">${esc(G(q))}</button>`).join('')}</div>
+    <div class="ai-in"><textarea id="ai-text" rows="2" placeholder="${G('{כתוב|כתבי} כאן... (Enter יורד שורה)')}"></textarea><button class="btn" id="ai-send" aria-label="שליחה">שליחה</button></div>
+    <div class="ai-foot"><span id="ai-left">${left!=null&&left<100?'נשארו היום '+left+' שאלות':TKcloud.vip()?'👑 בלי הגבלה':''}</span>${chat.length?'<button class="linkbtn" id="ai-clear">שיחה חדשה</button>':''}</div>
+    <p class="hint">${G('המאמן הוא עזר, לא טיפול. השיחה נשמרת רק בטלפון הזה.')}</p>`));
+  if(!user)return;
+  const lg=$('ai-log');lg.scrollTop=lg.scrollHeight;
+  $('ai-send').onclick=()=>send($('ai-text').value);
+  $('ai-pre').onclick=e=>{const b=e.target.closest('[data-q]');if(b)send(b.dataset.q)};
+  if($('ai-clear'))$('ai-clear').onclick=()=>{chat=[];keep();draw()};
+  lg.onclick=e=>{const b=e.target.closest('[data-ai-act]');if(!b)return;const [mi,i]=b.dataset.aiAct.split(':').map(Number);const m=chat[mi];const a=parse(m.text).actions[i];
+    if(a.type==='add_task'){TK.addTask(a.text,a.energy);toast('☀️ נוסף לרשימה של היום')}else if(a.type==='add_goal'){TK.addGoal(a);toast('🎯 המטרה נוצרה, והצעד הראשון כבר ברשימה')}
+    m.done=(m.done||[]).concat(i);keep();draw()};
+}
+function refresh(){const lg=$('ai-log');if(!lg)return;lg.innerHTML=bubbles();lg.scrollTop=lg.scrollHeight}
+async function send(text){
+  text=(text||'').trim();if(!text||busy)return;busy=true;
+  chat.push({role:'user',text});const bot={role:'model',text:''};chat.push(bot);keep();draw();$('ai-send').disabled=true;
+  try{
+    const {data:{session}}=await TKcloud.client.auth.getSession();
+    const r=await fetch(SB_URL+'/functions/v1/coach',{method:'POST',headers:{'Content-Type':'application/json',apikey:SB_KEY,Authorization:'Bearer '+session.access_token},
+      body:JSON.stringify({messages:chat.slice(0,-1).map(m=>({role:m.role,text:m.text})),context:context()})});
+    if(!r.ok){const e=await r.json().catch(()=>({}));
+      bot.text=e.error==='limit'?G('היום כבר {שאלת|שאלת} '+e.limit+' שאלות, וזה המון 💛 מחר יש עוד.'):e.error==='no_key'?'המאמן עוד לא הופעל. זה יקרה בקרוב 🌱':'🌧️ המאמן לא זמין כרגע. אפשר לנסות שוב עוד רגע.';
+    }else{
+      left=+r.headers.get('x-remaining');const rd=r.body.getReader(),dec=new TextDecoder();
+      while(true){const {value,done}=await rd.read();if(done)break;bot.text+=dec.decode(value,{stream:true});refresh()}
+      if(!bot.text)bot.text='🌧️ לא הגיעה תשובה. אפשר לנסות שוב.';
+    }
+  }catch(e){bot.text=navigator.onLine?'🌧️ משהו לא הסתדר. אפשר לנסות שוב.':'📴 אין רשת כרגע. המאמן צריך אינטרנט.'}
+  busy=false;keep();draw();
+}
+
+const fab=document.createElement('button');fab.className='ai-fab';fab.id='ai-fab';fab.setAttribute('aria-label','המאמן העדין');fab.innerHTML='<span class="e">✨</span>';
+fab.onclick=draw;document.body.appendChild(fab);
 })();
 </script>
 <script>
