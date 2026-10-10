@@ -3,7 +3,8 @@
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 
 // Google retires models often, so the list is read from Google (cached) and the newest "flash" models are tried first
-const PREFERRED = ["gemini-3.8-flash", "gemini-3.5-flash", "gemini-3.5-flash-lite"];
+// fastest first: a gentle short answer matters more than the biggest model
+const PREFERRED = ["gemini-3.5-flash", "gemini-3.5-flash-lite", "gemini-3.8-flash"];
 let cached: { at: number; list: string[] } | null = null;
 async function models(key: string): Promise<string[]> {
   if (cached && Date.now() - cached.at < 6 * 3600 * 1000) return cached.list;
@@ -84,12 +85,12 @@ Deno.serve(async (req) => {
   const fails: string[] = [];
   for (const model of await models(key)) {
     const ctrl = new AbortController();
-    const t = setTimeout(() => ctrl.abort(), 25000);
+    const t = setTimeout(() => ctrl.abort(), 40000);
     try {
       const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse`, {
         method: "POST", signal: ctrl.signal,
         headers: { "Content-Type": "application/json", "x-goog-api-key": key },
-        body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents, generationConfig: { temperature: 0.7, maxOutputTokens: 1200 } }),
+        body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents, generationConfig: { temperature: 0.7, maxOutputTokens: 4096 } }),
       });
       clearTimeout(t);
       if (!r.ok || !r.body) {

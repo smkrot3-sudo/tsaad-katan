@@ -442,7 +442,7 @@ button:disabled{opacity:.6;cursor:default}
 <section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" hidden></section>
 
 <div class="toast" id="toast" role="status"><span id="toast-msg"></span><button id="toast-undo" hidden>ביטול</button></div>
-<script>window.TK_SITE="https://smkrot3-sudo.github.io/tsaad-katan/";window.TK_BUILD=1791658929707;</script>
+<script>window.TK_SITE="https://smkrot3-sudo.github.io/tsaad-katan/";window.TK_BUILD=1791660211974;</script>
 <script>
 (function(){
 const KEY='tsaad-katan-v2';
@@ -1649,7 +1649,7 @@ async function send(text){
       while(true){const {value,done}=await rd.read();if(done)break;bot.text+=dec.decode(value,{stream:true});refresh()}
       if(!bot.text)bot.text='🌧️ לא הגיעה תשובה. אפשר לנסות שוב.';
     }
-  }catch(e){bot.text=navigator.onLine?'🌧️ משהו לא הסתדר. אפשר לנסות שוב.':'📴 אין רשת כרגע. המאמן צריך אינטרנט.'}
+  }catch(e){if(bot.text)bot.text+='\n…';else bot.text=navigator.onLine?'🌧️ משהו לא הסתדר. אפשר לנסות שוב.':'📴 אין רשת כרגע. המאמן צריך אינטרנט.'}
   busy=false;keep();draw();
 }
 

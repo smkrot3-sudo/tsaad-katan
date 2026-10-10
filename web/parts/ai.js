@@ -77,7 +77,7 @@ async function send(text){
       while(true){const {value,done}=await rd.read();if(done)break;bot.text+=dec.decode(value,{stream:true});refresh()}
       if(!bot.text)bot.text='🌧️ לא הגיעה תשובה. אפשר לנסות שוב.';
     }
-  }catch(e){bot.text=navigator.onLine?'🌧️ משהו לא הסתדר. אפשר לנסות שוב.':'📴 אין רשת כרגע. המאמן צריך אינטרנט.'}
+  }catch(e){if(bot.text)bot.text+='\n…';else bot.text=navigator.onLine?'🌧️ משהו לא הסתדר. אפשר לנסות שוב.':'📴 אין רשת כרגע. המאמן צריך אינטרנט.'}
   busy=false;keep();draw();
 }
 
