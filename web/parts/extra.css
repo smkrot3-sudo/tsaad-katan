@@ -84,7 +84,13 @@
 .sets .setrow:has(.seg),.sets .setrow:has(.swatches){flex-direction:column;align-items:stretch;gap:8px}
 .sets .setrow .swatches{justify-content:flex-start}
 /* the gentle coach */
-.ai-fab{position:fixed;inset-inline-start:16px;bottom:calc(84px + env(safe-area-inset-bottom,0px));width:52px;height:52px;border-radius:50%;border:0;background:linear-gradient(135deg,var(--joy5),var(--joy4));box-shadow:var(--shadow);font-size:1.5rem;z-index:15;display:grid;place-items:center;zoom:var(--fs)}
+.ai-fab{position:fixed;inset-inline-end:14px;bottom:calc(84px + env(safe-area-inset-bottom,0px));height:58px;padding:0 18px 0 14px;border-radius:999px;border:2px solid #fff;background:linear-gradient(135deg,#8B6CFF,#C86DD7 55%,var(--accent));color:#fff;font:inherit;font-weight:800;font-size:1.05rem;z-index:15;display:flex;align-items:center;gap:6px;zoom:var(--fs);box-shadow:0 6px 18px rgba(0,0,0,.18),0 0 0 0 var(--joy5);animation:aiGlow 2.8s ease-in-out infinite;text-shadow:0 1px 2px rgba(0,0,0,.25)}
+.ai-fab .e{font-size:1.6rem;line-height:1;animation:aiSpark 2.8s ease-in-out infinite}
+.ai-fab:active{transform:scale(.95)}
+@keyframes aiGlow{0%,100%{box-shadow:0 6px 18px rgba(0,0,0,.18),0 0 0 0 rgba(255,200,80,.55)}50%{box-shadow:0 6px 18px rgba(0,0,0,.18),0 0 0 10px rgba(255,200,80,0)}}
+@keyframes aiSpark{0%,100%{transform:rotate(0) scale(1)}50%{transform:rotate(-12deg) scale(1.15)}}
+@media (prefers-reduced-motion:reduce){.ai-fab,.ai-fab .e{animation:none}}
+.ai-hint{display:flex;gap:8px;align-items:center;background:var(--accent-soft);border-radius:14px;padding:8px 12px;margin:8px 0;font-size:.92rem}
 .ai-log{display:flex;flex-direction:column;gap:8px;max-height:46vh;overflow:auto;padding:4px 0}
 .ai-msg{max-width:88%;padding:10px 12px;border-radius:16px;white-space:pre-wrap;line-height:1.6}
 .ai-msg.me{align-self:flex-start;background:var(--accent-soft)}
@@ -100,5 +106,5 @@
 .qod .qtext{flex:1;display:flex;flex-direction:column;gap:2px;transition:opacity .16s}
 .qod.fade .qtext{opacity:0}
 .qod p{margin:0}
-.qod .qn{font-size:.72rem;opacity:.55}
+.qod .qn{font-size:.72rem;opacity:.55;direction:ltr;unicode-bidi:isolate}
 .qarrow{flex:none;width:30px;height:30px;border-radius:50%;border:0;background:rgba(255,255,255,.45);color:var(--joy-ink);font-size:1.3rem;line-height:1;display:grid;place-items:center;padding:0 0 3px}

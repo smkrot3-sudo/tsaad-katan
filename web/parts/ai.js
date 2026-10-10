@@ -81,6 +81,17 @@ async function send(text){
   busy=false;keep();draw();
 }
 
-const fab=document.createElement('button');fab.className='ai-fab';fab.id='ai-fab';fab.setAttribute('aria-label','המאמן העדין');fab.innerHTML='<span class="e">✨</span>';
+// short answers the app asks for by itself: steps for a new goal, tiny actions for a stuck task
+async function quick(mode,payload){
+  if(!TKcloud.user()||!navigator.onLine)throw {code:'unavailable'};
+  const {data:{session}}=await TKcloud.client.auth.getSession();if(!session)throw {code:'unavailable'};
+  const r=await fetch(SB_URL+'/functions/v1/coach',{method:'POST',headers:{'Content-Type':'application/json',apikey:SB_KEY,Authorization:'Bearer '+session.access_token},body:JSON.stringify({mode,...payload})});
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok||!Array.isArray(d.items)||!d.items.length)throw {code:d.error||'busy'};
+  if(d.left!=null)left=+d.left;return d.items;
+}
+window.TKai={ready:()=>!!TKcloud.user()&&navigator.onLine,steps:(title,why,days)=>quick('steps',{title,why,days}),smaller:text=>quick('smaller',{text}),open:draw};
+
+const fab=document.createElement('button');fab.className='ai-fab';fab.id='ai-fab';fab.setAttribute('aria-label','המאמן העדין');fab.innerHTML='<span class="e">✨</span><span class="l">המאמן</span>';
 fab.onclick=draw;document.body.appendChild(fab);
 })();

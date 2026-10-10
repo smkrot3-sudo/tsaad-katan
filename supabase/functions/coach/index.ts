@@ -44,6 +44,36 @@ const COACH = `את/ה "המאמן העדין" באפליקציה "צעד קטן
   ACTION {"type":"add_goal","title":"...","why":"...","steps":["...","..."]}
   המשתמש יאשר בעצמו. לכל היותר 3 שורות ACTION. לא לכתוב ACTION אם לא מתאים.`;
 
+// short JSON tasks the app asks for by itself (breaking a goal into steps, a stuck task into tiny actions)
+const STEPS = `את/ה מאמן/ת עדין/ה באפליקציה "צעד קטן" שעוזרת לאנשים (כולל מי שמתמודד עם דיכאון, שחיקה או קושי נפשי) להתקדם למטרה בצעדים קטנים, בלי לחץ ובלי שיפוטיות.
+פרק/י את המטרה ל-4 עד 6 צעדים הדרגתיים. הראשון קטן מאוד וקל. כל צעד הוא פעולה יומיומית אחת וקונקרטית שאפשר לעשות ביום אחד. המשתמש עובר לצעד הבא כשהוא מרגיש מוכן.
+כתוב/י בעברית, בלשון שם פועל, עד 60 תווים לצעד. החזר/י רק JSON: מערך מחרוזות.`;
+const SMALLER = `מישהו מנסה כבר כמה ימים לעשות משימה ולא מצליח להתחיל. פרק/י אותה ל-2 עד 4 פעולות זעירות וקונקרטיות, עד 2 דקות כל אחת, שהראשונה כמעט בלי מאמץ. בעברית, בלשון שם פועל, עד 50 תווים. החזר/י רק JSON: מערך מחרוזות.`;
+
+async function jsonList(key: string, system: string, text: string): Promise<{ list: string[]; model: string } | null> {
+  for (const model of await models(key)) {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 30000);
+    try {
+      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+        method: "POST", signal: ctrl.signal,
+        headers: { "Content-Type": "application/json", "x-goog-api-key": key },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: system }] }, contents: [{ role: "user", parts: [{ text }] }],
+          generationConfig: { temperature: 0.6, maxOutputTokens: 4096, responseMimeType: "application/json", responseSchema: { type: "ARRAY", items: { type: "STRING" } } },
+        }),
+      });
+      clearTimeout(t);
+      if (!r.ok) { console.error(`gemini json ${model} ${r.status} ${(await r.text().catch(() => "")).slice(0, 300)}`); if (r.status === 404) cached = null; continue; }
+      const d = await r.json();
+      const raw = (d.candidates?.[0]?.content?.parts ?? []).map((p: any) => p.text ?? "").join("");
+      const list = JSON.parse(raw.replace(/^```(json)?|```$/g, "").trim());
+      if (Array.isArray(list) && list.length) return { list: list.map((x: unknown) => String(x).slice(0, 90)).filter(Boolean).slice(0, 7), model };
+    } catch (e) { clearTimeout(t); console.error(`gemini json ${model} ${e}`); }
+  }
+  return null;
+}
+
 const SUMMARY = `סכם/י בעברית את המשוב שהמשתמשים שלחו לאפליקציה "צעד קטן": מה חוזר על עצמו, תקלות שכדאי לתקן קודם, ורעיונות בולטים. רשימה קצרה עם תבליטים.`;
 
 Deno.serve(async (req) => {
@@ -62,6 +92,25 @@ Deno.serve(async (req) => {
   let body: any;
   try { body = await req.json(); } catch { return json({ error: "bad_json" }, 400); }
 
+  const day = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Jerusalem" });
+  const refund = async () => {
+    const { data: u } = await admin.from("ai_usage").select("count").eq("user_id", user.id).eq("day", day).maybeSingle();
+    if (u && u.count > 0) await admin.from("ai_usage").update({ count: u.count - 1 }).eq("user_id", user.id).eq("day", day);
+  };
+
+  if (body.mode === "steps" || body.mode === "smaller") {
+    const { data: left, error } = await admin.rpc("ai_take", { p_user: user.id, p_day: day, p_limit: DAILY });
+    if (error) return json({ error: "quota" }, 500);
+    if (left < 0) return json({ error: "limit", limit: DAILY }, 429);
+    const prompt = body.mode === "steps"
+      ? `מטרה: ${String(body.title ?? "").slice(0, 200)}\n${body.why ? "למה זה חשוב: " + String(body.why).slice(0, 400) + "\n" : ""}${body.days ? `זמן עד היעד: ${+body.days} ימים.` : "בלי תאריך יעד."}`
+      : `המשימה: ${String(body.text ?? "").slice(0, 200)}`;
+    const out = await jsonList(key, body.mode === "steps" ? STEPS : SMALLER, prompt);
+    await admin.from("ai_log").insert({ user_id: user.id, model: out?.model ?? "none", ok: !!out });
+    if (!out) { await refund(); return json({ error: "busy" }, 503); }
+    return json({ items: out.list, left });
+  }
+
   let system = COACH, contents: any[] = [];
   if (body.mode === "feedback_summary") {
     const { data: isAdmin } = await asUser.rpc("is_admin");
@@ -72,7 +121,6 @@ Deno.serve(async (req) => {
   } else {
     const msgs = Array.isArray(body.messages) ? body.messages.slice(-12) : [];
     if (!msgs.length) return json({ error: "empty" }, 400);
-    const day = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Jerusalem" });
     const { data: left, error } = await admin.rpc("ai_take", { p_user: user.id, p_day: day, p_limit: DAILY });
     if (error) return json({ error: "quota" }, 500);
     if (left < 0) return json({ error: "limit", limit: DAILY }, 429);
@@ -131,10 +179,6 @@ Deno.serve(async (req) => {
   }
   await admin.from("ai_log").insert({ user_id: user.id, model: "none", ok: false });
   // nothing answered: give the question back
-  if (body.mode !== "feedback_summary") {
-    const day = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Jerusalem" });
-    const { data: u } = await admin.from("ai_usage").select("count").eq("user_id", user.id).eq("day", day).maybeSingle();
-    if (u && u.count > 0) await admin.from("ai_usage").update({ count: u.count - 1 }).eq("user_id", user.id).eq("day", day);
-  }
+  if (body.mode !== "feedback_summary") await refund();
   return json({ error: "busy", detail: fails.join(",") }, 503);
 });

@@ -1,5 +1,5 @@
 /* network first, cache as fallback: always the latest version when online, still works offline */
-const CACHE='tsaad-katan-1791660791287';
+const CACHE='tsaad-katan-1791661651732';
 const CORE=['./','index.html','manifest.webmanifest','vendor/supabase.js','fonts/varela-round-hebrew-400-normal.woff2','fonts/varela-round-latin-400-normal.woff2','fonts/suez-one-hebrew-400-normal.woff2','fonts/suez-one-latin-400-normal.woff2','icons/icon-192.png','privacy.html'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
