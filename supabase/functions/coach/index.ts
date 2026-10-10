@@ -46,7 +46,7 @@ const COACH = `את/ה "המאמן העדין" באפליקציה "צעד קטן
 
 // short JSON tasks the app asks for by itself (breaking a goal into steps, a stuck task into tiny actions)
 const STEPS = `את/ה מאמן/ת עדין/ה באפליקציה "צעד קטן" שעוזרת לאנשים (כולל מי שמתמודד עם דיכאון, שחיקה או קושי נפשי) להתקדם למטרה בצעדים קטנים, בלי לחץ ובלי שיפוטיות.
-פרק/י את המטרה ל-4 עד 6 צעדים הדרגתיים. הראשון קטן מאוד וקל. כל צעד הוא פעולה יומיומית אחת וקונקרטית שאפשר לעשות ביום אחד. המשתמש עובר לצעד הבא כשהוא מרגיש מוכן.
+פרק/י את המטרה למספר הצעדים שהיא באמת צריכה, לא מספר קבוע: מטרה קטנה ופשוטה 3 עד 4 צעדים, מטרה בינונית 5 עד 8, מטרה גדולה או ארוכה (למשל ללמוד מקצוע, לרוץ 10 ק"מ, להוציא רישיון נהיגה, לעבור דירה) 8 עד 15. אם יש תאריך יעד, התאם/י את מספר הצעדים והקצב לזמן שיש. הראשון קטן מאוד וקל, וכל צעד גדל רק קצת מהקודם. כל צעד הוא פעולה אחת וקונקרטית שאפשר לעשות ביום אחד. המשתמש עובר לצעד הבא כשהוא מרגיש מוכן.
 כתוב/י בעברית, בלשון שם פועל, עד 60 תווים לצעד. החזר/י רק JSON: מערך מחרוזות.`;
 const SMALLER = `מישהו מנסה כבר כמה ימים לעשות משימה ולא מצליח להתחיל. פרק/י אותה ל-2 עד 4 פעולות זעירות וקונקרטיות, עד 2 דקות כל אחת, שהראשונה כמעט בלי מאמץ. בעברית, בלשון שם פועל, עד 50 תווים. החזר/י רק JSON: מערך מחרוזות.`;
 
@@ -68,7 +68,7 @@ async function jsonList(key: string, system: string, text: string): Promise<{ li
       const d = await r.json();
       const raw = (d.candidates?.[0]?.content?.parts ?? []).map((p: any) => p.text ?? "").join("");
       const list = JSON.parse(raw.replace(/^```(json)?|```$/g, "").trim());
-      if (Array.isArray(list) && list.length) return { list: list.map((x: unknown) => String(x).slice(0, 90)).filter(Boolean).slice(0, 7), model };
+      if (Array.isArray(list) && list.length) return { list: list.map((x: unknown) => String(x).slice(0, 90)).filter(Boolean).slice(0, 15), model };
     } catch (e) { clearTimeout(t); console.error(`gemini json ${model} ${e}`); }
   }
   return null;

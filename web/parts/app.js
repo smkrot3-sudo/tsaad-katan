@@ -312,13 +312,13 @@ async function askSteps(title,why,days){
   if(coachOn())return (await TKai.steps(title,why,days)).map((text,i)=>({label:'צעד '+(i+1),text}));
   if(!sampleFn)throw {code:'unavailable'};
   const p=`את/ה מאמן/ת עדין/ה באפליקציה "צעד קטן" שעוזרת לאנשים (כולל מי שמתמודד עם דיכאון, שחיקה או קושי נפשי) להתקדם למטרה בצעדים קטנים, בלי לחץ ובלי שיפוטיות.
-פרק/י את המטרה ל-4 עד 6 צעדים הדרגתיים. הראשון קטן מאוד וקל. כל צעד הוא פעולה יומיומית אחת וקונקרטית שאפשר לעשות ביום אחד. המשתמש עובר לצעד הבא כשהוא מרגיש מוכן.
+פרק/י את המטרה למספר הצעדים שהיא באמת צריכה, לא מספר קבוע: מטרה קטנה ופשוטה 3 עד 4 צעדים, מטרה בינונית 5 עד 8, מטרה גדולה או ארוכה (למשל ללמוד מקצוע, לרוץ 10 ק"מ, להוציא רישיון נהיגה, לעבור דירה) 8 עד 15. אם יש תאריך יעד, התאם/י את מספר הצעדים והקצב לזמן שיש. הראשון קטן מאוד וקל, וכל צעד גדל רק קצת מהקודם. כל צעד הוא פעולה אחת וקונקרטית שאפשר לעשות ביום אחד. המשתמש עובר לצעד הבא כשהוא מרגיש מוכן.
 מטרה: ${title}
 ${why?'למה זה חשוב: '+why+'\n':''}${days?`זמן עד היעד: ${days} ימים.`:'בלי תאריך יעד.'}
 כתוב/י בעברית, בלשון שם פועל, עד 60 תווים לצעד. החזר/י רק JSON: מערך מחרוזות.`;
   const r=await sampleFn.json(p,{modelTier:'default'});
   if(!Array.isArray(r)||!r.length)throw {code:'invalid_json'};
-  return r.slice(0,7).map((x,i)=>({label:'צעד '+(i+1),text:String(typeof x==='string'?x:(x.text||'')).slice(0,90)})).filter(x=>x.text);
+  return r.slice(0,15).map((x,i)=>({label:'צעד '+(i+1),text:String(typeof x==='string'?x:(x.text||'')).slice(0,90)})).filter(x=>x.text);
 }
 async function askSmaller(text){
   if(coachOn())return (await TKai.smaller(text)).slice(0,4);
