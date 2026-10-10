@@ -31,7 +31,7 @@ const SUMMARY = `סכם/י בעברית את המשוב שהמשתמשים של�
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return json({ error: "method" }, 405);
-  const key = Deno.env.get("GEMINI_API_KEY");
+  const key = (Deno.env.get("GEMINI_API_KEY") ?? "").trim().replace(/^["']|["']$/g, "");
   if (!key) return json({ error: "no_key" }, 503);
 
   const url = Deno.env.get("SUPABASE_URL")!;
@@ -64,6 +64,7 @@ Deno.serve(async (req) => {
   }
 
   // try each model in turn; stream the first one that answers
+  const fails: string[] = [];
   for (const model of MODELS) {
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), 25000);
@@ -74,7 +75,12 @@ Deno.serve(async (req) => {
         body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents, generationConfig: { temperature: 0.7, maxOutputTokens: 1200 } }),
       });
       clearTimeout(t);
-      if (!r.ok || !r.body) continue;
+      if (!r.ok || !r.body) {
+        const detail = (await r.text().catch(() => "")).slice(0, 300);
+        console.error(`gemini ${model} ${r.status} ${detail}`);
+        fails.push(`${model}:${r.status}`);
+        continue;
+      }
       const reader = r.body.getReader(), dec = new TextDecoder(), enc = new TextEncoder();
       const stream = new ReadableStream({
         async start(c) {
@@ -102,8 +108,14 @@ Deno.serve(async (req) => {
         },
       });
       return new Response(stream, { headers: { ...cors, "Content-Type": "text/plain; charset=utf-8", "x-remaining": String((body as any)._left ?? ""), "x-model": model } });
-    } catch { clearTimeout(t); }
+    } catch (e) { clearTimeout(t); console.error(`gemini ${model} ${e}`); fails.push(`${model}:timeout`); }
   }
   await admin.from("ai_log").insert({ user_id: user.id, model: "none", ok: false });
-  return json({ error: "busy" }, 503);
+  // nothing answered: give the question back
+  if (body.mode !== "feedback_summary") {
+    const day = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Jerusalem" });
+    const { data: u } = await admin.from("ai_usage").select("count").eq("user_id", user.id).eq("day", day).maybeSingle();
+    if (u && u.count > 0) await admin.from("ai_usage").update({ count: u.count - 1 }).eq("user_id", user.id).eq("day", day);
+  }
+  return json({ error: "busy", detail: fails.join(",") }, 503);
 });
