@@ -2,7 +2,24 @@
 // 20 questions a day per user (unlimited for VIP and the owner). Only a counter and a content-free log are kept.
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 
-const MODELS = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-2.0-flash"];
+// Google retires models often, so the list is read from Google (cached) and the newest "flash" models are tried first
+const PREFERRED = ["gemini-3.8-flash", "gemini-3.5-flash", "gemini-3.5-flash-lite"];
+let cached: { at: number; list: string[] } | null = null;
+async function models(key: string): Promise<string[]> {
+  if (cached && Date.now() - cached.at < 6 * 3600 * 1000) return cached.list;
+  try {
+    const r = await fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=200", { headers: { "x-goog-api-key": key } });
+    const all = ((await r.json()).models ?? [])
+      .filter((m: any) => (m.supportedGenerationMethods ?? []).includes("generateContent"))
+      .map((m: any) => String(m.name).replace(/^models\//, ""))
+      .filter((n: string) => /^gemini-[\d.]+-flash(-lite)?$/.test(n));
+    const ver = (n: string) => parseFloat(n.split("-")[1]) - (n.endsWith("lite") ? 0.01 : 0);
+    all.sort((a: string, b: string) => ver(b) - ver(a));
+    const list = [...PREFERRED.filter((p) => all.includes(p)), ...all.filter((n: string) => !PREFERRED.includes(n))].slice(0, 3);
+    if (list.length) { cached = { at: Date.now(), list }; return list; }
+  } catch { /* fall through */ }
+  return PREFERRED;
+}
 const DAILY = 20;
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -65,7 +82,7 @@ Deno.serve(async (req) => {
 
   // try each model in turn; stream the first one that answers
   const fails: string[] = [];
-  for (const model of MODELS) {
+  for (const model of await models(key)) {
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), 25000);
     try {
@@ -79,6 +96,7 @@ Deno.serve(async (req) => {
         const detail = (await r.text().catch(() => "")).slice(0, 300);
         console.error(`gemini ${model} ${r.status} ${detail}`);
         fails.push(`${model}:${r.status}`);
+        if (r.status === 404) cached = null;
         continue;
       }
       const reader = r.body.getReader(), dec = new TextDecoder(), enc = new TextEncoder();
