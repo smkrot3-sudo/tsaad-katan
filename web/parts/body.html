@@ -1,0 +1,124 @@
+<canvas id="confetti" aria-hidden="true"></canvas>
+<div class="wrap">
+  <header class="top">
+    <div class="hd">
+      <h1 id="hello">שלום</h1>
+      <div class="date" id="today-date"></div>
+    </div>
+    <div id="acct-top"></div>
+    <button class="iconbtn" data-act="settings" aria-label="הגדרות"><span class="e">⚙️</span></button>
+  </header>
+
+  <!-- TODAY -->
+  <main class="view" id="v-today" style="padding-top:0">
+    <div class="offline" id="offline-note" hidden>📴 אין רשת כרגע. הכל נשמר במכשיר ויעלה לענן כשהרשת תחזור.</div>
+    <div class="updbar" id="update-bar" hidden></div>
+    <div class="updbar" id="get-app" hidden><span>📲 יש גם אפליקציה לאנדרואיד, עם תזכורות עדינות</span><a class="btn small" href="#" download>להורדה</a></div>
+    <div id="cloud-msgs" style="display:flex;flex-direction:column;gap:10px"></div>
+    <section class="garden" aria-label="ההתקדמות של היום">
+      <div id="scene" style="display:contents"></div>
+      <div class="gtxt">
+        <div class="speech"><span class="mascot" id="mascot"></span><div class="big" id="sum-big"></div></div>
+        <div class="sub" id="sum-sub"></div>
+        <span class="pill" id="sum-pill"></span>
+      </div>
+    </section>
+    <section class="moodrow" aria-label="מצב הרוח היום">
+      <span class="ml" id="mood-label"></span>
+      <div class="moods" id="moods" role="group" aria-label="בחירת מצב רוח"></div>
+    </section>
+    <section class="qod" aria-label="המשפט של היום"><p id="quote"></p><span class="who" id="quote-who"></span></section>
+    <button class="hardbtn" data-act="hardday" id="hardbtn" aria-pressed="false"></button>
+    <div id="banners" style="display:flex;flex-direction:column;gap:12px"></div>
+    <form class="addbox" id="add-task">
+      <div class="add">
+        <input id="task-input" aria-label="משימה חדשה להיום" autocomplete="off">
+        <button class="btn" type="submit">הוספה</button>
+      </div>
+      <div class="energy" id="energy-pick" role="group" aria-label="כמה כוח זה דורש"></div>
+    </form>
+    <div id="today-list" style="display:flex;flex-direction:column;gap:16px"></div>
+    <div id="after-list"></div>
+    <button class="btn ghost" data-act="evening-open" id="evening-btn"><span class="e">🌙</span> סקירת ערב</button>
+  </main>
+
+  <!-- GOALS -->
+  <main class="view" id="v-goals" hidden>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+      <h2><span class="e">🎯</span> המטרות שלי</h2>
+      <button class="btn small" id="new-goal-btn">+ מטרה חדשה</button>
+    </div>
+    <form class="form" id="goal-form" hidden>
+      <div class="fl">רעיונות להתחלה
+        <div class="chiprow" id="g-templates"></div>
+      </div>
+      <label for="g-title">מה המטרה?
+        <input id="g-title" placeholder="למשל: לצאת יותר מהבית" required autocomplete="off">
+      </label>
+      <label for="g-why"><span>למה זה חשוב לך? <span class="e">💛</span> זה המנוע שלך</span>
+        <input id="g-why" placeholder="מה ישתנה כשתגיע לשם?" autocomplete="off">
+      </label>
+      <div class="fl">סמל למטרה
+        <div class="emojis" id="g-emojis" role="group" aria-label="סמל למטרה"></div>
+      </div>
+      <div class="fl">עד מתי?
+        <div class="seg" role="group" aria-label="זמן יעד">
+          <button type="button" id="g-free" aria-pressed="true">🐢 בקצב שלי</button>
+          <button type="button" id="g-dated" aria-pressed="false">📅 עד תאריך מסוים</button>
+        </div>
+      </div>
+      <label for="g-date" id="g-date-wrap" hidden>תאריך יעד
+        <input type="date" id="g-date">
+      </label>
+      <div class="fl">צעדים קטנים בדרך
+        <button type="button" class="btn ghost" id="g-break">✨ לפרק לי את המטרה לצעדים</button>
+        <div id="g-thinking" class="thinking" hidden>מפרק את המטרה לצעדים קטנים...</div>
+        <div id="g-msg" style="font-size:.85rem" hidden></div>
+        <div class="draft" id="g-draft"></div>
+        <button type="button" class="linkbtn" id="g-addstep" style="align-self:flex-start">+ הוספת צעד בעצמי</button>
+      </div>
+      <label for="g-letter"><span><span class="e">💌</span> מכתב קטן לעצמך, שייפתח ביום שתגיע למטרה (רשות)</span>
+        <textarea id="g-letter" placeholder="מה תרצה להגיד לעצמך באותו יום?"></textarea>
+      </label>
+      <label class="check-row" for="g-auto"><input type="checkbox" id="g-auto" checked>לשבץ לי כל יום צעד אחד ברשימה של היום</label>
+      <div class="actions">
+        <button class="btn" type="submit">שמירת המטרה</button>
+        <button class="btn ghost" type="button" id="g-cancel">ביטול</button>
+      </div>
+    </form>
+    <div id="goals" style="display:flex;flex-direction:column;gap:14px"></div>
+  </main>
+
+  <!-- PROGRESS + JOURNAL -->
+  <main class="view" id="v-progress" hidden>
+    <h2><span class="e">🌷</span> הדרך שעשית</h2>
+    <div class="stats">
+      <div class="stat" style="background:var(--joy2)"><span class="se e">✅</span><div class="n" id="st-week">0</div><div class="l">דברים שעשית השבוע</div></div>
+      <div class="stat" style="background:var(--joy3)"><span class="se e">🌱</span><div class="n" id="st-steps">0</div><div class="l">צעדים קטנים למטרות</div></div>
+      <div class="stat" style="background:var(--joy1)"><span class="se e">☀️</span><div class="n" id="st-days">0</div><div class="l">ימים טובים</div></div>
+      <div class="stat" style="background:var(--joy4)"><span class="se e">🏆</span><div class="n" id="st-goals">0</div><div class="l">מטרות שהושגו</div></div>
+    </div>
+    <div id="better" hidden></div>
+    <div class="week" id="week" aria-label="השבוע האחרון"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+      <h2 style="font-size:1.1rem"><span class="e">📔</span> יומן ההישגים שלי</h2>
+      <button class="btn small ghost" data-act="letter-new">💌 מכתב לעצמי</button>
+    </div>
+    <div class="tabs2" id="jfilter" role="group" aria-label="סינון היומן"></div>
+    <ul class="list wins journal" id="wins"></ul>
+  </main>
+  <p class="ver" id="ver-line"></p>
+</div>
+
+<nav class="tabs" role="tablist">
+  <div class="in">
+    <button class="tab" role="tab" data-v="today" aria-selected="true"><span class="e">☀️</span>היום</button>
+    <button class="tab" role="tab" data-v="goals" aria-selected="false"><span class="e">🎯</span>המטרות שלי</button>
+    <button class="tab" role="tab" data-v="progress" aria-selected="false"><span class="e">📔</span>הדרך שלי</button>
+  </div>
+</nav>
+
+<div class="sheet-bg" id="sheet-bg" hidden></div>
+<section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" hidden></section>
+
+<div class="toast" id="toast" role="status"><span id="toast-msg"></span><button id="toast-undo" hidden>ביטול</button></div>

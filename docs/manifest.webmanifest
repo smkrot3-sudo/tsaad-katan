@@ -1,0 +1,17 @@
+{
+  "name": "צעד קטן",
+  "short_name": "צעד קטן",
+  "description": "מטרות קטנות ורשימת היום, בלי לחץ. כל צעד נחשב.",
+  "lang": "he",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FFF7EF",
+  "theme_color": "#FFF7EF",
+  "icons": [
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}

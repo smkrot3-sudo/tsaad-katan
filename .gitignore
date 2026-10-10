@@ -1,0 +1,6 @@
+android/keystore/
+android/build/
+android/out/
+android/assets/
+*.idsig
+web/preview.html
