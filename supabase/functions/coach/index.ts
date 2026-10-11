@@ -50,28 +50,51 @@ const STEPS = `את/ה מאמן/ת עדין/ה באפליקציה "צעד קטן
 כתוב/י בעברית, בלשון שם פועל, עד 60 תווים לצעד. החזר/י רק JSON: מערך מחרוזות.`;
 const SMALLER = `מישהו מנסה כבר כמה ימים לעשות משימה ולא מצליח להתחיל. פרק/י אותה ל-2 עד 4 פעולות זעירות וקונקרטיות, עד 2 דקות כל אחת, שהראשונה כמעט בלי מאמץ. בעברית, בלשון שם פועל, עד 50 תווים. החזר/י רק JSON: מערך מחרוזות.`;
 
-async function jsonList(key: string, system: string, text: string): Promise<{ list: string[]; model: string } | null> {
+const PLAN = `את/ה המאמן העדין באפליקציה "צעד קטן" (גם לאנשים שמתמודדים עם דיכאון, חרדה או שחיקה).
+המשתמש סיפר, בהקלטה או בכתב, מה יש לו היום. הפוך/הפכי את זה לרשימת משימות להיום:
+- כל משימה קצרה וברורה, בלשון שם פועל, עד 50 תווים. לא להמציא משימות שלא נאמרו.
+- לסדר לפי היגיון של היום: מה שדחוף או של הבוקר קודם.
+- energy: light = קל, mid = בינוני, high = דורש הרבה כוח.
+- daily = true רק אם נאמר שזה חוזר כל יום (למשל "כל בוקר אני מתפלל").
+- משימה ענקית: לכתוב רק את החלק הראשון והקטן שלה.
+- note: משפט אחד חם וקצר בעברית, לפי מגדר המשתמש אם ידוע, בלי לחץ.
+אם לא נשמע כלום ברור, להחזיר רשימה ריקה ו-note שמבקש בעדינות לנסות שוב.`;
+const PLAN_SCHEMA = {
+  type: "OBJECT",
+  properties: {
+    note: { type: "STRING" },
+    tasks: { type: "ARRAY", items: { type: "OBJECT", properties: { text: { type: "STRING" }, energy: { type: "STRING", enum: ["light", "mid", "high"] }, daily: { type: "BOOLEAN" } }, required: ["text", "energy"] } },
+  },
+  required: ["note", "tasks"],
+};
+
+async function askJSON(key: string, system: string, parts: any[], schema: any): Promise<{ data: any; model: string } | null> {
   for (const model of await models(key)) {
     const ctrl = new AbortController();
-    const t = setTimeout(() => ctrl.abort(), 30000);
+    const t = setTimeout(() => ctrl.abort(), 45000);
     try {
       const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
         method: "POST", signal: ctrl.signal,
         headers: { "Content-Type": "application/json", "x-goog-api-key": key },
         body: JSON.stringify({
-          systemInstruction: { parts: [{ text: system }] }, contents: [{ role: "user", parts: [{ text }] }],
-          generationConfig: { temperature: 0.6, maxOutputTokens: 4096, responseMimeType: "application/json", responseSchema: { type: "ARRAY", items: { type: "STRING" } } },
+          systemInstruction: { parts: [{ text: system }] }, contents: [{ role: "user", parts }],
+          generationConfig: { temperature: 0.5, maxOutputTokens: 4096, responseMimeType: "application/json", responseSchema: schema },
         }),
       });
       clearTimeout(t);
       if (!r.ok) { console.error(`gemini json ${model} ${r.status} ${(await r.text().catch(() => "")).slice(0, 300)}`); if (r.status === 404) cached = null; continue; }
       const d = await r.json();
       const raw = (d.candidates?.[0]?.content?.parts ?? []).map((p: any) => p.text ?? "").join("");
-      const list = JSON.parse(raw.replace(/^```(json)?|```$/g, "").trim());
-      if (Array.isArray(list) && list.length) return { list: list.map((x: unknown) => String(x).slice(0, 90)).filter(Boolean).slice(0, 15), model };
+      return { data: JSON.parse(raw.replace(/^```(json)?|```$/g, "").trim()), model };
     } catch (e) { clearTimeout(t); console.error(`gemini json ${model} ${e}`); }
   }
   return null;
+}
+
+async function jsonList(key: string, system: string, text: string): Promise<{ list: string[]; model: string } | null> {
+  const out = await askJSON(key, system, [{ text }], { type: "ARRAY", items: { type: "STRING" } });
+  const list = out?.data;
+  return Array.isArray(list) && list.length ? { list: list.map((x: unknown) => String(x).slice(0, 90)).filter(Boolean).slice(0, 15), model: out!.model } : null;
 }
 
 const SUMMARY = `סכם/י בעברית את המשוב שהמשתמשים שלחו לאפליקציה "צעד קטן": מה חוזר על עצמו, תקלות שכדאי לתקן קודם, ורעיונות בולטים. רשימה קצרה עם תבליטים.`;
@@ -97,6 +120,23 @@ Deno.serve(async (req) => {
     const { data: u } = await admin.from("ai_usage").select("count").eq("user_id", user.id).eq("day", day).maybeSingle();
     if (u && u.count > 0) await admin.from("ai_usage").update({ count: u.count - 1 }).eq("user_id", user.id).eq("day", day);
   };
+
+  if (body.mode === "plan") {
+    const audio = body.audio && typeof body.audio.data === "string" ? body.audio : null;
+    const text = String(body.text ?? "").slice(0, 3000).trim();
+    if (!audio && !text) return json({ error: "empty" }, 400);
+    if (audio && audio.data.length > 8_000_000) return json({ error: "too_long" }, 413);
+    const { data: left, error } = await admin.rpc("ai_take", { p_user: user.id, p_day: day, p_limit: DAILY });
+    if (error) return json({ error: "quota" }, 500);
+    if (left < 0) return json({ error: "limit", limit: DAILY }, 429);
+    const parts: any[] = [{ text: `מגדר לפנייה: ${body.address === "f" ? "נקבה" : body.address === "m" ? "זכר" : "לא ידוע"}.${text ? "\nמה שהמשתמש כתב: " + text : ""}${audio ? "\nההקלטה של המשתמש מצורפת." : ""}` }];
+    if (audio) parts.push({ inlineData: { mimeType: String(audio.mime || "audio/wav"), data: audio.data } });
+    const out = await askJSON(key, PLAN, parts, PLAN_SCHEMA);
+    const tasks = Array.isArray(out?.data?.tasks) ? out!.data.tasks.slice(0, 20).map((x: any) => ({ text: String(x.text ?? "").slice(0, 90), energy: ["light", "mid", "high"].includes(x.energy) ? x.energy : "mid", daily: !!x.daily })).filter((x: any) => x.text) : null;
+    await admin.from("ai_log").insert({ user_id: user.id, model: out?.model ?? "none", ok: !!tasks });
+    if (!tasks) { await refund(); return json({ error: "busy" }, 503); }
+    return json({ tasks, note: String(out!.data.note ?? "").slice(0, 300), left });
+  }
 
   if (body.mode === "steps" || body.mode === "smaller") {
     const { data: left, error } = await admin.rpc("ai_take", { p_user: user.id, p_day: day, p_limit: DAILY });

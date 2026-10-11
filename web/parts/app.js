@@ -150,7 +150,34 @@ const CHEERS=['🎉 כל הכבוד! עוד צעד קטן','🌟 יפה מאוד
 const HALF=['💪 התחלת, וזה כבר המון','🌱 כל ניסיון נחשב','🧡 התחלה זה חצי מהדרך'];
 const EMOJI_MAP=[[/מים|לשתות/,'💧'],[/מקלחת|להתקלח|רחצה|אמבטיה/,'🚿'],[/תרופ|כדור/,'💊'],[/להתקשר|טלפון|תור|קופת|רופא/,'📞'],[/הליכה|ללכת|לצאת|טיול|הליכות|מהבית/,'🚶'],[/ספורט|כושר|להתאמן|ריצה|לרוץ|יוגה|לזוז/,'💪'],[/חבר|חברתי|שיחה|לדבר|הודעה|אמא|אבא|משפחה|אינטראקצי|להיפגש|קשרים/,'💬'],[/לאכול|ארוחה|לבשל|אוכל|תזונה/,'🍎'],[/לסדר|לנקות|כביסה|לכבס|כלים|מיטה|חדר|בלגן|הבית/,'🧹'],[/ללמוד|לקרוא|ספר|שיעור|מבחן|קורס/,'📚'],[/לישון|שינה|להירדם|לנוח|מנוחה/,'😴'],[/לקנות|קניות|סופר/,'🛒'],[/עבודה|מייל|לכתוב|מחשב|קורות חיים|ראיון/,'💼'],[/לנשום|מדיטציה|נשימה|רוגע/,'🧘'],[/מוזיקה|לשיר|לנגן/,'🎵'],[/לצייר|יצירה|לצבוע|תחביב/,'🎨'],[/מרפסת|אוויר|שמש|בחוץ/,'🌤️'],[/כסף|חשבון|לשלם/,'💰'],[/כלב|חתול/,'🐾']];
 const FALLBACK_E=['🌱','⭐','🌼','✨','🍀','🦋'];
-const GOAL_EMOJIS=['🌱','🚶','💬','💪','📚','🧹','🍎','😴','🧘','🎨','💼','💛','🏡','🎯'];
+const GOAL_EMOJIS=['🌱','🎯','⭐','💛','✨','🌈','🏆','🔥','🪜','🌻','🚀','🍀'];
+// many symbols, grouped by kind of goal; the ones that fit the goal's words are offered first
+const GOAL_KINDS=[
+ ['בריאות ואוכל',/בריא|רופא|תרופ|שיניים|דיאט|משקל|לאכול|אוכל|תזונה|מים|לשתות|ירקות|סוכר/,['🍎','🥗','🥦','💧','💊','🩺','🦷','⚖️','🍵','🥑','🫐','🍌','🥕','🍳']],
+ ['ספורט ותנועה',/ספורט|כושר|להתאמן|אימון|ריצה|לרוץ|הליכ|ללכת|יוגה|שחי|לשחות|אופניים|לזוז|צעדים|פילאטיס|ריקוד|לרקוד/,['💪','🏃','🚶','🧘','🏊','🚴','⚽','🏀','🎾','🏋️','🤸','🥾','💃','⛰️']],
+ ['נפש ורוגע',/רוגע|נשימ|מדיטצי|חרדה|דיכאון|מצב רוח|נפש|לנוח|מנוחה|שינה|לישון|להירדם|טיפול|פסיכולוג|לחץ|סטרס/,['🌿','🕊️','😌','💜','🫶','🌙','😴','🛌','🕯️','🌸','☁️','🫧','🧸','🌼']],
+ ['לימודים',/ללמוד|לימוד|מבחן|קורס|תואר|לקרוא|קריאה|ספר|שפה|אנגלית|בגרות|שיעור|מבחנים|אוניברסיט/,['📚','📖','✏️','🎓','🧠','📝','🔤','🌍','🗣️','💡','🏫','📐','🔬','🎒']],
+ ['עבודה וקריירה',/עבודה|לעבוד|ראיון|קורות חיים|קריירה|עסק|פרויקט|מייל|לקוח|משרה|מקצוע|העסק/,['💼','💻','📈','🗂️','📊','🤝','🏢','📞','⏰','📋','🖊️','🧑‍💻','🛠️','📣']],
+ ['כסף',/כסף|לחסוך|חיסכון|חוב|חשבון|לשלם|תקציב|משכורת|הוצאות/,['💰','🪙','💵','🏦','🐷','🧾','💳','📉','🧮','💎']],
+ ['בית וסדר',/לסדר|לנקות|ניקיון|בית|דירה|חדר|כביסה|כלים|ארון|לשפץ|מטבח|בלגן|מיטה/,['🏡','🧹','🧺','🧽','🛋️','🪴','🛏️','📦','🔑','🧼','🗑️','🪟','🧴','🪣']],
+ ['קשרים ומשפחה',/חבר|משפחה|אמא|אבא|ילד|זוגיות|להתקשר|קשרים|להיפגש|חברתי|שיחה|סבא|סבתא|אח|אחות|אהבה/,['💬','👨‍👩‍👧','🤗','💞','👫','☕','📱','💌','🫂','🎉','👶','🐾','🎁','💐']],
+ ['יצירה ותחביבים',/לצייר|ציור|יצירה|לכתוב|כתיבה|מוזיקה|לנגן|לשיר|גיטרה|פסנתר|צילום|לסרוג|לבשל|לאפות|אפייה|תחביב|לתפור/,['🎨','🖌️','✍️','🎸','🎹','🎤','🎵','📷','🧶','🍰','🧑‍🍳','🎭','🧩','🪡']],
+ ['אמונה ונשמה',/להתפלל|תפילה|תורה|שבת|דף יומי|תהלים|אמונה|בית כנסת|מצוו|חסד|ללמוד גמרא|שיעור תורה/,['🙏','📜','🕯️','✡️','🕍','💫','🌅','🍷','🤲','⭐','📖','🌟']],
+ ['טבע ובחוץ',/טבע|טיול|לצאת|בחוץ|ים|פארק|גינה|לגנן|שמש|אוויר|מרפסת|הר/,['🌳','🌻','🌊','🏞️','🌤️','🍃','🌷','🏕️','🦋','🐦','🌈','🌾','🐶','🐱']],
+ ['חלומות ומסעות',/חלום|לטוס|טיסה|חו"ל|נסיעה|רישיון|לנהוג|רכב|לטייל|מסע|להגשים/,['✈️','🗺️','🧳','🚗','🚆','🧭','🏝️','🎯','🏆','🌟','🎈','🪁','🚀','🗽']],
+];
+const kindsFor=title=>GOAL_KINDS.filter(([,r])=>title&&r.test(title));
+const suggestEmoji=title=>{const k=kindsFor(title);if(k.length)return k[0][2][0];const m=EMOJI_MAP.find(([r])=>r.test(title||''));return m?m[1]:'🌱'};
+// the picker: first what fits the goal, then (on request) every group
+function emojiPickerHTML(cur,title,all){
+  const btn=e=>`<button type="button" data-em="${e}" aria-pressed="${e===cur}" aria-label="סמל ${e}">${e}</button>`;
+  const fit=[...new Set(kindsFor(title).flatMap(k=>k[2]))].slice(0,14);
+  let h=`<div class="emojis">${[...new Set([...(fit.length?fit:GOAL_EMOJIS),cur])].map(btn).join('')}</div>`;
+  if(fit.length)h=`<span class="emo-h">✨ מתאים למטרה</span>`+h;
+  if(all)h+=`<span class="emo-h">כללי</span><div class="emojis">${GOAL_EMOJIS.map(btn).join('')}</div>`+GOAL_KINDS.map(([n,,l])=>`<span class="emo-h">${n}</span><div class="emojis">${l.map(btn).join('')}</div>`).join('');
+  else h+=`<button type="button" class="linkbtn" data-emall style="align-self:flex-start">➕ עוד הרבה אימוג'ים</button>`;
+  return h;
+}
 const MASCOTS={plant:{e:'🌱',n:'נבטי, צמח שגדל איתך'},cat:{e:'🐱',n:'מיצי החתולה'},bear:{e:'🧸',n:'דובי'},bunny:{e:'🐰',n:'שפנפן'}};
 const MOODS=[['😔','קשה לי'],['😕','לא משהו'],['🙂','בסדר'],['😊','טוב'],['😄','מצוין']];
 const ENERGY={light:{e:'🪶',n:'קל'},mid:{e:'🌿',n:'בינוני'},high:{e:'🔥',n:'דורש כוח'}};
@@ -236,6 +263,7 @@ function rollover(){
       if(t.done||t.moved||t.letGo)return;
       t.moved=true;
       if(t.auto){const s=stepOf(goalOf(t.goalId),t.stepId);if(s&&!s.done)s.misses=(s.misses||0)+1;return}
+      if(t.dailyId)return;
       moved.push({...t,id:uid(),carried:(t.carried||0)+1,startedBefore:!!t.partial||t.startedBefore,partial:false,done:false,doneAt:null,moved:false});
     });
     S.tasks[T]=[...moved,...(S.tasks[T]||[])];
@@ -252,6 +280,12 @@ function inject(){
     if(skip.includes(s.id))return;
     L.push({id:uid(),text:s.text,energy:'light',done:false,color:nextColor(),goalId:g.id,stepId:s.id,auto:true,carried:s.misses||0,sample:g.sample});
   });
+  // tasks marked "every day" (like praying in the morning) are added again each day
+  // two phones may each add today's copy: keep one
+  const seen={};for(let i=L.length-1;i>=0;i--){const t=L[i];if(!t.dailyId)continue;const o=seen[t.dailyId];if(!o){seen[t.dailyId]=t;continue}
+    const drop=t.done&&!o.done?o:t;L.splice(L.indexOf(drop),1);if(drop===o)seen[t.dailyId]=t}
+  (S.daily||[]).forEach(d=>{if(L.some(t=>t.dailyId===d.id)||skip.includes(d.id))return;
+    L.push({id:uid(),text:d.text,energy:d.energy||'light',done:false,color:d.color||0,dailyId:d.id})});
 }
 rollover();inject();save();
 
@@ -388,17 +422,21 @@ $('quote-box').onclick=()=>showQuote(1);
 })();
 
 /* ---------- TODAY ---------- */
-let addEnergy='mid';
-function renderEnergyPick(){$('energy-pick').innerHTML='<span style="font-size:.85rem;color:var(--muted);align-self:center">כמה כוח זה דורש?</span>'+Object.entries(ENERGY).map(([k,v])=>`<button type="button" data-en="${k}" aria-pressed="${k===addEnergy}">${v.e} ${v.n}</button>`).join('')}
-$('energy-pick').onclick=e=>{const b=e.target.closest('[data-en]');if(!b)return;addEnergy=b.dataset.en;renderEnergyPick()};
+let addEnergy='mid',addDaily=false;
+function renderEnergyPick(){$('energy-pick').innerHTML='<span style="font-size:.85rem;color:var(--muted);align-self:center">כמה כוח זה דורש?</span>'+Object.entries(ENERGY).map(([k,v])=>`<button type="button" data-en="${k}" aria-pressed="${k===addEnergy}">${v.e} ${v.n}</button>`).join('')+
+  `<button type="button" class="daily-tg" data-daily aria-pressed="${addDaily}">🔁 כל יום</button>`}
+$('energy-pick').onclick=e=>{const b=e.target.closest('[data-en],[data-daily]');if(!b)return;if(b.dataset.en)addEnergy=b.dataset.en;else addDaily=!addDaily;renderEnergyPick()};
+function addDailyTask(text,energy){const d={id:uid(),text:String(text).slice(0,120),energy:ENERGY[energy]?energy:'light',color:nextColor(),createdAt:Date.now()};(S.daily=S.daily||[]).push(d);
+  today().push({id:uid(),text:d.text,energy:d.energy,done:false,color:d.color,dailyId:d.id});return d}
 
 function taskHTML(t){
   const g=t.goalId&&goalOf(t.goalId);
   let tag='';
   if(g)tag=`<span class="tag">${g.emoji||'🎯'} צעד בדרך אל: ${esc(g.title)}</span>`;
+  if(t.dailyId)tag+='<span class="tag">🔁 כל יום</span>';
   if(!t.done&&t.partial)tag+='<span class="tag">💪 התחלת, כל ניסיון נחשב</span>';
   else if(!t.done&&t.startedBefore)tag+='<span class="tag">🌱 כבר התחלת את זה פעם</span>';
-  else if(!t.done&&t.carried===1)tag+='<span class="tag">🔁 עבר איתך מאתמול</span>';
+  else if(!t.done&&t.carried===1&&!t.dailyId)tag+='<span class="tag">🔁 עבר איתך מאתמול</span>';
   const stuck=!t.done&&(t.carried||0)>=3;const longStuck=!t.done&&(t.carried||0)>=7&&!t.auto;
   const e=g?(g.emoji||emojiFor(t.text,t.color)):emojiFor(t.text,t.color);
   return `<li class="task${t.done?' done':''}${t.partial&&!t.done?' partial':''}" data-id="${t.id}"><div class="main"><span class="band" style="background:${JOYS[(t.color||0)%JOYS.length]}"></span>
@@ -470,7 +508,9 @@ function afterList(L,done,n){
   return '';
 }
 $('add-task').onsubmit=e=>{e.preventDefault();const v=$('task-input').value.trim();if(!v)return;
-  today().push({id:uid(),text:v,energy:addEnergy,done:false,color:nextColor()});$('task-input').value='';save();renderAll()};
+  if(addDaily){addDailyTask(v,addEnergy);addDaily=false;renderEnergyPick();toast(G('🔁 נוסף. המשימה תחכה לך כל יום מחדש.'))}
+  else today().push({id:uid(),text:v,energy:addEnergy,done:false,color:nextColor()});
+  $('task-input').value='';save();renderAll()};
 $('moods').onclick=e=>{const b=e.target.closest('[data-mood]');if(!b)return;const i=+b.dataset.mood;S.moods[T]=i;save();renderAll();
   toast(i===0?'💜 תודה {ששיתפת|ששיתפת}. אפשר ללכת לאט היום.':i===1?'🤍 קיבלנו. נלך בעדינות היום.':i===2?'🙂 בסדר זה גם טוב':i===3?'😊 איזה כיף לשמוע':'😄 יש! תהנה מהיום')};
 
@@ -513,9 +553,10 @@ function renderTemplates(){$('g-templates').innerHTML=TEMPLATES.map((t,i)=>`<but
 $('g-templates').onclick=e=>{const b=e.target.closest('[data-tpl]');if(!b)return;const t=TEMPLATES[+b.dataset.tpl];
   $('g-title').value=t.t;if(!$('g-why').value)$('g-why').value=t.why;gEmoji=t.e;gEmojiTouched=true;renderEmojis();draft=t.s.map((text,i)=>({label:'צעד '+(i+1),text}));renderDraft();
   $('g-msg').textContent='💡 הנה צעדים מוצעים. אפשר לערוך, להוסיף או להסיר.';$('g-msg').hidden=false};
-function renderEmojis(){$('g-emojis').innerHTML=GOAL_EMOJIS.map(e=>`<button type="button" data-em="${e}" aria-pressed="${e===gEmoji}" aria-label="סמל ${e}">${e}</button>`).join('')}
-$('g-emojis').onclick=e=>{const b=e.target.closest('[data-em]');if(!b)return;gEmoji=b.dataset.em;gEmojiTouched=true;renderEmojis()};
-$('g-title').addEventListener('input',()=>{if(gEmojiTouched)return;const m=EMOJI_MAP.find(([r])=>r.test($('g-title').value));gEmoji=m&&GOAL_EMOJIS.includes(m[1])?m[1]:'🌱';renderEmojis()});
+let gEmAll=false;
+function renderEmojis(){$('g-emojis').innerHTML=emojiPickerHTML(gEmoji,$('g-title').value,gEmAll)}
+$('g-emojis').onclick=e=>{if(e.target.closest('[data-emall]')){gEmAll=true;renderEmojis();return}const b=e.target.closest('[data-em]');if(!b)return;gEmoji=b.dataset.em;gEmojiTouched=true;renderEmojis()};
+$('g-title').addEventListener('input',()=>{if(!gEmojiTouched)gEmoji=suggestEmoji($('g-title').value);renderEmojis()});
 function setDated(v){dated=v;$('g-free').setAttribute('aria-pressed',!v);$('g-dated').setAttribute('aria-pressed',v);$('g-date-wrap').hidden=!v}
 $('g-free').onclick=()=>setDated(false);$('g-dated').onclick=()=>setDated(true);
 function renderDraft(){
@@ -549,7 +590,7 @@ function autoBreak(){clearTimeout(autoTimer);const t=$('g-title').value.trim();
   autoTimer=setTimeout(()=>{if($('g-title').value.trim()!==t||draft.some(s=>s.text.trim()))return;autoFor=t;breakGoal(true)},1800)}
 $('g-title').addEventListener('input',autoBreak);
 $('g-title').addEventListener('blur',()=>{clearTimeout(autoTimer);const t=$('g-title').value.trim();if(t.length>=3&&t!==autoFor&&!draft.some(s=>s.text.trim())&&coachOn()){autoFor=t;breakGoal(true)}});
-function openGoalForm(tplIndex){showTab('goals');$('goal-form').hidden=false;$('new-goal-btn').hidden=true;gEmoji='🌱';gEmojiTouched=false;renderEmojis();renderTemplates();
+function openGoalForm(tplIndex){showTab('goals');$('goal-form').hidden=false;$('new-goal-btn').hidden=true;gEmoji='🌱';gEmojiTouched=false;gEmAll=false;renderEmojis();renderTemplates();
   $('g-letter').placeholder=G('מה {תרצה|תרצי} להגיד לעצמך באותו יום?');$('g-why').placeholder=G('מה ישתנה {כשתגיע|כשתגיעי} לשם?');
   if(tplIndex!=null)$('g-templates').querySelector(`[data-tpl="${tplIndex}"]`).click();else $('g-title').focus()}
 $('new-goal-btn').onclick=()=>openGoalForm();
@@ -562,6 +603,17 @@ $('goal-form').onsubmit=e=>{e.preventDefault();const title=$('g-title').value.tr
   S.goals.unshift(g);open.add(g.id);inject();save();closeForm();renderAll();
   toast(g.auto?'🌱 המטרה נשמרה. הצעד הראשון כבר מחכה ברשימה של היום.':'🌱 המטרה נשמרה. מתחילים מהצעד הראשון.')};
 
+/* a task that comes back every day: remove it only today, or stop it */
+function openDailyDel(t){
+  openSheet(sheetHead('🔁 משימה של כל יום')+`<p>"${esc(t.text)}"</p><div style="display:flex;flex-direction:column;gap:8px">
+    <button class="btn" id="dd-today">🍃 רק להיום</button><button class="btn ghost" id="dd-stop">✋ להפסיק שזה יחזור כל יום</button></div>`);
+  $('dd-today').onclick=()=>{closeSheet();const L=today(),i=L.indexOf(t);if(i<0)return;L.splice(i,1);tomb(t.id);(S.injectSkip[T]=S.injectSkip[T]||[]).push(t.dailyId);save();renderAll();
+    toast('🍃 הורדנו רק מהיום. מחר זה יחזור.',()=>{untomb(t.id);L.splice(i,0,t);S.injectSkip[T]=S.injectSkip[T].filter(x=>x!==t.dailyId);save();renderAll()})};
+  $('dd-stop').onclick=()=>{closeSheet();const di=(S.daily||[]).findIndex(d=>d.id===t.dailyId),d=S.daily[di];if(d){S.daily.splice(di,1);tomb(d.id)}
+    const L=today(),i=L.indexOf(t),gone=i>=0&&!t.done;if(gone){L.splice(i,1);tomb(t.id)}else delete t.dailyId;save();renderAll();
+    toast('המשימה לא תחזור יותר',()=>{if(d){untomb(d.id);S.daily.splice(di,0,d);t.dailyId=d.id}if(gone){untomb(t.id);L.splice(i,0,t)}save();renderAll()})};
+}
+
 /* edit an existing goal: name, symbol, why, date, daily step, letter and the steps themselves */
 function openGoalEdit(g){
   let em=g.emoji||'🌱';const steps=g.steps.map(x=>({id:x.id,text:x.text,done:x.done}));
@@ -571,7 +623,7 @@ function openGoalEdit(g){
     <button type="button" class="del" data-rm="${i}" aria-label="הסרת הצעד">${X}</button></div></div>`).join('');
   openSheet(sheetHead('✏️ עריכת המטרה')+`<form id="ge-form" class="form" style="box-shadow:none;padding:0">
     <label>מה המטרה<input id="ge-title" value="${esc(g.title)}" required autocomplete="off"></label>
-    <div class="emojis" id="ge-emojis" role="group" aria-label="סמל למטרה"></div>
+    <div class="fl" id="ge-emojis" role="group" aria-label="סמל למטרה"></div>
     <label>למה זה חשוב לי (רשות)<input id="ge-why" value="${esc(g.why||'')}" autocomplete="off"></label>
     <label>תאריך יעד (אפשר להשאיר ריק)<input type="date" id="ge-date" value="${g.deadline||''}"></label>
     <b style="margin-top:6px">🪜 הצעדים</b><div class="draft" id="ge-steps">${stepsHtml()}</div>
@@ -579,8 +631,9 @@ function openGoalEdit(g){
     <label><span>💌 מכתב לעצמי ליום שאגיע (רשות)</span><textarea id="ge-letter">${esc(g.letter||'')}</textarea></label>
     <label class="check-row"><input type="checkbox" id="ge-auto" ${g.auto!==false?'checked':''}>לשבץ לי כל יום צעד אחד ברשימה של היום</label>
     <div class="row" style="display:flex;gap:8px;margin-top:8px"><button class="btn" type="submit" style="flex:1">שמירה</button><button class="btn ghost" type="button" data-act="sheet-close">ביטול</button></div></form>`);
-  const drawEm=()=>{$('ge-emojis').innerHTML=GOAL_EMOJIS.map(e=>`<button type="button" data-em="${e}" aria-pressed="${e===em}" aria-label="סמל ${e}">${e}</button>`).join('')};drawEm();
-  $('ge-emojis').onclick=e=>{const b=e.target.closest('[data-em]');if(b){em=b.dataset.em;drawEm()}};
+  let all=false;const drawEm=()=>{$('ge-emojis').innerHTML=emojiPickerHTML(em,$('ge-title').value,all)};drawEm();
+  $('ge-title').addEventListener('input',drawEm);
+  $('ge-emojis').onclick=e=>{if(e.target.closest('[data-emall]')){all=true;drawEm();return}const b=e.target.closest('[data-em]');if(b){em=b.dataset.em;drawEm()}};
   const box=$('ge-steps'),redraw=()=>{box.innerHTML=stepsHtml()};
   box.oninput=e=>{const r=e.target.closest('[data-i]');if(r)steps[+r.dataset.i].text=e.target.value};
   box.onclick=e=>{const up=e.target.closest('[data-up]'),rm=e.target.closest('[data-rm]');
@@ -808,7 +861,7 @@ function applyLook(size){
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>applyLook());
 
 /* what's new, once per version */
-const WHATS_NEW={v:'4.0',items:['☁️ אפשר להתחבר ולשמור הכל בענן, וגם לעבור בין מכשירים','🎨 בהגדרות: מצב כהה, צבע מועדף וגודל טקסט','💾 גיבוי לקובץ ושחזור ממנו','💬 אפשר לשלוח לנו רעיון או לספר על תקלה','🔔 באפליקציה: תזכורות עדינות, שקטות בלילה ובשבת']};
+const WHATS_NEW={v:'6.1',items:['🔁 משימה שחוזרת כל יום: מסמנים "כל יום" כשמוסיפים משימה','🎙️ לספר למאמן מה יש לך היום, והוא מסדר את זה לרשימה','✨ המאמן מציע צעדים לבד כשבונים מטרה חדשה','✏️ אפשר לערוך מטרות','😊 הרבה יותר אימוג׳ים למטרות, ועוד 120 משפטים טובים']};
 function maybeWhatsNew(){
   if(!S.onboarded)return;
   if(S.seenNew===WHATS_NEW.v)return;
@@ -905,7 +958,7 @@ function openSettings(){
   $('whatsnew').onclick=()=>{S.seenNew='x';maybeWhatsNew()};
   $('rewiz').onclick=()=>{closeSheet();openWizard()};
   $('reset').onclick=()=>{if(!armed){armed=true;$('reset').textContent='בטוח? ללחוץ שוב';return}
-    const st=S.settings,old=S;S={v:3,tasks:{},goals:[],moods:{},journal:[],hard:{},seeded:false,onboarded:true,seenNew:old.seenNew,colorIx:0,lastOpen:T,lastSeen:T,carryNote:null,injectSkip:{},reviewed:{},askNext:{},settings:st,del:old.del||{}};
+    const st=S.settings,old=S;S={v:3,tasks:{},goals:[],moods:{},journal:[],hard:{},seeded:false,onboarded:true,seenNew:old.seenNew,colorIx:0,lastOpen:T,lastSeen:T,carryNote:null,injectSkip:{},reviewed:{},askNext:{},daily:[],settings:st,del:old.del||{}};
     Object.values(old.tasks).forEach(L=>L.forEach(x=>tomb(x.id)));old.goals.forEach(x=>tomb(x.id));old.journal.forEach(x=>tomb(x.id));
     S.lastSeenPrev=T;save();closeSheet();renderAll();toast('🧽 דף נקי. מתחילים מחדש, בקצב שלך.')};
 }
@@ -925,6 +978,7 @@ window.TK={
     ['moods','hard','askNext','injectSkip','reviewed','del'].forEach(k=>S[k]=S[k]||{});S.journal=S.journal||[];
     quiet=!!fromCloud;rollover();inject();save();quiet=false;lastStage=-1;applyLook();renderAll()},
   markSaved(){quiet=true;save();quiet=false},
+  addDaily(text,energy){addDailyTask(text,energy);save();renderAll()},
   addTask(text,energy){today().push({id:uid(),text:String(text).slice(0,120),energy:ENERGY[energy]?energy:'light',done:false,color:nextColor()});save();renderAll()},
   addGoal(o){const steps=(o.steps||[]).map(x=>String(x).trim()).filter(Boolean);if(!o.title)return;
     const g={id:uid(),emoji:emojiFor(o.title),color:nextColor(),title:String(o.title).slice(0,80),why:String(o.why||'').slice(0,160),letter:'',deadline:'',auto:true,createdAt:Date.now(),
@@ -944,7 +998,7 @@ document.addEventListener('click',e=>{
       if(v){const el=document.querySelector(`.task[data-id="${t.id}"] .check`);
         if(today().every(x=>x.done))celebrate(el,'🌸 {סימנת|סימנת} הכל להיום'+nm()+'. איזה יום!');else celebrate(el)}break}
     case 'half':{if(!t)return;t.partial=!t.partial;save();renderAll();if(t.partial){confetti(document.querySelector(`.task[data-id="${t.id}"] .halfbtn`));toast(pick(HALF))}break}
-    case 'del':{if(!t)return;const L=today(),i=L.indexOf(t);L.splice(i,1);tomb(t.id);
+    case 'del':{if(!t)return;if(t.dailyId){openDailyDel(t);return}const L=today(),i=L.indexOf(t);L.splice(i,1);tomb(t.id);
       if(t.auto){(S.injectSkip[T]=S.injectSkip[T]||[]).push(t.stepId);save();renderAll();toast('🍃 הורדנו את זה מהיום. זה יחכה לך מחר.',()=>{untomb(t.id);L.splice(i,0,t);S.injectSkip[T]=S.injectSkip[T].filter(x=>x!==t.stepId);save();renderAll()})}
       else{save();renderAll();toast('המשימה נמחקה',()=>{untomb(t.id);L.splice(i,0,t);save();renderAll()})}break}
     case 'stuck':if(t)openStuck(t);break;

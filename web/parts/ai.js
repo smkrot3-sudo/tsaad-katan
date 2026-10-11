@@ -90,7 +90,89 @@ async function quick(mode,payload){
   if(!r.ok||!Array.isArray(d.items)||!d.items.length)throw {code:d.error||'busy'};
   if(d.left!=null)left=+d.left;return d.items;
 }
-window.TKai={ready:()=>!!TKcloud.user()&&navigator.onLine,steps:(title,why,days)=>quick('steps',{title,why,days}),smaller:text=>quick('smaller',{text}),open:draw};
+/* ---------- tell the coach about your day: record (or write), and it builds today's list ---------- */
+const MAX_SEC=90;
+let rec=null; // {ctx,stream,proc,chunks,start,timer}
+async function startRec(){
+  const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}});
+  let ctx;try{ctx=new (window.AudioContext||window.webkitAudioContext)({sampleRate:16000})}catch(e){ctx=new (window.AudioContext||window.webkitAudioContext)()}
+  const src=ctx.createMediaStreamSource(stream),proc=ctx.createScriptProcessor(4096,1,1),chunks=[];
+  proc.onaudioprocess=e=>chunks.push(new Float32Array(e.inputBuffer.getChannelData(0)));
+  src.connect(proc);proc.connect(ctx.destination);
+  rec={ctx,stream,proc,src,chunks,start:Date.now()};
+}
+function stopRec(){
+  if(!rec)return null;const r=rec;rec=null;
+  try{r.src.disconnect();r.proc.disconnect()}catch(e){}r.stream.getTracks().forEach(t=>t.stop());const rate=r.ctx.sampleRate;r.ctx.close();
+  let n=0;r.chunks.forEach(c=>n+=c.length);if(n<rate*0.6)return null;
+  const all=new Float32Array(n);let o=0;r.chunks.forEach(c=>{all.set(c,o);o+=c.length});
+  // down to 16 kHz mono, 16-bit WAV: small enough to send, clear enough for speech
+  const ratio=rate/16000,len=Math.floor(all.length/ratio),pcm=new Int16Array(len);
+  for(let i=0;i<len;i++){const a=Math.floor(i*ratio),b=Math.min(all.length,Math.floor((i+1)*ratio));let sum=0;for(let j=a;j<b;j++)sum+=all[j];const v=Math.max(-1,Math.min(1,sum/Math.max(1,b-a)));pcm[i]=v<0?v*0x8000:v*0x7fff}
+  const buf=new ArrayBuffer(44+pcm.length*2),dv=new DataView(buf),w=(p,str)=>{for(let i=0;i<str.length;i++)dv.setUint8(p+i,str.charCodeAt(i))};
+  w(0,'RIFF');dv.setUint32(4,36+pcm.length*2,true);w(8,'WAVE');w(12,'fmt ');dv.setUint32(16,16,true);dv.setUint16(20,1,true);dv.setUint16(22,1,true);dv.setUint32(24,16000,true);dv.setUint32(28,32000,true);dv.setUint16(32,2,true);dv.setUint16(34,16,true);w(36,'data');dv.setUint32(40,pcm.length*2,true);
+  new Int16Array(buf,44).set(pcm);
+  const bytes=new Uint8Array(buf);let bin='';for(let i=0;i<bytes.length;i+=0x8000)bin+=String.fromCharCode.apply(null,bytes.subarray(i,i+0x8000));
+  return {mime:'audio/wav',data:btoa(bin),sec:Math.round(len/16000)};
+}
+let planAudio=null,planItems=null,planNote='';
+const EN={light:'🍃 קל',mid:'🌤️ בינוני',high:'🔥 דורש כוח'};
+function openPlanner(){
+  const user=TKcloud.user();
+  if(!user){openSheet(sheetHead('🎙️ לספר למאמן על היום')+`<p>${G('{מספר|מספרת} למאמן מה יש לך היום, והוא מסדר את זה לרשימה. כדי להשתמש בזה צריך להתחבר (זה בחינם).')}</p><button class="btn wide" data-cloud="login">${G('{התחבר|התחברי}')}</button>`);return}
+  planAudio=null;planItems=null;planNote='';drawPlanner();
+}
+function drawPlanner(){
+  if(planItems){
+    openSheet(sheetHead('🎙️ הרשימה שהמאמן הציע')+(planNote?`<p>${esc(planNote)}</p>`:'')+
+      (planItems.length?`<p class="hint">${G('אפשר לתקן, להוריד סימון ממה שלא {צריך|צריכה}, ולסמן 🔁 למה שחוזר כל יום.')}</p><div class="plan-list" id="pl-list">${planItems.map((x,i)=>`<div class="plan-it${x.on?'':' off'}" data-i="${i}">
+        <input type="checkbox" data-on ${x.on?'checked':''} aria-label="להוסיף את זה">
+        <input class="t-in" data-text value="${esc(x.text)}" aria-label="המשימה">
+        <div class="plan-tags"><button type="button" class="chipbtn" data-en>${EN[x.energy]||EN.mid}</button><button type="button" class="chipbtn${x.daily?' on':''}" data-daily aria-pressed="${!!x.daily}">🔁 כל יום</button></div></div>`).join('')}</div>
+      <div style="display:flex;gap:8px;margin-top:12px"><button class="btn" id="pl-add" style="flex:1">להוסיף לרשימה של היום</button><button class="btn ghost" id="pl-again">לנסות שוב</button></div>`
+      :`<button class="btn wide" id="pl-again">לנסות שוב</button>`));
+    const list=$('pl-list');
+    if(list){
+      list.oninput=e=>{const it=e.target.closest('[data-i]');if(it&&e.target.dataset.text!=null)planItems[+it.dataset.i].text=e.target.value};
+      list.onchange=e=>{const it=e.target.closest('[data-i]');if(it&&e.target.dataset.on!=null){planItems[+it.dataset.i].on=e.target.checked;it.classList.toggle('off',!e.target.checked)}};
+      list.onclick=e=>{const it=e.target.closest('[data-i]');if(!it)return;const x=planItems[+it.dataset.i];
+        if(e.target.closest('[data-en]')){x.energy=x.energy==='light'?'mid':x.energy==='mid'?'high':'light';e.target.closest('[data-en]').textContent=EN[x.energy]}
+        if(e.target.closest('[data-daily]')){x.daily=!x.daily;const b=e.target.closest('[data-daily]');b.classList.toggle('on',x.daily);b.setAttribute('aria-pressed',x.daily)}};
+      $('pl-add').onclick=()=>{const pick=planItems.filter(x=>x.on&&x.text.trim());pick.forEach(x=>x.daily?TK.addDaily(x.text.trim(),x.energy):TK.addTask(x.text.trim(),x.energy));
+        closeSheet();toast(pick.length?G('☀️ '+(pick.length===1?'משימה אחת נוספה':pick.length+' משימות נוספו')+' לרשימה של היום'):'לא נוסף כלום, וזה גם בסדר')};
+    }
+    $('pl-again').onclick=()=>{planItems=null;planAudio=null;drawPlanner()};
+    return;
+  }
+  openSheet(sheetHead('🎙️ לספר למאמן על היום')+`<p>${G('{ספר|ספרי} בחופשיות מה יש לך היום, בלי סדר ובלי לחץ. המאמן יהפוך את זה לרשימה מסודרת, ו{אתה|את} {תחליט|תחליטי} מה להוסיף.')}</p>
+    <div class="rec-box"><button type="button" class="rec-btn" id="pl-rec" aria-label="הקלטה">🎙️</button><div id="pl-rec-msg" class="hint">${planAudio?'✓ יש הקלטה של '+planAudio.sec+' שניות. אפשר להקליט שוב.':'ללחוץ כדי להתחיל להקליט (עד דקה וחצי)'}</div></div>
+    <label class="fl">או לכתוב כאן<textarea id="pl-text" rows="3" placeholder="${G('למשל: צריך להתקשר לרופא, לקנות חלב, ובערב להתקשר לאמא...')}"></textarea></label>
+    <button class="btn wide" id="pl-go" style="margin-top:10px">✨ לסדר לי את היום</button><div id="pl-think" class="thinking" hidden>המאמן מקשיב ומסדר...</div>`);
+  const btn=$('pl-rec'),msg=$('pl-rec-msg');
+  btn.onclick=async()=>{
+    if(rec){clearInterval(rec.timer);btn.classList.remove('on');btn.textContent='🎙️';const a=stopRec();planAudio=a;msg.textContent=a?'✓ יש הקלטה של '+a.sec+' שניות. אפשר ללחוץ "לסדר לי".':'ההקלטה הייתה קצרה מדי. אפשר לנסות שוב.';return}
+    try{await startRec()}catch(e){msg.textContent=G('אין גישה למיקרופון. אפשר לאשר מיקרופון לאפליקציה, או ללחוץ על המיקרופון במקלדת ולהכתיב בתיבה למטה.');return}
+    btn.classList.add('on');btn.textContent='⏹️';
+    rec.timer=setInterval(()=>{if(!rec)return;const s=Math.floor((Date.now()-rec.start)/1000);msg.textContent='🔴 מקליט... '+s+' שניות. ללחוץ שוב כדי לסיים.';if(s>=MAX_SEC)btn.click()},500);
+  };
+  $('pl-go').onclick=async()=>{
+    if(rec)btn.click();
+    const text=$('pl-text').value.trim();if(!planAudio&&!text){msg.textContent=G('{ספר|ספרי} או {כתוב|כתבי} משהו קודם 🌱');return}
+    $('pl-go').disabled=true;$('pl-think').hidden=false;
+    try{
+      const {data:{session}}=await TKcloud.client.auth.getSession();
+      const r=await fetch(SB_URL+'/functions/v1/coach',{method:'POST',headers:{'Content-Type':'application/json',apikey:SB_KEY,Authorization:'Bearer '+session.access_token},
+        body:JSON.stringify({mode:'plan',text,audio:planAudio?{mime:planAudio.mime,data:planAudio.data}:null,address:TK.get().settings.address})});
+      const d=await r.json().catch(()=>({}));
+      if(!r.ok){$('pl-go').disabled=false;$('pl-think').hidden=true;msg.textContent=d.error==='limit'?'היום כבר נגמרו השאלות למאמן 💛 מחר יש עוד.':'🌧️ המאמן לא זמין כרגע. אפשר לנסות שוב עוד רגע.';return}
+      if(d.left!=null)left=+d.left;planNote=d.note||'';planItems=(d.tasks||[]).map(x=>({...x,on:true}));drawPlanner();
+    }catch(e){$('pl-go').disabled=false;$('pl-think').hidden=true;msg.textContent=navigator.onLine?'🌧️ משהו לא הסתדר. אפשר לנסות שוב.':'📴 אין רשת כרגע.'}
+  };
+}
+
+const pb=document.getElementById('plan-btn');if(pb)pb.onclick=openPlanner;
+
+window.TKai={plan:openPlanner,ready:()=>!!TKcloud.user()&&navigator.onLine,steps:(title,why,days)=>quick('steps',{title,why,days}),smaller:text=>quick('smaller',{text}),open:draw};
 
 const fab=document.createElement('button');fab.className='ai-fab';fab.id='ai-fab';fab.setAttribute('aria-label','המאמן העדין');fab.innerHTML='<span class="e">✨</span><span class="l">המאמן</span>';
 fab.onclick=draw;document.body.appendChild(fab);

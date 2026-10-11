@@ -9,7 +9,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.view.View;
+import android.content.pm.PackageManager;
 import android.webkit.JavascriptInterface;
+import android.webkit.PermissionRequest;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
@@ -24,7 +26,8 @@ import org.json.JSONObject;
 public class MainActivity extends Activity {
     static final String SITE = Reminders.SITE;
     static final String OFFLINE = "file:///android_asset/index.html";
-    static final int REQ_SAVE = 11, REQ_PICK = 12, REQ_NOTIF = 13;
+    static final int REQ_SAVE = 11, REQ_PICK = 12, REQ_NOTIF = 13, REQ_MIC = 14;
+    private PermissionRequest micRequest;
     private WebView web;
     private String pendingAuth, saveContent;
     private ValueCallback<Uri[]> pickCallback;
@@ -50,6 +53,17 @@ public class MainActivity extends Activity {
                 pickCallback = cb;
                 try { startActivityForResult(p.createIntent(), REQ_PICK); } catch (Exception e) { pickCallback = null; return false; }
                 return true;
+            }
+            // the microphone, for telling the coach about your day
+            @Override
+            public void onPermissionRequest(PermissionRequest r) {
+                boolean audio = false;
+                for (String x : r.getResources()) if (PermissionRequest.RESOURCE_AUDIO_CAPTURE.equals(x)) audio = true;
+                if (!audio) { r.deny(); return; }
+                if (checkSelfPermission("android.permission.RECORD_AUDIO") == PackageManager.PERMISSION_GRANTED) { r.grant(new String[]{PermissionRequest.RESOURCE_AUDIO_CAPTURE}); return; }
+                if (micRequest != null) micRequest.deny();
+                micRequest = r;
+                requestPermissions(new String[]{"android.permission.RECORD_AUDIO"}, REQ_MIC);
             }
         });
         web.setWebViewClient(new WebViewClient() {
@@ -110,6 +124,14 @@ public class MainActivity extends Activity {
         getWindow().setStatusBarColor(c);
         getWindow().setNavigationBarColor(c);
         getWindow().getDecorView().setSystemUiVisibility(light ? View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR : 0);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int req, String[] perms, int[] res) {
+        if (req != REQ_MIC || micRequest == null) return;
+        if (res.length > 0 && res[0] == PackageManager.PERMISSION_GRANTED) micRequest.grant(new String[]{PermissionRequest.RESOURCE_AUDIO_CAPTURE});
+        else micRequest.deny();
+        micRequest = null;
     }
 
     @Override

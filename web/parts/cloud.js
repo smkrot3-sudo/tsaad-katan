@@ -23,6 +23,7 @@ function merge(a,b){ /* a = local, b = server; the newer copy wins where both ch
   out.del=del;
   out.tasks={};new Set([...Object.keys(a.tasks||{}),...Object.keys(b.tasks||{})]).forEach(k=>{out.tasks[k]=byId((newer.tasks||{})[k],(older.tasks||{})[k])});
   out.goals=byId(newer.goals,older.goals);
+  out.daily=byId(newer.daily,older.daily);
   out.journal=byId(newer.journal,older.journal).sort((x,y)=>(y.at||0)-(x.at||0));
   ['moods','hard','reviewed','injectSkip','askNext'].forEach(k=>out[k]=Object.assign({},older[k]||{},newer[k]||{}));
   out.settings=Object.assign({},older.settings||{},newer.settings||{});
