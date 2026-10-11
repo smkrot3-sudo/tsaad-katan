@@ -122,3 +122,6 @@
 .plan-it input[type=checkbox]{width:22px;height:22px;padding:0;accent-color:var(--accent)}
 .plan-it .plan-tags{grid-column:2;display:flex;gap:6px;flex-wrap:wrap}
 .plan-it .chipbtn.on{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+.lvl{border:0;background:none;padding:0 2px;font:inherit;font-size:.78rem;color:var(--muted);white-space:nowrap;cursor:pointer}
+.lvl-light{color:#3E9A6E}.lvl-high{color:#D0643B}
+.task.done .lvl{opacity:.6}

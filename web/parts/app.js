@@ -181,6 +181,16 @@ function emojiPickerHTML(cur,title,all){
 const MASCOTS={plant:{e:'🌱',n:'נבטי, צמח שגדל איתך'},cat:{e:'🐱',n:'מיצי החתולה'},bear:{e:'🧸',n:'דובי'},bunny:{e:'🐰',n:'שפנפן'}};
 const MOODS=[['😔','קשה לי'],['😕','לא משהו'],['🙂','בסדר'],['😊','טוב'],['😄','מצוין']];
 const ENERGY={light:{e:'🪶',n:'קל'},mid:{e:'🌿',n:'בינוני'},high:{e:'🔥',n:'דורש כוח'}};
+// the app decides by itself how much strength a task takes (the user can still tap the label to change it)
+const E_LIGHT=/לשתות|מים|כוס|תרופ|כדור|לצחצח|שיניים|לפתוח (את ה)?(חלון|תריס)|להתפלל|תפילה|לברך|ברכ|לנשום|נשימ|לשמוע|שיר|הודעה|לשלוח|וואטסאפ|לסמס|לחייך|לאכול|ארוחת בוקר|נשנוש|פרי|לסדר (את ה)?מיטה|לקרוא פרק|תהלים|להשקות|לתלות|לקום|להתלבש|ויטמין|דקה|דקות/;
+const E_HIGH=/לנקות את (כל )?ה?(בית|דירה)|ניקיון|ספורט|כושר|חדר כושר|להתאמן|אימון|ריצה|לרוץ|מבחן|בחינה|עבודה ל|להגיש|ראיון|קורות חיים|לשפץ|לעבור דירה|לארוז|פרויקט|שעה|שעתיים|שעות|בנק|ביטוח לאומי|דוח|מס הכנסה|רופא|בדיק|טסט|לנהוג|קניות|סופר|לבשל|ארוחת ערב|כביסה|לגהץ|לסדר את (כל )?ה?(חדר|ארון|בית)|ללמוד|לכתוב|עבודה/;
+function guessEnergy(text){
+  const t=String(text||'');const m=t.match(/(\d+)\s*דקות/);
+  if(m)return +m[1]<=10?'light':+m[1]<=30?'mid':'high';
+  if(E_HIGH.test(t))return 'high';
+  if(E_LIGHT.test(t))return 'light';
+  return t.length>45?'high':'mid';
+}
 const NICE=['☕ לשתות משהו חם בשקט','🎵 לשמוע שיר שאוהבים','🌳 כמה דקות בחוץ','🛁 מקלחת חמה ונעימה','📞 הודעה קטנה למישהו יקר','🧸 פשוט לנוח, בלי אשמה'];
 const TEMPLATES=[
  {t:'לצאת יותר מהבית',e:'🚶',why:'להרגיש יותר חיים ואוויר',s:['לפתוח חלון ולעמוד ליד 2 דקות','לצאת למרפסת או לחצר ל-5 דקות','להקיף את הבניין פעם אחת','הליכה של 10 דקות בשכונה','לצאת למקום נעים (פארק, בית קפה)']},
@@ -422,11 +432,10 @@ $('quote-box').onclick=()=>showQuote(1);
 })();
 
 /* ---------- TODAY ---------- */
-let addEnergy='mid',addDaily=false;
-function renderEnergyPick(){$('energy-pick').innerHTML='<span style="font-size:.85rem;color:var(--muted);align-self:center">כמה כוח זה דורש?</span>'+Object.entries(ENERGY).map(([k,v])=>`<button type="button" data-en="${k}" aria-pressed="${k===addEnergy}">${v.e} ${v.n}</button>`).join('')+
-  `<button type="button" class="daily-tg" data-daily aria-pressed="${addDaily}">🔁 כל יום</button>`}
-$('energy-pick').onclick=e=>{const b=e.target.closest('[data-en],[data-daily]');if(!b)return;if(b.dataset.en)addEnergy=b.dataset.en;else addDaily=!addDaily;renderEnergyPick()};
-function addDailyTask(text,energy){const d={id:uid(),text:String(text).slice(0,120),energy:ENERGY[energy]?energy:'light',color:nextColor(),createdAt:Date.now()};(S.daily=S.daily||[]).push(d);
+let addDaily=false;
+function renderEnergyPick(){$('energy-pick').innerHTML=`<button type="button" class="daily-tg" data-daily aria-pressed="${addDaily}">🔁 חוזר כל יום</button><span class="hint" style="align-self:center;margin:0">${G('את הקושי האפליקציה מדרגת לבד')}</span>`}
+$('energy-pick').onclick=e=>{if(!e.target.closest('[data-daily]'))return;addDaily=!addDaily;renderEnergyPick()};
+function addDailyTask(text,energy){const d={id:uid(),text:String(text).slice(0,120),energy:ENERGY[energy]?energy:guessEnergy(text),color:nextColor(),createdAt:Date.now()};(S.daily=S.daily||[]).push(d);
   today().push({id:uid(),text:d.text,energy:d.energy,done:false,color:d.color,dailyId:d.id});return d}
 
 function taskHTML(t){
@@ -441,7 +450,7 @@ function taskHTML(t){
   const e=g?(g.emoji||emojiFor(t.text,t.color)):emojiFor(t.text,t.color);
   return `<li class="task${t.done?' done':''}${t.partial&&!t.done?' partial':''}" data-id="${t.id}"><div class="main"><span class="band" style="background:${JOYS[(t.color||0)%JOYS.length]}"></span>
     <button class="check" data-act="check" aria-pressed="${!!t.done}" aria-label="${t.done?'ביטול סימון':'סימון כבוצע'}: ${esc(t.text)}">${CHECK}</button>
-    <span class="t">${esc(t.text)}${t.done?' <span class="e">✨</span>':''}${tag}</span>
+    <span class="t">${esc(t.text)}${t.done?' <span class="e">✨</span>':''} <button type="button" class="lvl lvl-${t.energy||'mid'}" data-act="energy" aria-label="רמת קושי: ${ENERGY[t.energy||'mid'].n}. ללחוץ כדי לשנות">(${ENERGY[t.energy||'mid'].n})</button>${tag}</span>
     ${t.done?'':`<button class="halfbtn" data-act="half" aria-pressed="${!!t.partial}">${t.partial?'½ התחלתי':'התחלתי'}</button>`}
     <span class="emo" style="background:${JOYS[(t.color||0)%JOYS.length]}">${e}</span>
     <button class="del" data-act="del" aria-label="${t.auto?'להוריד מהיום':'מחיקה'}: ${esc(t.text)}">${X}</button></div>
@@ -482,8 +491,7 @@ function renderToday(){
   const shown=hard?L.filter(t=>t.energy==='light'||t.done):L;const waiting=hard?L.filter(t=>t.energy!=='light'&&!t.done):[];
   let html='';
   if(!n)html='';
-  else ['light','mid','high'].forEach(k=>{const grp=shown.filter(t=>(t.energy||'mid')===k);if(!grp.length)return;
-    html+=`<section class="grp"><div class="grp-h"><span class="e">${ENERGY[k].e}</span> ${k==='light'?'קל, גם ליום עייף':k==='mid'?'בינוני':'דורש כוח'}</div><ul class="list">${grp.map(taskHTML).join('')}</ul></section>`});
+  else html=`<ul class="list notebook">${shown.map(taskHTML).join('')}</ul>`;
   if(waiting.length)html+=`<div class="note"><span>🌙 ${waiting.length===1?'משימה אחת מחכה':waiting.length+' משימות מחכות'} ליום עם יותר כוח.</span></div>`;
   $('today-list').innerHTML=html;
   // after the list: suggestions
@@ -508,8 +516,9 @@ function afterList(L,done,n){
   return '';
 }
 $('add-task').onsubmit=e=>{e.preventDefault();const v=$('task-input').value.trim();if(!v)return;
+  const addEnergy=guessEnergy(v);
   if(addDaily){addDailyTask(v,addEnergy);addDaily=false;renderEnergyPick();toast(G('🔁 נוסף. המשימה תחכה לך כל יום מחדש.'))}
-  else today().push({id:uid(),text:v,energy:addEnergy,done:false,color:nextColor()});
+  else{today().push({id:uid(),text:v,energy:addEnergy,done:false,color:nextColor()});toast(ENERGY[addEnergy].e+' נוסף · '+ENERGY[addEnergy].n+' (אפשר ללחוץ כדי לשנות)')}
   $('task-input').value='';save();renderAll()};
 $('moods').onclick=e=>{const b=e.target.closest('[data-mood]');if(!b)return;const i=+b.dataset.mood;S.moods[T]=i;save();renderAll();
   toast(i===0?'💜 תודה {ששיתפת|ששיתפת}. אפשר ללכת לאט היום.':i===1?'🤍 קיבלנו. נלך בעדינות היום.':i===2?'🙂 בסדר זה גם טוב':i===3?'😊 איזה כיף לשמוע':'😄 יש! תהנה מהיום')};
@@ -979,7 +988,7 @@ window.TK={
     quiet=!!fromCloud;rollover();inject();save();quiet=false;lastStage=-1;applyLook();renderAll()},
   markSaved(){quiet=true;save();quiet=false},
   addDaily(text,energy){addDailyTask(text,energy);save();renderAll()},
-  addTask(text,energy){today().push({id:uid(),text:String(text).slice(0,120),energy:ENERGY[energy]?energy:'light',done:false,color:nextColor()});save();renderAll()},
+  addTask(text,energy){today().push({id:uid(),text:String(text).slice(0,120),energy:ENERGY[energy]?energy:guessEnergy(text),done:false,color:nextColor()});save();renderAll()},
   addGoal(o){const steps=(o.steps||[]).map(x=>String(x).trim()).filter(Boolean);if(!o.title)return;
     const g={id:uid(),emoji:emojiFor(o.title),color:nextColor(),title:String(o.title).slice(0,80),why:String(o.why||'').slice(0,160),letter:'',deadline:'',auto:true,createdAt:Date.now(),
       steps:(steps.length?steps:localBreakdown(o.title).map(x=>x.text)).map(text=>({id:uid(),text,doneDays:[],done:false}))};
@@ -1002,6 +1011,7 @@ document.addEventListener('click',e=>{
       if(t.auto){(S.injectSkip[T]=S.injectSkip[T]||[]).push(t.stepId);save();renderAll();toast('🍃 הורדנו את זה מהיום. זה יחכה לך מחר.',()=>{untomb(t.id);L.splice(i,0,t);S.injectSkip[T]=S.injectSkip[T].filter(x=>x!==t.stepId);save();renderAll()})}
       else{save();renderAll();toast('המשימה נמחקה',()=>{untomb(t.id);L.splice(i,0,t);save();renderAll()})}break}
     case 'stuck':if(t)openStuck(t);break;
+    case 'energy':{if(!t)return;const o=['light','mid','high'],n=o[(o.indexOf(t.energy||'mid')+1)%3];t.energy=n;if(t.dailyId){const d=(S.daily||[]).find(x=>x.id===t.dailyId);if(d)d.energy=n}save();renderAll();toast(ENERGY[n].e+' '+ENERGY[n].n);break}
     case 'letgo':{if(!t)return;t.letGo=true;const L=today(),i=L.indexOf(t);L.splice(i,1);tomb(t.id);save();renderAll();toast('🍃 שחררנו בשקט. אפשר תמיד להוסיף שוב.',()=>{t.letGo=false;untomb(t.id);L.splice(i,0,t);save();renderAll()});break}
     case 'keep':if(t){t.carried=3;save();renderAll();toast('💪 נשאר איתך. קדימה!')}break;
     case 'hardday':{S.hard[T]=!S.hard[T];save();renderAll();if(S.hard[T])toast('💜 מצב יום קשה. רק הדברים הקלים נשארו.');break}
