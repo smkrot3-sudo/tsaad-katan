@@ -125,3 +125,16 @@
 .lvl{border:0;background:none;padding:0 2px;font:inherit;font-size:.78rem;color:var(--muted);white-space:nowrap;cursor:pointer}
 .lvl-light{color:#3E9A6E}.lvl-high{color:#D0643B}
 .task.done .lvl{opacity:.6}
+/* donation note */
+.don-bg{position:fixed;inset:0;z-index:60;background:rgba(30,20,40,.45);display:grid;place-items:center;padding:16px;animation:donIn .25s ease}
+.don-bg.out{opacity:0;transition:opacity .25s}
+.don-card{width:min(420px,100%);background:var(--surface);color:var(--fg);border-radius:28px;padding:24px 20px 14px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.25);display:flex;flex-direction:column;gap:8px;zoom:var(--fs);animation:donPop .35s cubic-bezier(.2,1.4,.4,1)}
+.don-art{font-size:2.6rem;line-height:1;margin:0 auto 4px;width:84px;height:84px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--joy1),var(--joy4))}
+.don-card h2{margin:4px 0 2px;font-size:1.25rem}
+.don-card p{margin:0;line-height:1.7}
+.don-bit{margin-top:12px;border:0;border-radius:18px;padding:14px 16px;font:inherit;font-weight:800;font-size:1.05rem;color:#06343A;background:linear-gradient(135deg,#3BE8F2,#20C7D9);box-shadow:0 6px 16px rgba(32,199,217,.35);display:flex;align-items:center;justify-content:center;gap:10px}
+.don-bit .b{background:#06343A;color:#3BE8F2;border-radius:10px;padding:2px 8px;font-family:system-ui,Arial,sans-serif;font-weight:900;direction:ltr}
+.don-skip{align-self:center;padding:10px 20px;color:var(--muted)}
+@keyframes donIn{from{opacity:0}}
+@keyframes donPop{from{transform:translateY(20px) scale(.94);opacity:0}}
+@media (prefers-reduced-motion:reduce){.don-bg,.don-card{animation:none}}

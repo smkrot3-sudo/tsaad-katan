@@ -345,6 +345,19 @@ button:disabled{opacity:.6;cursor:default}
 .lvl{border:0;background:none;padding:0 2px;font:inherit;font-size:.78rem;color:var(--muted);white-space:nowrap;cursor:pointer}
 .lvl-light{color:#3E9A6E}.lvl-high{color:#D0643B}
 .task.done .lvl{opacity:.6}
+/* donation note */
+.don-bg{position:fixed;inset:0;z-index:60;background:rgba(30,20,40,.45);display:grid;place-items:center;padding:16px;animation:donIn .25s ease}
+.don-bg.out{opacity:0;transition:opacity .25s}
+.don-card{width:min(420px,100%);background:var(--surface);color:var(--fg);border-radius:28px;padding:24px 20px 14px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.25);display:flex;flex-direction:column;gap:8px;zoom:var(--fs);animation:donPop .35s cubic-bezier(.2,1.4,.4,1)}
+.don-art{font-size:2.6rem;line-height:1;margin:0 auto 4px;width:84px;height:84px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--joy1),var(--joy4))}
+.don-card h2{margin:4px 0 2px;font-size:1.25rem}
+.don-card p{margin:0;line-height:1.7}
+.don-bit{margin-top:12px;border:0;border-radius:18px;padding:14px 16px;font:inherit;font-weight:800;font-size:1.05rem;color:#06343A;background:linear-gradient(135deg,#3BE8F2,#20C7D9);box-shadow:0 6px 16px rgba(32,199,217,.35);display:flex;align-items:center;justify-content:center;gap:10px}
+.don-bit .b{background:#06343A;color:#3BE8F2;border-radius:10px;padding:2px 8px;font-family:system-ui,Arial,sans-serif;font-weight:900;direction:ltr}
+.don-skip{align-self:center;padding:10px 20px;color:var(--muted)}
+@keyframes donIn{from{opacity:0}}
+@keyframes donPop{from{transform:translateY(20px) scale(.94);opacity:0}}
+@media (prefers-reduced-motion:reduce){.don-bg,.don-card{animation:none}}
 </style>
 </head>
 <body>
@@ -473,7 +486,7 @@ button:disabled{opacity:.6;cursor:default}
 <section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" hidden></section>
 
 <div class="toast" id="toast" role="status"><span id="toast-msg"></span><button id="toast-undo" hidden>ביטול</button></div>
-<script>window.TK_SITE="https://smkrot3-sudo.github.io/tsaad-katan/";window.TK_BUILD=1791754442286;</script>
+<script>window.TK_SITE="https://smkrot3-sudo.github.io/tsaad-katan/";window.TK_BUILD=1791922194058;</script>
 <script>
 (function(){
 const KEY='tsaad-katan-v2';
@@ -2051,6 +2064,39 @@ window.TKai={plan:openPlanner,ready:()=>!!TKcloud.user()&&navigator.onLine,steps
 
 const fab=document.createElement('button');fab.className='ai-fab';fab.id='ai-fab';fab.setAttribute('aria-label','המאמן העדין');fab.innerHTML='<span class="e">✨</span><span class="l">המאמן</span>';
 fab.onclick=draw;document.body.appendChild(fab);
+})();
+</script>
+<script>
+/* A gentle donation note from the developer, shown on every app open until END (owner asked: 48 hours from 13.10.2026 23:08). */
+(function(){
+const END=Date.parse('2026-10-15T20:10:00Z');
+const BIT='https://www.bitpay.co.il/app/me/FA4F8726-85D1-3F0D-E1FE-9D227477881C0742';
+if(Date.now()>END||!window.TK)return;
+let shownAt=0,hiddenAt=0;
+function show(){
+  if(Date.now()>END||document.getElementById('donate'))return;
+  // wait for any open sheet (onboarding, what's new) to close first
+  const sh=document.getElementById('sheet');if(sh&&!sh.hidden){setTimeout(show,1500);return}
+  shownAt=Date.now();
+  const d=document.createElement('div');d.id='donate';d.className='don-bg';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-labelledby','don-h');
+  d.innerHTML=`<div class="don-card"><div class="don-art" aria-hidden="true">🌱💛</div>
+    <h2 id="don-h">מילה קטנה מהיוצר</h2>
+    <p>אפליקציה זו נוצרה באופן עצמאי על ידי <b>שמואל רוט</b>. הושקעו בה זמן, מחשבה וכסף.</p>
+    <p>אם היא משמשת אתכם, נשמח לתרומות להמשך תחזוקה ועדכונים 🙏</p>
+    <button class="don-bit" id="don-bit"><span class="b">bit</span> לתרומה בביט לחצו כאן</button>
+    <button class="linkbtn don-skip" id="don-skip">דלג</button></div>`;
+  document.body.appendChild(d);
+  const close=()=>{d.classList.add('out');setTimeout(()=>d.remove(),250)};
+  d.querySelector('#don-skip').onclick=close;
+  d.onclick=e=>{if(e.target===d)close()};
+  d.querySelector('#don-bit').onclick=()=>{
+    if(window.TsaadApp&&TsaadApp.openExternal)TsaadApp.openExternal(BIT);else window.open(BIT,'_blank','noopener');
+    close();setTimeout(()=>TK.toast('💛 תודה רבה!'),400)};
+  setTimeout(()=>d.querySelector('#don-skip').focus(),50);
+}
+setTimeout(show,1200);
+// coming back to the app after a while counts as a new entry
+document.addEventListener('visibilitychange',()=>{if(document.hidden)hiddenAt=Date.now();else if(hiddenAt&&Date.now()-hiddenAt>10*60*1000)setTimeout(show,600)});
 })();
 </script>
 <script>
