@@ -14,6 +14,7 @@ function show(){
     <h2 id="don-h">מילה קטנה מהיוצר</h2>
     <p>אפליקציה זו נוצרה באופן עצמאי על ידי <b>שמואל רוט</b>. הושקעו בה זמן, מחשבה וכסף.</p>
     <p>אם היא משמשת אתכם, נשמח לתרומות להמשך תחזוקה ועדכונים 🙏</p>
+    <p class="don-wink">(ובכנות: בעוד כחמישה שבועות יוצא GTA 6, והוא מאוד רוצה לשחק בו. עזרו לו לממן את המשחק, ואת התקופה שבה לא יעבוד בגללו 🎮😅)</p>
     <button class="don-bit" id="don-bit"><span class="b">bit</span> לתרומה בביט לחצו כאן</button>
     <button class="linkbtn don-skip" id="don-skip">דלג</button></div>`;
   document.body.appendChild(d);

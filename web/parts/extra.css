@@ -138,3 +138,4 @@
 @keyframes donIn{from{opacity:0}}
 @keyframes donPop{from{transform:translateY(20px) scale(.94);opacity:0}}
 @media (prefers-reduced-motion:reduce){.don-bg,.don-card{animation:none}}
+.don-card .don-wink{font-size:.85rem;color:var(--muted);font-style:italic;line-height:1.55;margin-top:2px}
