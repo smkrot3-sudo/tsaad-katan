@@ -60,7 +60,10 @@ if('serviceWorker' in navigator&&location.protocol==='https:')addEventListener('
 </body>
 </html>
 '''
-open(P('docs/index.html'), 'w', encoding='utf8').write(page())
+# maintenance switch: while web/maintenance.on exists, the site (and so the APK) shows only a 'temporarily unavailable' page
+MAINT = os.path.exists(P('web/maintenance.on'))
+open(P('docs/index.html'), 'w', encoding='utf8').write(
+    read('web/maintenance.html').replace('__FONTS__', local_fonts) if MAINT else page())
 sw = read('web/sw.js').replace('__BUILD__', str(BUILD))
 open(P('docs/sw.js'), 'w', encoding='utf8').write(sw)
 
@@ -72,4 +75,4 @@ for f in os.listdir(P('docs/fonts')): shutil.copy(P('docs/fonts', f), a + '/font
 for f in os.listdir(P('docs/vendor')): shutil.copy(P('docs/vendor', f), a + '/vendor/')
 open(a + '/index.html', 'w', encoding='utf8').write(page())
 shutil.copy(P('android/migrate.html'), a + '/migrate.html')
-print('built', BUILD)
+print('built', BUILD, '(MAINTENANCE)' if MAINT else '')

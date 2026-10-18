@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>צעד קטן · הפסקה קצרה</title>
+<meta name="theme-color" content="#FFF7EF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1D1A26" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="icons/icon-192.png">
+__FONTS__
+<style>
+:root{--bg:#FFF7EF;--surface:#FFFFFF;--fg:#3B2F4A;--muted:#7D708A;--line:#F2E2D2;--accent:#FF7F50}
+@media (prefers-color-scheme:dark){:root{--bg:#1D1A26;--surface:#282434;--fg:#F4EEF8;--muted:#B5A9C2;--line:#3B3550;--accent:#FF9A73}}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:"Varela Round",system-ui,sans-serif;line-height:1.6;display:grid;place-items:center;padding:24px 16px}
+.card{background:var(--surface);border:2px solid var(--line);border-radius:28px;padding:36px 26px;max-width:420px;width:100%;text-align:center;box-shadow:0 10px 30px rgba(59,47,74,.08)}
+.e{font-size:3.4rem;line-height:1;margin-bottom:14px}
+h1{font-family:"Suez One",serif;font-weight:400;font-size:1.7rem;margin-bottom:12px}
+p{color:var(--muted);font-size:1.05rem}
+.s{margin-top:18px;color:var(--accent);font-size:.98rem}
+</style>
+</head>
+<body>
+<main class="card">
+<div class="e">🌱</div>
+<h1>צעד קטן לוקחת הפסקה קצרה</h1>
+<p>האפליקציה לא זמינה כרגע באופן זמני.<br>כל מה ששמרת נשאר בדיוק במקום.</p>
+<p class="s">נחזור בקרוב 💛</p>
+</main>
+<script>
+if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
