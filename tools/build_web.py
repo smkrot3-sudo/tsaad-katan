@@ -64,6 +64,11 @@ if('serviceWorker' in navigator&&location.protocol==='https:')addEventListener('
 MAINT = os.path.exists(P('web/maintenance.on'))
 open(P('docs/index.html'), 'w', encoding='utf8').write(
     read('web/maintenance.html').replace('__FONTS__', local_fonts) if MAINT else page())
+# the admin page also talks to the database: only published while the app is on
+if MAINT:
+    if os.path.exists(P('docs/admin.html')): os.remove(P('docs/admin.html'))
+else:
+    shutil.copy(P('web/admin.html'), P('docs/admin.html'))
 sw = read('web/sw.js').replace('__BUILD__', str(BUILD))
 open(P('docs/sw.js'), 'w', encoding='utf8').write(sw)
 
