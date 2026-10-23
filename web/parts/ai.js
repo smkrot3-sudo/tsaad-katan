@@ -2,7 +2,7 @@
    The conversation stays on this phone; the server keeps only a daily counter. */
 (function(){
 if(!window.TK||!window.TKcloud)return;
-const SB_URL='https://pzrzwilkloksfxsvcwji.supabase.co',SB_KEY='sb_publishable_kTKMU6nUUWtGAgb-SJvYyQ_QweS_o60';
+const SB_URL='https://jgqlwuvmwbsgrcqddeyw.supabase.co',SB_KEY='sb_publishable_0LbF_Fxj9W3RbHVri_VFHQ_FCG_GQJy';
 const KEY='tsaad-katan-ai';
 const $=id=>document.getElementById(id);
 const {G,esc,toast,openSheet,closeSheet,sheetHead}=TK;

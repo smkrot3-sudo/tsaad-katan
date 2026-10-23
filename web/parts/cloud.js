@@ -1,13 +1,13 @@
 /* Cloud: sign-in (email, Google when enabled), one JSON row per user with a version, offline-first sync. */
 (function(){
-const SB_URL='https://pzrzwilkloksfxsvcwji.supabase.co';
+const SB_URL='https://jgqlwuvmwbsgrcqddeyw.supabase.co';
 /* publishable key: meant to be public, all access is limited by row-level security */
-const SB_KEY='sb_publishable_kTKMU6nUUWtGAgb-SJvYyQ_QweS_o60';
+const SB_KEY='sb_publishable_0LbF_Fxj9W3RbHVri_VFHQ_FCG_GQJy';
 const SITE=window.TK_SITE||(location.origin+location.pathname.replace(/[^/]*$/,''));
 const META='tsaad-katan-cloud';
 const $=id=>document.getElementById(id);
 if(!window.supabase||!window.TK)return;
-const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:'tsaad-katan-auth'}});
+const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:'tsaad-katan-auth2'}});
 const inApp=!!window.TsaadApp;
 let user=null,isVip=false,isAdmin=false,googleOn=false,busy=false,timer=null,online=navigator.onLine;
 let meta={};try{meta=JSON.parse(localStorage.getItem(META))||{}}catch(e){}

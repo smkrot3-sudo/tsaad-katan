@@ -22,8 +22,8 @@ public class Reminders extends BroadcastReceiver {
     static final String PREFS = "tsaad";
     static final int FLAGS = PendingIntent.FLAG_UPDATE_CURRENT | 0x04000000; // FLAG_IMMUTABLE
     static final long UPDATE_EVERY = 6 * 3600 * 1000L;
-    static final String SB = "https://pzrzwilkloksfxsvcwji.supabase.co";
-    static final String SB_KEY = "sb_publishable_kTKMU6nUUWtGAgb-SJvYyQ_QweS_o60"; // public key, access is limited by the database
+    static final String SB = "https://jgqlwuvmwbsgrcqddeyw.supabase.co";
+    static final String SB_KEY = "sb_publishable_0LbF_Fxj9W3RbHVri_VFHQ_FCG_GQJy"; // public key, access is limited by the database
 
     static SharedPreferences prefs(Context c) { return c.getSharedPreferences(PREFS, Context.MODE_PRIVATE); }
 

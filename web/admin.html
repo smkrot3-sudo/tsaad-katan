@@ -59,7 +59,7 @@ pre{white-space:pre-wrap;font:inherit;margin:0}
 </main>
 <script src="vendor/supabase.js"></script>
 <script>
-const sb=supabase.createClient('https://pzrzwilkloksfxsvcwji.supabase.co','sb_publishable_kTKMU6nUUWtGAgb-SJvYyQ_QweS_o60',{auth:{persistSession:true,storageKey:'tsaad-katan-auth'}});
+const sb=supabase.createClient('https://jgqlwuvmwbsgrcqddeyw.supabase.co','sb_publishable_0LbF_Fxj9W3RbHVri_VFHQ_FCG_GQJy',{auth:{persistSession:true,storageKey:'tsaad-katan-auth2'}});
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const when=t=>t?new Date(t).toLocaleString('he-IL',{timeZone:'Asia/Jerusalem',day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
@@ -96,7 +96,7 @@ async function loadFeedback(){
 }
 $('fb-sum').onclick=async()=>{const box=$('fb-summary');box.hidden=false;box.textContent='מסכם...';
   const {data:{session}}=await sb.auth.getSession();
-  const r=await fetch('https://pzrzwilkloksfxsvcwji.supabase.co/functions/v1/coach',{method:'POST',headers:{'Content-Type':'application/json',apikey:'sb_publishable_kTKMU6nUUWtGAgb-SJvYyQ_QweS_o60',Authorization:'Bearer '+session.access_token},body:JSON.stringify({mode:'feedback_summary'})});
+  const r=await fetch('https://jgqlwuvmwbsgrcqddeyw.supabase.co/functions/v1/coach',{method:'POST',headers:{'Content-Type':'application/json',apikey:'sb_publishable_0LbF_Fxj9W3RbHVri_VFHQ_FCG_GQJy',Authorization:'Bearer '+session.access_token},body:JSON.stringify({mode:'feedback_summary'})});
   if(!r.ok){const e=await r.json().catch(()=>({}));box.textContent=e.error==='no_key'?'צריך להגדיר את מפתח Gemini ב-Supabase קודם':'לא הצלחתי לסכם כרגע';return}
   box.textContent='';const rd=r.body.getReader(),dec=new TextDecoder();while(true){const {value,done}=await rd.read();if(done)break;box.textContent+=dec.decode(value,{stream:true})}};
 async function loadBroadcasts(){
