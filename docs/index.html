@@ -359,6 +359,21 @@ button:disabled{opacity:.6;cursor:default}
 @keyframes donPop{from{transform:translateY(20px) scale(.94);opacity:0}}
 @media (prefers-reduced-motion:reduce){.don-bg,.don-card{animation:none}}
 .don-card .don-wink{font-size:.85rem;color:var(--muted);font-style:italic;line-height:1.55;margin-top:2px}
+/* companions + speaking styles (6.2) */
+.pet-svg{width:44px;height:44px;display:block;filter:drop-shadow(0 3px 6px rgba(0,0,0,.12))}
+.mascot .pet-svg{width:40px;height:40px;animation:petbob 3.2s ease-in-out infinite}
+.pick.pets button .pet-svg{width:58px;height:58px}
+.wiz .big-e.pet-big{display:flex;justify-content:center}.wiz .big-e.pet-big .pet-svg{width:96px;height:96px;animation:petbob 3.2s ease-in-out infinite}
+.pet-bob{animation:petbob 3.2s ease-in-out infinite;transform-box:fill-box;transform-origin:center bottom}
+@keyframes petbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@media (prefers-reduced-motion:reduce){.pet-bob,.mascot .pet-svg,.wiz .big-e.pet-big .pet-svg{animation:none}}
+.voices{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.voices button{border:2px solid var(--line);background:var(--bg);border-radius:18px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;color:var(--fg)}
+.voices button .ve{font-size:2rem;font-family:var(--emoji);line-height:1.1}
+.voices button b{font-size:.98rem}
+.voices button small{color:var(--muted);font-size:.78rem}
+.voices button .vs{margin-top:4px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:6px 8px;font-size:.8rem;line-height:1.35}
+.voices button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
 </style>
 </head>
 <body>
@@ -487,7 +502,7 @@ button:disabled{opacity:.6;cursor:default}
 <section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" hidden></section>
 
 <div class="toast" id="toast" role="status"><span id="toast-msg"></span><button id="toast-undo" hidden>ביטול</button></div>
-<script>window.TK_SITE="https://smkrot3-sudo.github.io/tsaad-katan/";window.TK_BUILD=1792762935309;</script>
+<script>window.TK_SITE="https://smkrot3-sudo.github.io/tsaad-katan/";window.TK_BUILD=1792766328778;</script>
 <script>
 (function(){
 const KEY='tsaad-katan-v2';
@@ -669,7 +684,119 @@ function emojiPickerHTML(cur,title,all){
   else h+=`<button type="button" class="linkbtn" data-emall style="align-self:flex-start">➕ עוד הרבה אימוג'ים</button>`;
   return h;
 }
-const MASCOTS={plant:{e:'🌱',n:'נבטי, צמח שגדל איתך'},cat:{e:'🐱',n:'מיצי החתולה'},bear:{e:'🧸',n:'דובי'},bunny:{e:'🐰',n:'שפנפן'}};
+const MASCOTS={leafy:{e:'🍃',n:'עלעלי הזוהר'},puff:{e:'☁️',n:'פופי הפרוותי'},bloom:{e:'🌸',n:'פרחית הוורודה'},sunny:{e:'🌟',n:'שמשי הזהוב'},plant:{e:'🌱',n:'נבטי, צמח שגדל איתך'},cat:{e:'🐱',n:'מיצי החתולה'},bear:{e:'🧸',n:'דובי'},bunny:{e:'🐰',n:'שפנפן'}};
+/* ---------- companions: soft glowing creatures, drawn here (no image files) ---------- */
+let petN=0;
+const PET_LOOK={
+  leafy:{kind:'jelly',c1:'#E9FF9E',c2:'#9BD63A',c3:'#4E9A1F',ear:'leaf',eye:'#123B12',tail:true},
+  bloom:{kind:'jelly',c1:'#FFE3F1',c2:'#FF9CC8',c3:'#D2558F',ear:'petal',eye:'#4A1638',tail:true},
+  puff:{kind:'fluff',c1:'#FFFFFF',c2:'#E6F1FF',c3:'#4C8DF0',eye:'#1F63C9'},
+  sunny:{kind:'fluff',c1:'#FFF9DB',c2:'#FFE082',c3:'#F4A72C',eye:'#8A4B00'},
+};
+function petSVG(k){
+  const p=PET_LOOK[k];if(!p)return '';const id='pt'+(++petN);
+  const eyes=`<g><ellipse cx="38" cy="54" rx="9" ry="10.5" fill="${p.eye}"/><ellipse cx="62" cy="54" rx="9" ry="10.5" fill="${p.eye}"/>
+    <ellipse cx="38" cy="57" rx="6" ry="5" fill="${p.c3}" opacity=".55"/><ellipse cx="62" cy="57" rx="6" ry="5" fill="${p.c3}" opacity=".55"/>
+    <circle cx="35" cy="50" r="3.2" fill="#fff"/><circle cx="59" cy="50" r="3.2" fill="#fff"/><circle cx="41" cy="58" r="1.4" fill="#fff"/><circle cx="65" cy="58" r="1.4" fill="#fff"/></g>
+    <ellipse cx="27" cy="66" rx="6" ry="3.6" fill="#FF8FA3" opacity=".55"/><ellipse cx="73" cy="66" rx="6" ry="3.6" fill="#FF8FA3" opacity=".55"/>`;
+  if(p.kind==='jelly'){
+    const ear=p.ear==='leaf'
+      ?(x,r)=>`<g transform="rotate(${r} ${x} 40)"><ellipse cx="${x}" cy="24" rx="11" ry="20" fill="url(#${id}b)" stroke="${p.c3}" stroke-width="1.4" stroke-opacity=".5"/><path d="M${x} 8 V40 M${x} 20 l-6 -5 M${x} 28 l6 -5 M${x} 28 l-6 -5" stroke="${p.c3}" stroke-width="1.2" stroke-opacity=".55" fill="none" stroke-linecap="round"/></g>`
+      :(x,r)=>`<g transform="rotate(${r} ${x} 40)">${[-24,0,24].map(a=>`<ellipse cx="${x}" cy="22" rx="7" ry="15" fill="url(#${id}b)" stroke="${p.c3}" stroke-width="1.2" stroke-opacity=".5" transform="rotate(${a} ${x} 36)"/>`).join('')}</g>`;
+    return `<svg class="pet-svg" viewBox="0 0 100 100" aria-hidden="true"><defs>
+      <radialGradient id="${id}b" cx=".38" cy=".3" r=".8"><stop offset="0" stop-color="${p.c1}"/><stop offset=".6" stop-color="${p.c2}"/><stop offset="1" stop-color="${p.c3}"/></radialGradient></defs>
+      <ellipse cx="50" cy="95" rx="26" ry="3.5" fill="#000" opacity=".12"/>
+      ${p.tail?`<path d="M70 84 Q92 84 90 68 Q88 58 80 62 Q76 66 82 69" fill="none" stroke="url(#${id}b)" stroke-width="5" stroke-linecap="round"/><circle cx="82" cy="69" r="4" fill="${p.c1}" opacity=".9"/>`:''}
+      ${ear(29,-22)}${ear(71,22)}
+      <path d="M44 34 Q40 20 33 14" stroke="${p.c2}" stroke-width="2.4" fill="none" stroke-linecap="round"/><circle cx="32" cy="13" r="4.5" fill="url(#${id}b)"/>
+      <path d="M56 34 Q60 20 67 14" stroke="${p.c2}" stroke-width="2.4" fill="none" stroke-linecap="round"/><circle cx="68" cy="13" r="4.5" fill="url(#${id}b)"/>
+      <ellipse cx="50" cy="80" rx="20" ry="14" fill="url(#${id}b)"/>
+      <circle cx="50" cy="56" r="27" fill="url(#${id}b)"/>
+      <ellipse cx="40" cy="40" rx="9" ry="5" fill="#fff" opacity=".45" transform="rotate(-25 40 40)"/>
+      <circle cx="28" cy="72" r="1.3" fill="#fff" opacity=".8"/><circle cx="70" cy="44" r="1.1" fill="#fff" opacity=".8"/><circle cx="60" cy="76" r="1" fill="#fff" opacity=".8"/>
+      ${eyes}<path d="M46 68 q2 2.5 4 0 q2 2.5 4 0" stroke="${p.c3}" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <ellipse cx="41" cy="91" rx="6" ry="4" fill="url(#${id}b)"/><ellipse cx="59" cy="91" rx="6" ry="4" fill="url(#${id}b)"/></svg>`;
+  }
+  // fluffy puff
+  const fur=Array.from({length:34},(_,i)=>{const a=i/34*Math.PI*2,r=29+(i%3)*1.2;return `<circle cx="${(50+Math.cos(a)*r).toFixed(1)}" cy="${(60+Math.sin(a)*r*.92).toFixed(1)}" r="${6+(i%2)}" fill="${i%2?p.c2:p.c1}"/>`}).join('');
+  return `<svg class="pet-svg" viewBox="0 0 100 100" aria-hidden="true"><defs>
+    <radialGradient id="${id}f" cx=".42" cy=".35" r=".85"><stop offset="0" stop-color="${p.c1}"/><stop offset=".75" stop-color="${p.c2}"/><stop offset="1" stop-color="${p.c3}" stop-opacity=".5"/></radialGradient>
+    <linearGradient id="${id}t" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${p.c3}"/><stop offset="1" stop-color="${p.c1}"/></linearGradient></defs>
+    <ellipse cx="50" cy="96" rx="28" ry="3.5" fill="#000" opacity=".12"/>
+    <path d="M44 32 Q42 16 36 8" stroke="${p.c2}" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="35" cy="8" rx="4" ry="6" fill="url(#${id}t)" transform="rotate(-25 35 8)"/>
+    <path d="M58 32 Q62 18 70 12" stroke="${p.c2}" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="71" cy="11" rx="4" ry="6" fill="url(#${id}t)" transform="rotate(30 71 11)"/>
+    <path d="M18 44 L12 26 L30 36Z" fill="${p.c3}"/><path d="M82 44 L88 26 L70 36Z" fill="${p.c3}"/>
+    ${fur}<ellipse cx="50" cy="60" rx="31" ry="28" fill="url(#${id}f)"/>
+    ${eyes}<circle cx="50" cy="66" r="1" fill="${p.eye}"/>
+    <ellipse cx="38" cy="90" rx="6" ry="3.5" fill="${p.c3}"/><ellipse cx="62" cy="90" rx="6" ry="3.5" fill="${p.c3}"/></svg>`;
+}
+/* the companion as a small picture: drawn creature, or the old emoji */
+const petIcon=k=>{const m=MASCOTS[k]||MASCOTS.plant;return PET_LOOK[k]?petSVG(k):`<span class="e">${m.e}</span>`};
+
+/* ---------- how the app talks to you ---------- */
+const VOICES={
+  gentle:{e:'🌱',n:'רך ועדין',d:'שקט, חם, בלי לחץ',s:'אין לחץ. צעד אחד קטן, ואם לא היום, אז מחר 💛',
+    p:'רך, עדין ושקט. בלי לחץ בכלל.',start:'{הוסף|הוסיפי} משהו קטן, או פשוט {תנוח|תנוחי}.',mid:'הפרח שלך גדל עם כל וי. אין לחץ להספיק הכל.',done:'מגיע לך לנוח. אולי עוד צעד קטן למטרה?',
+    cheers:[]},
+  friend:{e:'🤗',n:'חבר הכי טוב',d:'צחוק, חיבוק ו"יאללה"',s:'{אחי|אחותי}, יאללה! עוד וי אחד וזה שלנו 😎',
+    p:'חבר/ה הכי טוב/ה: סלנג קליל, חם, צוחק יחד, "אחי"/"אחותי", מעודד כמו חבר אמיתי.',start:'יאללה, נתחיל עם משהו ממש קטן? אני איתך 🤙',mid:'{אתה רואה|את רואה}? הולך לך! {אחי התותח|אחותי התותחית} 💥',done:'{סגרת|סגרת} את היום! מגיע לך משהו טעים 🍕',
+    cheers:['😎 {אחי, איזה מלך|אחותי, איזו מלכה}','🙌 יאללה! עוד אחד','🔥 {שורף|שורפת} את היום','🤙 ככה אני אוהב אותך']},
+  parent:{e:'🫶',n:'הורה אוהב',d:'דאגה, גאווה וחום',s:'{מתוק|מתוקה} שלי, אני כל כך {גאה|גאה} בך. אכלת היום? 💛',
+    p:'הורה אוהב/ת: דואג/ת, גאה, חם/ה, "מתוק/ה שלי", שואל/ת אם אכלת ונחת, מחבק/ת במילים.',start:'{מתוק|מתוקה} שלי, נתחיל ממשהו קטן? ואל {תשכח|תשכחי} לאכול 🍲',mid:'אני רואה כמה {אתה משתדל|את משתדלת}. אני גאה בך',done:'{עשית|עשית} הכל. עכשיו לנוח, {מתוק|מתוקה} 💛',
+    cheers:['🫶 אני כל כך גאה בך','💛 {מתוק|מתוקה} שלי, כל הכבוד','🥰 ידעתי {שתצליח|שתצליחי}','🍲 יופי! ועכשיו לאכול משהו']},
+  psych:{e:'🛋️',n:'פסיכולוג',d:'מקשיב, שואל, משקף',s:'מה {אתה מרגיש|את מרגישה} עכשיו? כל רגש מתקבל כאן 🌿',
+    p:'פסיכולוג/ית מקשיב/ה ותומך/ת: משקף/ת רגשות, שואל/ת שאלה פתוחה אחת, מנרמל/ת, מדבר/ת בגובה העיניים. לא מאבחן/ת.',start:'איך {אתה מגיע|את מגיעה} ליום הזה? אפשר להתחיל מצעד אחד קטן 🌿',mid:'{שים|שימי} לב: {אתה מתקדם|את מתקדמת}. איך זה מרגיש?',done:'{עשית|עשית} הרבה היום. מה {למדת|למדת} על עצמך?',
+    cheers:['🌿 {שים|שימי} לב לתחושה הזאת','🪞 זה שלך, {עשית|עשית} את זה','💭 צעד קטן, שינוי אמיתי','🌱 התקדמות היא לא קו ישר, והנה עוד צעד']},
+  buddy:{e:'🤝',n:'מלווה צמוד',d:'כל הזמן לידך, צעד אחר צעד',s:'אני פה איתך כל היום. מה הצעד הבא? נעשה אותו ביחד 🤝',
+    p:'מלווה צמוד/ה: נמצא/ת לצד המשתמש כל הזמן, מתכנן/ת איתו את הצעד הבא, תכליתי/ת וחם/ה, "ביחד", "אני פה".',start:'אני פה. מה הדבר הראשון שנעשה ביחד?',mid:'יופי, אנחנו בדרך. מה הבא בתור?',done:'עשינו את זה ביחד היום 🤝',
+    cheers:['🤝 עשינו את זה ביחד','👣 צעד, ועוד צעד','✅ סימנו, ממשיכים','💪 אני פה איתך']},
+  rabbi:{e:'📜',n:'רב',d:'אמונה, חיזוק ומשפט מהמקורות',s:'"לא עליך המלאכה לגמור". כל מעשה קטן חשוב בשמיים 🕯️',
+    p:'רב חם ומחזק: אמונה ובטחון, משפט קצר מהמקורות כשמתאים (פרקי אבות, תהילים, חסידות), "בעזרת השם", מדגיש שכל מעשה קטן נחשב. בלי הטפה ובלי לחץ.',start:'"כל ההתחלות קשות". נתחיל בעזרת השם ממשהו קטן 🕯️',mid:'"לפום צערא אגרא", כל מאמץ נחשב',done:'ברוך השם, יום מלא. מגיעה לך מנוחה 🙏',
+    cheers:['🕯️ ישר כוח!','🙏 ברוך השם, עוד צעד','📜 "מצווה גוררת מצווה"','✨ כל מעשה קטן הוא עולם ומלואו']},
+  commander:{e:'🎖️',n:'מפקד בצבא',d:'קצר, נחוש, מאמין בך',s:'{חייל|חיילת}! משימה אחת קטנה, ביצוע. אני סומך {עליך|עלייך} 🎖️',
+    p:'מפקד/ת בצבא: משפטים קצרים ונחושים, "חייל/ת", "ביצוע", "קדימה", מאמין/ה במשתמש. תמיד מכבד/ת ותומך/ת, אף פעם לא משפיל/ה, ובימים קשים מוריד/ה הילוך: "גם מנוחה היא חלק מהמשימה".',start:'{חייל|חיילת}, משימה ראשונה קטנה. קדימה!',mid:'יפה! ממשיכים לפי התוכנית 🎖️',done:'משימת היום הושלמה. לנוח, זו פקודה 🫡',
+    cheers:['🫡 ביצוע מצוין!','🎖️ כל הכבוד, {חייל|חיילת}','💥 משימה הושלמה','⚔️ ממשיכים קדימה']},
+  coach:{e:'🏋️',n:'מאמן כושר',d:'אנרגיה, "עוד חזרה אחת!"',s:'עוד חזרה אחת! הראש מתחזק כמו שריר 💪',
+    p:'מאמן/ת כושר אנרגטי/ת: "עוד חזרה אחת", אנרגיה ושמחה, משווה התקדמות לאימון, תמיד מזכיר/ה שגם מנוחה בונה שריר.',start:'חימום: משימה אחת קלה ומתחילים 🏋️',mid:'יאללה עוד סט! {אתה|את} בכושר',done:'אימון מושלם! עכשיו מתיחות ומנוחה 💪',
+    cheers:['💪 עוד חזרה!','🏋️ שריר של אלופים','🔥 ככה בונים כוח','🥇 שיא אישי']},
+  grandma:{e:'👵',n:'סבתא',d:'חיבוק, מרק ו"חמוד שלי"',s:'{חמוד|חמודה} של סבתא, אכלת משהו? אחר כך משימה קטנה 🍲',
+    p:'סבתא חמה: "חמוד/ה של סבתא", דואגת שתאכל/י ותתלבש/י חם, גאה בכל דבר קטן, מלאת אהבה ופולניות עדינה.',start:'{חמוד|חמודה}, קודם תה ועוגה, ואז משהו קטן 🍰',mid:'אוי, איזה {מוכשר|מוכשרת}! סבתא גאה',done:'הכל גמור? {שב|שבי} לנוח, סבתא מביאה מרק 🍲',
+    cheers:['👵 {חמוד|חמודה} של סבתא!','🍪 מגיעה לך עוגייה','💋 נשיקה מסבתא','🧶 איזה {מוכשר|מוכשרת}']},
+  zen:{e:'🧘',n:'מורה מדיטציה',d:'נשימה, רוגע, רגע אחד',s:'נשימה אחת. צעד אחד. זה מספיק 🍃',
+    p:'מורה מדיטציה רגוע/ה: מעט מילים, נשימה, נוכחות ברגע, בלי מאמץ ובלי שיפוט.',start:'נשימה עמוקה. צעד אחד קטן 🍃',mid:'רגע אחד בכל פעם. {אתה|את} כאן',done:'היום התמלא. עכשיו רק לנשום 🧘',
+    cheers:['🍃 נשימה, וי','🧘 נוכחות מלאה','🌊 בדיוק כמו גל','☁️ קל ופשוט']},
+  funny:{e:'😄',n:'חבר מצחיק',d:'הומור וקלילות',s:'המשימות שלך כבר מתגעגעות. בוא{|י} נראה להן מי הבוס 😜',
+    p:'חבר/ה מצחיק/ה: הומור עדין וקליל, משחקי מילים, מגזים בכיף, אף פעם לא צוחק/ת על המשתמש.',start:'רשימה ריקה? אפילו הכביסה {מתגעגעת אליך|מתגעגעת אלייך} 😜',mid:'המשימות בורחות ממך בפאניקה 😂',done:'{סיימת|סיימת} הכל. הרשימה הגישה תלונה במשטרה 🚓',
+    cheers:['😂 המשימה לא ראתה את זה מגיע','🦸 {גיבור|גיבורת} על בפעולה','🎤 מיקרופון נופל','🕺 ריקוד ניצחון!']},
+};
+const voice=()=>VOICES[S.settings.voice]||VOICES.gentle;
+function voicePickHTML(cur){
+  return `<div class="voices">${Object.entries(VOICES).map(([k,v])=>`<button data-voice="${k}" aria-pressed="${k===cur}"><span class="ve">${v.e}</span><b>${v.n}</b><small>${v.d}</small><span class="vs">"${esc(G(v.s))}"</span></button>`).join('')}</div>`;
+}
+function petPickHTML(cur){
+  return `<div class="pick pets">${Object.entries(MASCOTS).map(([k,v])=>`<button data-masc="${k}" aria-pressed="${k===cur}">${petIcon(k)}${v.n}</button>`).join('')}</div>`;
+}
+/* once after the update (and from settings): choose how the app talks to you, and meet the new companions */
+function openVoicePicker(fromSettings){
+  let step=0,sel=S.settings.voice||'',pet=S.settings.mascot;
+  if(!fromSettings)$('sheet').dataset.lock='1';
+  const draw=()=>{
+    const body=step===0
+      ?`<div class="big-e">💬</div><h2 id="sheet-title" style="text-align:center">${G('איך {תרצה|תרצי} שאדבר {אליך|אלייך}?')}</h2>
+        <p style="text-align:center;color:var(--muted)">${G('{בחר|בחרי} את הסגנון שהכי מרגיש לך נכון. אפשר להחליף בכל רגע בהגדרות.')}</p>${voicePickHTML(sel)}`
+      :`<div class="big-e pet-big">${petIcon(pet)}</div><h2 id="sheet-title" style="text-align:center">חברים חדשים ללוות אותך ✨</h2>
+        <p style="text-align:center;color:var(--muted)">${G('הגיעו דמויות קטנות וזוהרות. {בחר|בחרי} מי ילווה אותך.')}</p>${petPickHTML(pet)}`;
+    openSheet(`<div class="wiz">${body}<div class="actions"><button class="btn wide" id="vp-next" ${step===0&&!sel?'disabled':''}>${step===0&&!fromSettings?'הבא':'יופי, שומרים'}</button></div></div>`);
+    const s=$('sheet');
+    s.querySelectorAll('[data-voice]').forEach(b=>b.onclick=()=>{sel=b.dataset.voice;s.querySelectorAll('[data-voice]').forEach(x=>x.setAttribute('aria-pressed',x===b));$('vp-next').disabled=false});
+    s.querySelectorAll('[data-masc]').forEach(b=>b.onclick=()=>{pet=b.dataset.masc;draw()});
+    $('vp-next').onclick=()=>{
+      if(step===0){S.settings.voice=sel;save();if(fromSettings){closeSheet();renderAll();toast(G(voice().e+' '+voice().s));return}step=1;draw();return}
+      S.settings.mascot=pet;S.seenNew=WHATS_NEW.v;save();delete $('sheet').dataset.lock;closeSheet();lastStage=-1;renderAll();toast(G(voice().e+' '+voice().s))};
+  };
+  draw();
+}
+
 const MOODS=[['😔','קשה לי'],['😕','לא משהו'],['🙂','בסדר'],['😊','טוב'],['😄','מצוין']];
 const ENERGY={light:{e:'🪶',n:'קל'},mid:{e:'🌿',n:'בינוני'},high:{e:'🔥',n:'דורש כוח'}};
 // the app decides by itself how much strength a task takes (the user can still tap the label to change it)
@@ -815,7 +942,7 @@ let tt,undoFn=null;
 function toast(msg,undo){$('toast-msg').textContent=G(msg);undoFn=undo||null;$('toast-undo').hidden=!undo;$('toast').classList.add('show');clearTimeout(tt);tt=setTimeout(()=>{$('toast').classList.remove('show');undoFn=null},undo?5000:2600)}
 $('toast-undo').onclick=()=>{if(undoFn){undoFn();undoFn=null}$('toast').classList.remove('show')};
 let lastCheer=-1;
-function cheer(){let i;do{i=Math.floor(Math.random()*CHEERS.length)}while(i===lastCheer&&CHEERS.length>1);lastCheer=i;return CHEERS[i]}
+function cheer(){const C=voice().cheers.length&&Math.random()<.7?voice().cheers:CHEERS;let i;do{i=Math.floor(Math.random()*C.length)}while(i===lastCheer&&C.length>1);lastCheer=i;return C[i]}
 function celebrate(el,msg,big){chime();confetti(el,big);toast(msg||cheer());try{navigator.vibrate&&navigator.vibrate(18)}catch(e){}}
 
 /* ---------- task + step logic ---------- */
@@ -873,7 +1000,8 @@ function scene(stage){
       [0,60,120,180,240,300].map(a=>`<ellipse class="petal" cx="80" cy="64" rx="6.5" ry="10" transform="rotate(${a} 80 74)"/>`).join('')+'<circle class="core" cx="80" cy="74" r="7"/>'+
       '<text x="104" y="62" font-size="16" style="font-family:var(--emoji)">✨</text><text x="44" y="78" font-size="13" style="font-family:var(--emoji)">✨</text>'
   };
-  const pet=S.settings.mascot!=='plant'?`<text x="116" y="136" font-size="22" style="font-family:var(--emoji)">${MASCOTS[S.settings.mascot].e}</text>`:'';
+  const mk=MASCOTS[S.settings.mascot]?S.settings.mascot:'plant';
+  const pet=PET_LOOK[mk]?`<g class="pet-bob"><svg x="100" y="94" width="44" height="44" viewBox="0 0 100 100">${petSVG(mk).replace(/^<svg[^>]*>|<\/svg>$/g,'')}</svg></g>`:mk!=='plant'?`<text x="116" y="136" font-size="22" style="font-family:var(--emoji)">${MASCOTS[mk].e}</text>`:'';
   return `<svg class="scene" viewBox="0 0 320 150" preserveAspectRatio="xMinYMax slice" aria-hidden="true">
     <defs><linearGradient id="skyg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="sky1"/><stop offset="1" class="sky2"/></linearGradient></defs>
     <rect width="320" height="150" fill="url(#skyg)"/>
@@ -954,10 +1082,10 @@ function renderToday(){
   const L=today();const done=L.filter(t=>t.done).length,n=L.length,pct=progressOf(L);
   const stage=!n||pct===0?0:pct<.5?1:pct<1?2:3;
   if(stage!==lastStage){$('scene').innerHTML=scene(stage);if(lastStage===-1){const p=$('plant-g');p&&p.classList.remove('grow')}lastStage=stage}
-  $('mascot').textContent=MASCOTS[S.settings.mascot].e;
+  $('mascot').innerHTML=petIcon(S.settings.mascot);
   const hard=isHard();
   $('sum-big').textContent=G(hard?'היום מספיק משהו אחד קטן 💜':!n?'יום חדש מתחיל 🌤️':done===n?'{עשית|עשית} את כל מה {שתכננת|שתכננת} להיום 🌸':pct===0?'אפשר להתחיל מהדבר הכי קטן 🌱':'כבר {עשית|עשית} '+(done===1?'דבר אחד':done>1?done+' דברים':'התחלה')+' היום');
-  $('sum-sub').textContent=G(hard?'מותר לנוח. אפילו לנשום זה בסדר.':!n?'{הוסף|הוסיפי} משהו קטן, או פשוט {תנוח|תנוחי}.':done===n?'מגיע לך לנוח. אולי עוד צעד קטן למטרה?':'הפרח שלך גדל עם כל וי. אין לחץ להספיק הכל.');
+  const V=voice();$('sum-sub').textContent=G(hard?'מותר לנוח. אפילו לנשום זה בסדר.':!n?V.start:done===n?V.done:V.mid);
   $('sum-pill').textContent=n?`✨ ${done} מתוך ${n}`:'🌱 מוכנים להתחיל';
   // mood
   const m=S.moods[T];
@@ -1190,30 +1318,32 @@ const sheetHead=t=>`<div class="head"><h2 id="sheet-title">${t}</h2><button clas
 
 /* onboarding wizard: 3 steps, skippable */
 function openWizard(){
-  let step=0;const st={name:S.settings.name||'',address:S.settings.address||'m',mascot:S.settings.mascot||'plant',faith:!!S.settings.faith};
+  let step=0;const st={name:S.settings.name||'',address:S.settings.address||'m',mascot:S.settings.mascot||'leafy',faith:!!S.settings.faith,voice:S.settings.voice||'gentle'};
   $('sheet').dataset.lock='1';
   const draw=()=>{
-    const dots=`<div class="dots">${[0,1,2].map(i=>`<span class="${i===step?'on':''}"></span>`).join('')}</div>`;
+    const dots=`<div class="dots">${[0,1,2,3].map(i=>`<span class="${i===step?'on':''}"></span>`).join('')}</div>`;
     let body='';
     if(step===0)body=`<div class="big-e">🌱</div><h2 id="sheet-title" style="text-align:center">ברוכים הבאים לצעד קטן</h2><p style="text-align:center;color:var(--muted)">כל צעד נחשב. בואו נכיר רגע.</p>
       <label class="fieldcol" for="wz-name">איך קוראים לך? (רשות)<input id="wz-name" value="${esc(st.name)}" autocomplete="given-name"></label>
       <div class="fieldcol">איך לפנות אליך?<div class="pick"><button data-addr="m" aria-pressed="${st.address==='m'}"><span class="e">🙋‍♂️</span>אתה</button><button data-addr="f" aria-pressed="${st.address==='f'}"><span class="e">🙋‍♀️</span>את</button></div></div>`;
-    else if(step===1)body=`<div class="big-e">${MASCOTS[st.mascot].e}</div><h2 id="sheet-title" style="text-align:center">מי ילווה אותך?</h2><p style="text-align:center;color:var(--muted)">אפשר להחליף בכל רגע בהגדרות.</p>
-      <div class="pick">${Object.entries(MASCOTS).map(([k,v])=>`<button data-masc="${k}" aria-pressed="${k===st.mascot}"><span class="e">${v.e}</span>${v.n}</button>`).join('')}</div>
+    else if(step===1)body=`<div class="big-e pet-big">${petIcon(st.mascot)}</div><h2 id="sheet-title" style="text-align:center">מי ילווה אותך?</h2><p style="text-align:center;color:var(--muted)">אפשר להחליף בכל רגע בהגדרות.</p>
+      ${petPickHTML(st.mascot)}
       <div class="setrow"><span>🕯️ לשלב גם משפטים מהמקורות</span><button class="switch" role="switch" aria-checked="${st.faith}" id="wz-faith" aria-label="משפטים מהמקורות"></button></div>`;
+    else if(step===2)body=`<div class="big-e">💬</div><h2 id="sheet-title" style="text-align:center">${st.address==='f'?'איך תרצי שאדבר אלייך?':'איך תרצה שאדבר אליך?'}</h2><p style="text-align:center;color:var(--muted)">אפשר להחליף בכל רגע בהגדרות.</p>${voicePickHTML(st.voice)}`;
     else body=`<div class="big-e">🎯</div><h2 id="sheet-title" style="text-align:center">${st.address==='f'?'לאן היית רוצה להתקדם?':'לאן היית רוצה להתקדם?'}</h2><p style="text-align:center;color:var(--muted)">${st.address==='f'?'בחרי מטרה ראשונה, ונפרק אותה יחד לצעדים קטנים. או דלגי, ותתחילי רק עם רשימה להיום.':'בחר מטרה ראשונה, ונפרק אותה יחד לצעדים קטנים. או דלג, ותתחיל רק עם רשימה להיום.'}</p>
       <div class="chiprow" style="justify-content:center">${TEMPLATES.map((t,i)=>`<button class="chipbtn" data-wtpl="${i}">${t.e} ${t.t}</button>`).join('')}<button class="chipbtn" data-wtpl="own">✏️ מטרה משלי</button></div>`;
-    openSheet(`<div class="wiz">${dots}${body}<div class="actions" style="justify-content:space-between"><button class="btn ghost small" id="wz-skip">דילוג</button><button class="btn" id="wz-next" style="flex:1">${step<2?'הבא':'להתחיל בלי מטרה'}</button></div></div>`);
+    openSheet(`<div class="wiz">${dots}${body}<div class="actions" style="justify-content:space-between"><button class="btn ghost small" id="wz-skip">דילוג</button><button class="btn" id="wz-next" style="flex:1">${step<3?'הבא':'להתחיל בלי מטרה'}</button></div></div>`);
     const s=$('sheet');
     s.querySelectorAll('[data-addr]').forEach(b=>b.onclick=()=>{st.address=b.dataset.addr;st.name=$('wz-name').value;draw()});
     s.querySelectorAll('[data-masc]').forEach(b=>b.onclick=()=>{st.mascot=b.dataset.masc;draw()});
+    s.querySelectorAll('[data-voice]').forEach(b=>b.onclick=()=>{st.voice=b.dataset.voice;s.querySelectorAll('[data-voice]').forEach(x=>x.setAttribute('aria-pressed',x===b))});
     if($('wz-faith'))$('wz-faith').onclick=()=>{st.faith=!st.faith;$('wz-faith').setAttribute('aria-checked',st.faith)};
     s.querySelectorAll('[data-wtpl]').forEach(b=>b.onclick=()=>finish(b.dataset.wtpl));
     $('wz-skip').onclick=()=>finish(null);
-    $('wz-next').onclick=()=>{if(step===0)st.name=$('wz-name').value.trim();if(step<2){step++;draw()}else finish(null)};
+    $('wz-next').onclick=()=>{if(step===0)st.name=$('wz-name').value.trim();if(step<3){step++;draw()}else finish(null)};
   };
   const finish=tpl=>{if($('wz-name'))st.name=$('wz-name').value.trim();
-    Object.assign(S.settings,{name:st.name,address:st.address,mascot:st.mascot,faith:st.faith});S.onboarded=true;S.seenNew=WHATS_NEW.v;save();
+    Object.assign(S.settings,{name:st.name,address:st.address,mascot:st.mascot,faith:st.faith,voice:st.voice});S.onboarded=true;S.seenNew=WHATS_NEW.v;save();
     delete $('sheet').dataset.lock;closeSheet();lastStage=-1;renderAll();
     if(tpl==='own')openGoalForm();else if(tpl!=null)openGoalForm(+tpl);
     else toast('🌱 '+G('יאללה, מתחילים')+(st.name?' '+st.name:'')+'!')};
@@ -1361,10 +1491,11 @@ function applyLook(size){
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>applyLook());
 
 /* what's new, once per version */
-const WHATS_NEW={v:'6.1',items:['🔁 משימה שחוזרת כל יום: מסמנים "כל יום" כשמוסיפים משימה','🎙️ לספר למאמן מה יש לך היום, והוא מסדר את זה לרשימה','✨ המאמן מציע צעדים לבד כשבונים מטרה חדשה','✏️ אפשר לערוך מטרות','😊 הרבה יותר אימוג׳ים למטרות, ועוד 120 משפטים טובים']};
+const WHATS_NEW={v:'6.2',items:['💬 בוחרים איך האפליקציה מדברת אליך: הורה, חבר, פסיכולוג, רב, מפקד ועוד','✨ ארבעה חברים חדשים וזוהרים שמלווים אותך','🔁 משימה שחוזרת כל יום, והמאמן שמסדר לך את היום מהקלטה']};
 function maybeWhatsNew(){
   if(!S.onboarded)return;
   if(S.seenNew===WHATS_NEW.v)return;
+  if(!S.settings.voice){openVoicePicker(false);return}
   S.seenNew=WHATS_NEW.v;save();
   openSheet(sheetHead('🎁 מה חדש בצעד קטן')+`<ul class="newlist">${WHATS_NEW.items.map(x=>`<li>${x}</li>`).join('')}</ul><button class="btn wide" data-act="sheet-close">יופי, תודה</button>`);
 }
@@ -1412,7 +1543,8 @@ function openSettings(){
     <h3>🙂 עליי</h3>
     <div class="setrow"><label for="set-name">📛 השם שלך</label><input id="set-name" value="${esc(S.settings.name)}" style="max-width:150px"></div>
     <div class="setrow"><span>🗣️ איך לפנות אליך</span><div class="seg"><button data-addr="m" aria-pressed="${S.settings.address==='m'}">אתה</button><button data-addr="f" aria-pressed="${S.settings.address==='f'}">את</button></div></div>
-    <div class="fieldcol" style="padding-block:10px">🧸 מי מלווה אותך<div class="pick">${Object.entries(MASCOTS).map(([k,v])=>`<button data-masc="${k}" aria-pressed="${k===S.settings.mascot}"><span class="e">${v.e}</span>${v.n}</button>`).join('')}</div></div>
+    <div class="setrow"><span>💬 איך האפליקציה מדברת אליי</span><button class="btn small ghost" id="set-voice">${voice().e} ${voice().n}</button></div>
+    <div class="fieldcol" style="padding-block:10px">🧸 מי מלווה אותך<div class="pick pets">${Object.entries(MASCOTS).map(([k,v])=>`<button data-masc="${k}" aria-pressed="${k===S.settings.mascot}">${petIcon(k)}${v.n}</button>`).join('')}</div></div>
     ${sw('faith','🕯️ משפטים מהמקורות')}
     <h3>🎨 מראה</h3>
     <div class="setrow"><span>🌗 תצוגה</span><div class="seg" id="set-theme">${[['light','☀️ בהיר'],['dark','🌙 כהה'],['system','📱 כמו בטלפון']].map(([k,l])=>`<button data-th="${k}" aria-pressed="${(S.settings.theme||'system')===k}">${l}</button>`).join('')}</div></div>
@@ -1457,6 +1589,7 @@ function openSettings(){
   $('share-app').onclick=shareApp;$('fb').onclick=openFeedback;
   $('whatsnew').onclick=()=>{S.seenNew='x';maybeWhatsNew()};
   $('rewiz').onclick=()=>{closeSheet();openWizard()};
+  $('set-voice').onclick=()=>{closeSheet();openVoicePicker(true)};
   $('reset').onclick=()=>{if(!armed){armed=true;$('reset').textContent='בטוח? ללחוץ שוב';return}
     const st=S.settings,old=S;S={v:3,tasks:{},goals:[],moods:{},journal:[],hard:{},seeded:false,onboarded:true,seenNew:old.seenNew,colorIx:0,lastOpen:T,lastSeen:T,carryNote:null,injectSkip:{},reviewed:{},askNext:{},daily:[],settings:st,del:old.del||{}};
     Object.values(old.tasks).forEach(L=>L.forEach(x=>tomb(x.id)));old.goals.forEach(x=>tomb(x.id));old.journal.forEach(x=>tomb(x.id));
@@ -1470,7 +1603,7 @@ function versionLine(){
 
 /* other scripts (cloud sync, Android bridge) reach the app through this */
 window.TK={
-  get:()=>S, G, esc, toast, openSheet, closeSheet, sheetHead, X, versionLine, version:WHATS_NEW.v,
+  get:()=>S, G, esc, toast, voice:()=>voice(), petIcon, openSheet, closeSheet, sheetHead, X, versionLine, version:WHATS_NEW.v,
   render:()=>{applyLook();renderAll()},
   /* replace all data (from the cloud or a backup) without marking it as a new local change */
   replace(d,fromCloud){const keepDevice={lastSeenPrev:S.lastSeenPrev};S=Object.assign({},d,keepDevice);
@@ -1910,6 +2043,7 @@ function context(){
   const S=TK.get(),st=S.settings,d=new Date(),k=x=>x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0');
   const T=k(d),L=S.tasks[T]||[];const lines=[];
   lines.push(`שם: ${st.name||'לא ידוע'}. מגדר לפנייה: ${st.address}. היום: ${d.toLocaleDateString('he-IL',{weekday:'long',day:'numeric',month:'long'})}, שעה ${d.getHours()}:00.`);
+  const V=TK.voice&&TK.voice();if(V)lines.push(`סגנון הדיבור שהמשתמש בחר: "${V.n}". לדבר כך: ${V.p} תמיד לשמור על הכללים למעלה, ובמצוקה לחזור לרכות.`);
   if(S.moods[T]!=null)lines.push('מצב רוח היום: '+MOODS[S.moods[T]]);
   if(S.hard&&S.hard[T])lines.push('סימן היום "יום קשה".');
   lines.push('משימות היום:'+(L.length?'':' אין'));

@@ -139,3 +139,18 @@
 @keyframes donPop{from{transform:translateY(20px) scale(.94);opacity:0}}
 @media (prefers-reduced-motion:reduce){.don-bg,.don-card{animation:none}}
 .don-card .don-wink{font-size:.85rem;color:var(--muted);font-style:italic;line-height:1.55;margin-top:2px}
+/* companions + speaking styles (6.2) */
+.pet-svg{width:44px;height:44px;display:block;filter:drop-shadow(0 3px 6px rgba(0,0,0,.12))}
+.mascot .pet-svg{width:40px;height:40px;animation:petbob 3.2s ease-in-out infinite}
+.pick.pets button .pet-svg{width:58px;height:58px}
+.wiz .big-e.pet-big{display:flex;justify-content:center}.wiz .big-e.pet-big .pet-svg{width:96px;height:96px;animation:petbob 3.2s ease-in-out infinite}
+.pet-bob{animation:petbob 3.2s ease-in-out infinite;transform-box:fill-box;transform-origin:center bottom}
+@keyframes petbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@media (prefers-reduced-motion:reduce){.pet-bob,.mascot .pet-svg,.wiz .big-e.pet-big .pet-svg{animation:none}}
+.voices{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.voices button{border:2px solid var(--line);background:var(--bg);border-radius:18px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;color:var(--fg)}
+.voices button .ve{font-size:2rem;font-family:var(--emoji);line-height:1.1}
+.voices button b{font-size:.98rem}
+.voices button small{color:var(--muted);font-size:.78rem}
+.voices button .vs{margin-top:4px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:6px 8px;font-size:.8rem;line-height:1.35}
+.voices button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}

@@ -21,6 +21,7 @@ function context(){
   const S=TK.get(),st=S.settings,d=new Date(),k=x=>x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0');
   const T=k(d),L=S.tasks[T]||[];const lines=[];
   lines.push(`שם: ${st.name||'לא ידוע'}. מגדר לפנייה: ${st.address}. היום: ${d.toLocaleDateString('he-IL',{weekday:'long',day:'numeric',month:'long'})}, שעה ${d.getHours()}:00.`);
+  const V=TK.voice&&TK.voice();if(V)lines.push(`סגנון הדיבור שהמשתמש בחר: "${V.n}". לדבר כך: ${V.p} תמיד לשמור על הכללים למעלה, ובמצוקה לחזור לרכות.`);
   if(S.moods[T]!=null)lines.push('מצב רוח היום: '+MOODS[S.moods[T]]);
   if(S.hard&&S.hard[T])lines.push('סימן היום "יום קשה".');
   lines.push('משימות היום:'+(L.length?'':' אין'));
