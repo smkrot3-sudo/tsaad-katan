@@ -23,7 +23,7 @@ function openCalm(tab){
   tab=tab||'breath';let gi=0,gn=0,wi=Math.floor(Math.random()*CALM_WORDS.length);
   const stop=()=>{clearTimeout(calmTimer);calmTimer=null};
   const draw=()=>{stop();
-    const tabs=`<div class="seg calm-tabs">${[['breath','🫧 נשימה'],['ground','🖐️ 5-4-3-2-1'],['words','💛 מילים']].map(([k,l])=>`<button data-ct="${k}" aria-pressed="${k===tab}">${l}</button>`).join('')}</div>`;
+    const tabs=`<div class="seg calm-tabs">${[['breath','🫧 נשימה'],['ground','🖐️ קרקוע'],['words','💛 מילים'],['people','📲 אנשים שלי']].map(([k,l])=>`<button data-ct="${k}" aria-pressed="${k===tab}">${l}</button>`).join('')}</div>`;
     let body='';
     if(tab==='breath')body=`<div class="breath"><div class="b-stage"><div class="b-ring" id="b-ring"></div><div class="b-pet">${petIcon(S.settings.mascot)}</div></div>
       <div class="b-word" id="b-word">${G('נושמים ביחד, בקצב רגוע')}</div><div class="b-count" id="b-count">${G('שאיפה 4 שניות · להחזיק 4 · נשיפה 6')}</div>
@@ -34,7 +34,8 @@ function openCalm(tab){
         <div class="g-big"><span class="e">${e}</span><b>${n}</b></div><p class="g-t">${G(t)}</p>
         <div class="g-dots">${Array.from({length:n},(_,i)=>`<button data-gd="${i}" aria-pressed="${i<gn}" aria-label="${i+1}"></button>`).join('')}</div>
         <p class="hint" style="text-align:center">${G('{לחץ|לחצי} על עיגול על כל דבר {שמצאת|שמצאת}')}</p></div>`}
-    }else body=`<div class="calm-words"><p class="cw" id="cw">${esc(G(CALM_WORDS[wi]))}</p><div class="actions" style="justify-content:center"><button class="btn ghost small" id="cw-next">עוד משפט</button>${S.journal.some(j=>j.type==='letter')?'<button class="btn ghost small" data-act="read-letter">💌 מכתב שכתבתי לעצמי</button>':''}</div>${helpCard()}</div>`;
+    }else if(tab==='people')body=peopleHTML();
+    else body=`<div class="calm-words"><p class="cw" id="cw">${esc(G(CALM_WORDS[wi]))}</p><div class="actions" style="justify-content:center"><button class="btn ghost small" id="cw-next">עוד משפט</button>${S.journal.some(j=>j.type==='letter')?'<button class="btn ghost small" data-act="read-letter">💌 מכתב שכתבתי לעצמי</button>':''}</div>${helpCard()}</div>`;
     openSheet(sheetHead('🫧 פינת הרגעה')+tabs+body+(tab!=='words'?`<p class="hint calm-help">🫂 ${G('צריך לדבר עם מישהו? ער"ן')} <a href="tel:1201" dir="ltr">1201</a> · ${G('סה"ר')} <a href="https://sahar.org.il" target="_blank" rel="noopener">sahar.org.il</a></p>`:''),()=>{stop();calmSound(false)});
     const s=$('sheet');
     s.querySelectorAll('[data-ct]').forEach(b=>b.onclick=()=>{tab=b.dataset.ct;draw()});
@@ -48,6 +49,7 @@ function openCalm(tab){
         if(gn>=GROUND[gi][0])setTimeout(()=>{gi++;gn=0;draw()},450)});
       if($('g-again'))$('g-again').onclick=()=>{gi=0;gn=0;draw()};
     }
+    if(tab==='people')wirePeople(draw);
     if(tab==='words')$('cw-next').onclick=()=>{wi=(wi+1)%CALM_WORDS.length;$('cw').textContent=G(CALM_WORDS[wi])};
   };
   const PH=[['שאיפה...',4000,1],['להחזיק',4000,1],['נשיפה...',6000,0]];
@@ -334,3 +336,38 @@ function openPetPicker(){
   draw();
 }
 NEW_TRY.pets=()=>openPetPicker();
+NEW_TRY.sos=()=>openCalm('people');
+
+/* ---------- my people: one tap sends "I'm having a hard day" on WhatsApp ---------- */
+const SOS_DEFAULT='{היי, עובר עליי יום קשה היום 💛 אשמח אם תתקשר או תשלח לי הודעה כשאתה יכול.|היי, עובר עליי יום קשה היום 💛 אשמח אם תתקשרי או תשלחי לי הודעה כשאת יכולה.}';
+const waNum=p=>{let d=String(p||'').replace(/[^\d+]/g,'');if(d.startsWith('+'))d=d.slice(1);else if(d.startsWith('00'))d=d.slice(2);else if(d.startsWith('0'))d='972'+d.slice(1);return /^\d{8,15}$/.test(d)?d:''};
+const sosList=()=>S.settings.sos||(S.settings.sos=[]);
+function sendSOS(c,text){
+  const url='https://wa.me/'+waNum(c.p)+'?text='+encodeURIComponent(text);
+  if(window.TsaadApp&&TsaadApp.openExternal)TsaadApp.openExternal(url);else window.open(url,'_blank','noopener');
+  toast(G('💛 כל הכבוד {שביקשת|שביקשת} תמיכה. זה צעד אמיץ'));
+}
+function peopleHTML(){
+  const L=sosList(),msg=S.settings.sosText||G(SOS_DEFAULT);
+  return `<div class="sos">
+    <p class="hint" style="margin:0">${G('אנשים קרובים שאפשר לפנות אליהם ביום קשה. לחיצה אחת פותחת וואטסאפ עם הודעה מוכנה, ו{אתה|את} {שולח|שולחת} בעצמך.')}</p>
+    ${L.length?`<label class="fieldcol" for="sos-text">💬 ההודעה<textarea id="sos-text" rows="3">${esc(msg)}</textarea></label>
+      <div class="sos-list">${L.map((c,i)=>`<div class="sos-it"><button class="btn sos-send" data-sos="${i}">📲 לשלוח ל${esc(c.n)}</button><button class="del" data-sosdel="${i}" aria-label="להסיר את ${esc(c.n)}">${X}</button></div>`).join('')}</div>
+      ${L.length>1?`<button class="btn ghost wide" id="sos-all">💛 לשלוח לכולם (${L.length})</button>`:''}`
+      :`<div class="big-e">🫂</div><p style="text-align:center">${G('עוד לא {הוספת|הוספת} אף אחד. מספיק אדם אחד שאכפת לו.')}</p>`}
+    <details class="sos-add"${L.length?'':' open'}><summary>+ ${L.length?'להוסיף עוד מישהו':'להוסיף איש קשר'}</summary>
+      <div class="sos-form"><input id="sos-n" placeholder="שם (למשל: אמא, דני)" autocomplete="off" maxlength="30"><input id="sos-p" type="tel" dir="ltr" placeholder="מספר טלפון, 050-1234567" autocomplete="tel" maxlength="20">
+      <div id="sos-err" class="hint" style="color:#C0392B;margin:0" hidden></div><button class="btn" id="sos-save">לשמור</button></div></details>
+  </div>`;
+}
+function wirePeople(redraw){
+  const L=sosList(),txt=()=>($('sos-text')?$('sos-text').value.trim():'')||G(SOS_DEFAULT);
+  if($('sos-text'))$('sos-text').onchange=e=>{const v=e.target.value.trim();S.settings.sosText=v&&v!==G(SOS_DEFAULT)?v:'';save()};
+  $('sheet').querySelectorAll('[data-sos]').forEach(b=>b.onclick=()=>sendSOS(L[+b.dataset.sos],txt()));
+  $('sheet').querySelectorAll('[data-sosdel]').forEach(b=>b.onclick=()=>{if(b.dataset.armed!=='1'){b.dataset.armed='1';b.textContent='?';return}L.splice(+b.dataset.sosdel,1);save();redraw()});
+  if($('sos-all'))$('sos-all').onclick=()=>{let i=0;const next=()=>{if(i>=L.length)return;const c=L[i++];sendSOS(c,txt());if(i<L.length)openSheet(sheetHead('💛 לשלוח לכולם')+`<p>${G('נשלח ל'+esc(c.n)+'? אפשר להמשיך לבא בתור.')}</p><button class="btn wide" id="sos-next">📲 לשלוח ל${esc(L[i].n)}</button><button class="btn ghost wide" data-act="sheet-close">מספיק להיום</button>`),$('sos-next').onclick=next};next()};
+  $('sos-save').onclick=()=>{const n=$('sos-n').value.trim(),p=$('sos-p').value.trim(),err=$('sos-err');
+    if(!n){err.textContent='צריך שם';err.hidden=false;return}
+    if(!waNum(p)){err.textContent='המספר לא נראה תקין. למשל 050-1234567';err.hidden=false;return}
+    L.push({n,p});save();toast('🫂 '+n+' '+G('נוסף לאנשים שלך'));redraw()};
+}

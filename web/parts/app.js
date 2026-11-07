@@ -707,7 +707,7 @@ function renderToday(){
   let b=morningCard();
   if(between(S.lastSeenPrev,T)>=3&&!S.absenceShown)b+=`<div class="banner"><div class="row1"><span class="bico e">🤗</span><div><h3>חשבנו עליך${esc(nm())} 💛</h3><p class="sub">${G('טוב {שחזרת|שחזרת}. אין מה להשלים ואין מה להסביר. מתחילים מהיום, בקטן.')}</p></div><button class="del" data-act="absence-ok" aria-label="סגירה">${X}</button></div></div>`;
   if(hard)b+=`<div class="banner" style="background:var(--joy5);border-color:var(--joy5);color:var(--joy-ink)"><div class="row1"><span class="bico e">💜</span><div><h3>יום קשה זה בסדר</h3><p>${G('השארנו רק את הדברים הקלים. כל השאר מחכה ליום אחר, בלי שום לחץ.')}</p></div></div>
-    <div class="actions"><button class="btn small" data-act="read-letter">💌 מכתב שכתבתי לעצמי</button><button class="btn small ghost" data-act="calm">🫧 פינת הרגעה</button><button class="btn small ghost" data-act="go-journal">📔 ההישגים שלי</button></div></div>`;
+    <div class="actions"><button class="btn small" data-act="read-letter">💌 מכתב שכתבתי לעצמי</button><button class="btn small ghost" data-act="calm">🫧 פינת הרגעה</button><button class="btn small ghost" data-act="sos">📲 לכתוב לאנשים שלי</button><button class="btn small ghost" data-act="go-journal">📔 ההישגים שלי</button></div></div>`;
   if((m===0)||hard)b+=helpCard();
   if(insightDue())b+=`<div class="banner"><div class="row1"><span class="bico e">🔍</span><div><h3>מכתב השבוע מחכה לך</h3><p class="sub">${G('המאמן קרא את השבוע שלך ושם לב לכמה דברים טובים')}</p></div></div><div class="actions"><button class="btn small" data-act="insight">💌 לפתוח את המכתב</button></div></div>`;
   if(S.carryNote&&S.carryNote.date===T)b+=`<div class="banner"><div class="row1"><span class="bico e">🌅</span><div><h3>זה בסדר, היום יום חדש</h3><p class="sub">${S.carryNote.n===1?'משימה אחת עברה':S.carryNote.n+' משימות עברו'} איתך מאתמול. אפשר לנסות שוב, בלי לחץ.</p></div><button class="del" data-act="carry-ok" aria-label="סגירה">${X}</button></div></div>`;
@@ -1101,7 +1101,8 @@ function applyLook(size){
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>applyLook());
 
 /* what's new, once per version */
-const WHATS_NEW={v:'7.1',items:[
+const WHATS_NEW={v:'7.2',items:[
+  ['📲','לבקש תמיכה בלחיצה','בפינת הרגעה יש עכשיו "אנשים שלי": שומרים אנשים קרובים, וביום קשה שולחים להם הודעה בוואטסאפ בלחיצה אחת.','sos','7.2'],
   ['🐾','עשרות חברים חדשים ללוות אותך','חתלתולה, ארנבונת, דובון, פנדה, חד-קרן, דרקון קטן, פינגווין, תמנון ועוד הרבה. כולם רכים וזוהרים, {בחר|בחרי} מי ילווה אותך.','pets','7.1'],
   ['🫧','פינת הרגעה','נשימה מונחית עם הדמות שלך, תרגיל קרקוע 5-4-3-2-1 וצליל רך. נמצאת ליד כפתור "יום קשה".','calm'],
   ['💌','המאמן פונה ראשון','הודעת בוקר אישית בכל בוקר, ותזכורת "חשבנו עליך" אם לא נכנסים כמה ימים.','morning'],
@@ -1118,7 +1119,7 @@ function maybeWhatsNew(){
   const app=!!window.TsaadApp,hasW=app&&!!TsaadApp.setWidget;
   const tryBtn=k=>k==='pets'?`<button class="btn small" data-try="pets">🐾 לבחור חבר</button>`:k==='widget'?(hasW?'<span class="hint" style="margin:0">לחיצה ארוכה על מסך הבית ← ווידג׳טים ← צעד קטן</span>':app?'<span class="hint" style="margin:0">צריך לעדכן את האפליקציה (יש כפתור "לעדכן" למעלה)</span>':''):`<button class="btn small ghost" data-try="${k}">לנסות</button>`;
   openSheet(`<div class="wn-hero"><div class="wn-pet">${petIcon(S.settings.mascot)}</div><h2 id="sheet-title">🎁 צעד קטן ${WHATS_NEW.v}</h2><p>${G('הרבה דברים חדשים מחכים לך'+(S.settings.name?', '+esc(S.settings.name):'')+'. הנה מה שהגיע:')}</p></div>
-    <div class="wn-list">${WHATS_NEW.items.filter(x=>(x[3]!=='widget'||/Android/i.test(navigator.userAgent))&&(prevSeen!=='7.0'||x[4]==='7.1')).map(([e,t,d,k])=>`<div class="wn-it"><span class="wn-e e">${e}</span><div><b>${t}</b><p>${G(d)}</p>${tryBtn(k)}</div></div>`).join('')}</div>
+    <div class="wn-list">${WHATS_NEW.items.filter(x=>(x[3]!=='widget'||/Android/i.test(navigator.userAgent))&&(!/^7\./.test(prevSeen||'')||(x[4]||'7.0')>prevSeen)).map(([e,t,d,k])=>`<div class="wn-it"><span class="wn-e e">${e}</span><div><b>${t}</b><p>${G(d)}</p>${tryBtn(k)}</div></div>`).join('')}</div>
     <button class="btn wide" data-act="sheet-close">יופי, תודה 💛</button>`);
   $('sheet').querySelectorAll('[data-try]').forEach(b=>b.onclick=()=>{const f=NEW_TRY[b.dataset.try];closeSheet();f&&setTimeout(f,120)});
 }
@@ -1277,6 +1278,7 @@ document.addEventListener('click',e=>{
     case 'hardday':{S.hard[T]=!S.hard[T];save();renderAll();if(S.hard[T])toast('💜 מצב יום קשה. רק הדברים הקלים נשארו.');break}
     case 'read-letter':openLetterRead();break;
     case 'calm':openCalm();break;
+    case 'sos':openCalm('people');break;
     case 'report':openReport();break;
     case 'insight':openInsight();break;
     case 'insight-new':openInsight(true);break;
