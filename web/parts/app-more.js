@@ -319,3 +319,18 @@ function takeWidgetMood(){
 
 /* ---------- what's new in 7.0: each item can be tried right away ---------- */
 const NEW_TRY={calm:()=>openCalm(),report:()=>openReport(),insight:()=>openInsight(),garden:()=>{showTab('progress');setTimeout(()=>{const el=$('garden-big');el&&el.scrollIntoView({block:'start'})},60)},buddy:()=>window.TKbuddy&&TKbuddy.open(),morning:()=>{S.morningSeen='';save();showTab('today');renderToday()}};
+
+/* ---------- choosing a companion: a big grouped gallery with a live preview ---------- */
+function openPetPicker(){
+  let pet=S.settings.mascot;
+  const draw=()=>{const m=MASCOTS[pet]||MASCOTS.plant;
+    openSheet(sheetHead('🧸 מי ילווה אותך?')+`<div class="pet-prev"><div class="pp-art">${petIcon(pet)}</div><b>${esc(m.n)}</b></div>
+      <div class="pet-gallery">${petPickHTML(pet)}</div>
+      <button class="btn wide pet-save" id="pp-save">${G('{בחרתי|בחרתי}, שומרים 💛')}</button>`);
+    const s=$('sheet'),top=s.querySelector('.pet-gallery');
+    s.querySelectorAll('[data-masc]').forEach(b=>b.onclick=()=>{pet=b.dataset.masc;const y=s.scrollTop;draw();$('sheet').scrollTop=y});
+    $('pp-save').onclick=()=>{S.settings.mascot=pet;save();closeSheet();lastStage=-1;renderAll();toast('💛 '+(MASCOTS[pet]||MASCOTS.plant).n.split(',')[0]+' '+G('{מלווה|מלווה}')+' אותך מעכשיו')};
+  };
+  draw();
+}
+NEW_TRY.pets=()=>openPetPicker();

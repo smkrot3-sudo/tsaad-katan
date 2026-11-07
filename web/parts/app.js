@@ -180,6 +180,7 @@ function emojiPickerHTML(cur,title,all){
 }
 const MASCOTS={leafy:{e:'🍃',n:'עלעלי הזוהר'},puff:{e:'☁️',n:'פופי הפרוותי'},bloom:{e:'🌸',n:'פרחית הוורודה'},sunny:{e:'🌟',n:'שמשי הזהוב'},plant:{e:'🌱',n:'נבטי, צמח שגדל איתך'},cat:{e:'🐱',n:'מיצי החתולה'},bear:{e:'🧸',n:'דובי'},bunny:{e:'🐰',n:'שפנפן'}};
 /* ---------- companions: soft glowing creatures, drawn here (no image files) ---------- */
+const hasArt=k=>!!(PET_LOOK[k]||PETS2[k]);
 let petN=0;
 const PET_LOOK={
   leafy:{kind:'jelly',c1:'#E9FF9E',c2:'#9BD63A',c3:'#4E9A1F',ear:'leaf',eye:'#123B12',tail:true},
@@ -187,7 +188,117 @@ const PET_LOOK={
   puff:{kind:'fluff',c1:'#FFFFFF',c2:'#E6F1FF',c3:'#4C8DF0',eye:'#1F63C9'},
   sunny:{kind:'fluff',c1:'#FFF9DB',c2:'#FFE082',c3:'#F4A72C',eye:'#8A4B00'},
 };
+/* ---------- many more companions: one drawing kit (body, ears, extras), each creature is a recipe ---------- */
+const PETS2={
+  /* furry friends */
+  mimi:{g:'fur',n:'מימי החתלתולה',e:'🐱',body:'jelly',c1:'#FFF1E6',c2:'#FFC9A3',c3:'#E98A5B',ear:'cat',mouth:'w',tail:'curl'},
+  hopi:{g:'fur',n:'הופי הארנבונת',e:'🐰',body:'jelly',c1:'#FFFFFF',c2:'#F1E8FF',c3:'#B39DDB',ear:'bunny',tail:'puff',top:'bow'},
+  teddy:{g:'fur',n:'טדי דובון הדבש',e:'🧸',body:'jelly',c1:'#FFF0D1',c2:'#F2C38A',c3:'#B97A3E',ear:'bear',belly:1},
+  pandi:{g:'fur',n:'פנדי הפנדה',e:'🐼',body:'jelly',c1:'#FFFFFF',c2:'#F3F3F7',c3:'#9A9AAE',ear:'bear',earc:'#3B3B4F',patch:1},
+  shuali:{g:'fur',n:'שועלי השועל',e:'🦊',body:'jelly',c1:'#FFE7D1',c2:'#FFA45C',c3:'#D9652A',ear:'cat',mouth:'w',tail:'fox',belly:1},
+  tziftzif:{g:'fur',n:'צפצפי העכבר',e:'🐭',body:'jelly',c1:'#FFFFFF',c2:'#E4E6EE',c3:'#9CA3B8',ear:'mouse',mouth:'w',tail:'line'},
+  koali:{g:'fur',n:'קואלי',e:'🐨',body:'jelly',c1:'#F4F6FA',c2:'#C9CFDC',c3:'#7F8AA3',ear:'mouse',earc:'#E8EBF2',nose:1},
+  kivsi:{g:'fur',n:'כבשי הכבשה',e:'🐑',body:'fluff',c1:'#FFFFFF',c2:'#F6F1EA',c3:'#C7B8A6',eye:'#5B4636'},
+  hamtzi:{g:'fur',n:'חמצי האוגר',e:'🐹',body:'bean',c1:'#FFF5E1',c2:'#FFD59E',c3:'#E0A458',ear:'bear',belly:1},
+  /* magical */
+  yuniki:{g:'magic',n:'יוניקי החד-קרן',e:'🦄',body:'jelly',c1:'#FFFFFF',c2:'#FFE3F4',c3:'#C79BFF',ear:'unicorn',tail:'rainbow',top:'star'},
+  draki:{g:'magic',n:'דרקי הדרקון הקטן',e:'🐉',body:'jelly',c1:'#E6FFF4',c2:'#8EE3C0',c3:'#3FA884',ear:'horns',wings:'dragon',tail:'curl',belly:1},
+  malachi:{g:'magic',n:'מלאכי',e:'😇',body:'bean',c1:'#FFFFFF',c2:'#FFF6DC',c3:'#F2C14E',wings:'angel',top:'halo'},
+  peya:{g:'magic',n:'פיית הפרחים',e:'🧚',body:'jelly',c1:'#FBF0FF',c2:'#E2BFFF',c3:'#A46BE0',ear:'petal',wings:'fairy',top:'flower'},
+  lumi:{g:'magic',n:'לומי הגחלילית',e:'✨',body:'drop',c1:'#FFFDE3',c2:'#FFE97A',c3:'#F2B705',ear:'star',glow:'#FFF3A0'},
+  kokhavi:{g:'magic',n:'כוכבי מהלילה',e:'🌙',body:'fluff',c1:'#E9E6FF',c2:'#9F96F0',c3:'#4B3FB8',eye:'#221A66',top:'moon'},
+  rukhi:{g:'magic',n:'רוחי הרוח הטובה',e:'👻',body:'ghost',c1:'#FFFFFF',c2:'#F1F4FF',c3:'#B8C3EE'},
+  /* sweet and tiny */
+  mochi:{g:'sweet',n:'מוצ׳י',e:'🍡',body:'bean',c1:'#FFFFFF',c2:'#FFF0F3',c3:'#F4B6C8',top:'sprout'},
+  tipi:{g:'sweet',n:'טיפי הטיפה',e:'💧',body:'drop',c1:'#EAF7FF',c2:'#9FD7FF',c3:'#3B9BE0',mouth:'o'},
+  tuti:{g:'sweet',n:'תותי',e:'🍓',body:'drop',c1:'#FFE0E3',c2:'#FF7A8A',c3:'#D93D55',top:'leafcap',dots:1},
+  afarsek:{g:'sweet',n:'אפרסקי',e:'🍑',body:'bean',c1:'#FFF1E6',c2:'#FFC1A1',c3:'#F08A6C',top:'sprout'},
+  nevton:{g:'sweet',n:'נבטון',e:'🌱',body:'bean',c1:'#F2FFE0',c2:'#B9E88A',c3:'#6DB33F',top:'sprout'},
+  sukaria:{g:'sweet',n:'סוכריה הוורודה',e:'🍬',body:'fluff',c1:'#FFFFFF',c2:'#FFD6EC',c3:'#F27BB8',eye:'#8C1D5A'},
+  menta:{g:'sweet',n:'מנטה',e:'🍃',body:'fluff',c1:'#FFFFFF',c2:'#D3F7EA',c3:'#3FBF96',eye:'#145C46'},
+  /* birds and sea */
+  efrochi:{g:'sea',n:'אפרוחי',e:'🐥',body:'bean',c1:'#FFFDE6',c2:'#FFE680',c3:'#F4C20D',beak:1,top:'tuft',wings:'tiny'},
+  pingi:{g:'sea',n:'פינגי הפינגווין',e:'🐧',body:'bean',c1:'#5D6B9A',c2:'#3F4A75',c3:'#262E52',belly:'#FFFFFF',beak:1,wings:'tiny',eye:'#111'},
+  inbi:{g:'sea',n:'ינשופי',e:'🦉',body:'bean',c1:'#F6E7D3',c2:'#C9A27E',c3:'#8A6240',ear:'tufts',beak:1,belly:1,bigeyes:1},
+  tamnuni:{g:'sea',n:'תמנוני',e:'🐙',body:'octo',c1:'#FFE6F2',c2:'#FF9CCB',c3:'#E0569A'},
+  tzavi:{g:'sea',n:'צבי הצב',e:'🐢',body:'turtle',c1:'#E9FFE0',c2:'#9EDC7C',c3:'#4E9A3A'},
+  dagi:{g:'sea',n:'דגי הדגיג',e:'🐟',body:'fish',c1:'#E3F4FF',c2:'#8FD0FF',c3:'#FF9F5A'},
+};
+const PET_GROUPS=[['glow','✨ הזוהרים'],['fur','🐾 פרוותיים'],['magic','🦄 קסומים'],['sweet','🍬 מתוקים וקטנים'],['sea','🐣 ציפורים וים'],['classic','🙂 קלאסיים']];
+function cuteSVG(p,id){
+  const G2=`url(#${id}b)`,st=`stroke="${p.c3}" stroke-opacity=".45" stroke-width="1.3"`;
+  const eyeC=p.eye||'#2B1E3A';
+  // where the face sits for each body
+  const F={jelly:[50,56],bean:[50,58],drop:[50,64],fluff:[50,60],ghost:[50,52],octo:[50,50],turtle:[50,46],fish:[44,52]}[p.body]||[50,56];
+  const [fx,fy]=F;
+  const eyes=p.bigeyes
+    ?`<circle cx="${fx-12}" cy="${fy-2}" r="11" fill="#fff" ${st}/><circle cx="${fx+12}" cy="${fy-2}" r="11" fill="#fff" ${st}/><circle cx="${fx-12}" cy="${fy-1}" r="6.5" fill="${eyeC}"/><circle cx="${fx+12}" cy="${fy-1}" r="6.5" fill="${eyeC}"/><circle cx="${fx-14}" cy="${fy-4}" r="2.2" fill="#fff"/><circle cx="${fx+10}" cy="${fy-4}" r="2.2" fill="#fff"/>`
+    :`<ellipse cx="${fx-12}" cy="${fy-2}" rx="7.5" ry="9" fill="${eyeC}"/><ellipse cx="${fx+12}" cy="${fy-2}" rx="7.5" ry="9" fill="${eyeC}"/>
+      <circle cx="${fx-14.5}" cy="${fy-5.5}" r="2.8" fill="#fff"/><circle cx="${fx+9.5}" cy="${fy-5.5}" r="2.8" fill="#fff"/><circle cx="${fx-10}" cy="${fy+1.5}" r="1.2" fill="#fff"/><circle cx="${fx+14}" cy="${fy+1.5}" r="1.2" fill="#fff"/>`;
+  const patch=p.patch?`<ellipse cx="${fx-12}" cy="${fy-1}" rx="11" ry="12" fill="#3B3B4F" transform="rotate(-18 ${fx-12} ${fy-1})"/><ellipse cx="${fx+12}" cy="${fy-1}" rx="11" ry="12" fill="#3B3B4F" transform="rotate(18 ${fx+12} ${fy-1})"/>`:'';
+  const blush=`<ellipse cx="${fx-21}" cy="${fy+9}" rx="5.5" ry="3.3" fill="#FF8FA3" opacity=".55"/><ellipse cx="${fx+21}" cy="${fy+9}" rx="5.5" ry="3.3" fill="#FF8FA3" opacity=".55"/>`;
+  const mouth=p.beak?`<path d="M${fx-5} ${fy+7} L${fx+5} ${fy+7} L${fx} ${fy+13}Z" fill="#FFA62B" stroke="#E08A12" stroke-width=".8" stroke-linejoin="round"/>`
+    :p.mouth==='w'?`<path d="M${fx-5} ${fy+9} q2.5 3 5 0 q2.5 3 5 0" stroke="${p.c3}" stroke-width="1.7" fill="none" stroke-linecap="round"/>`
+    :p.mouth==='o'?`<ellipse cx="${fx}" cy="${fy+10}" rx="2.6" ry="3" fill="${p.c3}"/>`
+    :`<path d="M${fx-4} ${fy+9} q4 4 8 0" stroke="${p.c3}" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;
+  const nose=p.nose?`<ellipse cx="${fx}" cy="${fy+6}" rx="5" ry="3.6" fill="#4A4A5E"/>`:'';
+  // ears and things on the head (drawn behind the head)
+  const ec=p.earc||G2,inner='#FFB7C9';
+  const ears={
+    cat:`<path d="M24 40 L22 12 L46 30Z" fill="${ec}" ${st} stroke-linejoin="round"/><path d="M76 40 L78 12 L54 30Z" fill="${ec}" ${st} stroke-linejoin="round"/><path d="M28 34 L27 19 L40 29Z" fill="${inner}" opacity=".8"/><path d="M72 34 L73 19 L60 29Z" fill="${inner}" opacity=".8"/>`,
+    bunny:`<ellipse cx="37" cy="16" rx="8" ry="21" fill="${ec}" ${st} transform="rotate(-12 37 30)"/><ellipse cx="63" cy="16" rx="8" ry="21" fill="${ec}" ${st} transform="rotate(12 63 30)"/><ellipse cx="37" cy="17" rx="4" ry="15" fill="${inner}" opacity=".75" transform="rotate(-12 37 30)"/><ellipse cx="63" cy="17" rx="4" ry="15" fill="${inner}" opacity=".75" transform="rotate(12 63 30)"/>`,
+    bear:`<circle cx="28" cy="33" r="10" fill="${ec}" ${st}/><circle cx="72" cy="33" r="10" fill="${ec}" ${st}/><circle cx="28" cy="33" r="5" fill="${p.earc?'#5A5A70':inner}" opacity=".7"/><circle cx="72" cy="33" r="5" fill="${p.earc?'#5A5A70':inner}" opacity=".7"/>`,
+    mouse:`<circle cx="24" cy="32" r="14" fill="${ec}" ${st}/><circle cx="76" cy="32" r="14" fill="${ec}" ${st}/><circle cx="24" cy="32" r="8" fill="${inner}" opacity=".7"/><circle cx="76" cy="32" r="8" fill="${inner}" opacity=".7"/>`,
+    unicorn:`<path d="M28 38 L26 22 L40 31Z" fill="${G2}" ${st}/><path d="M72 38 L74 22 L60 31Z" fill="${G2}" ${st}/><path d="M45 31 L50 4 L55 31Z" fill="#FFD66B" stroke="#E5A92B" stroke-width="1"/><path d="M47 24 L53 21 M46 17 L53 14 M48 10 L52 9" stroke="#E5A92B" stroke-width="1" stroke-linecap="round"/>`,
+    horns:`<path d="M34 32 Q30 18 38 14 Q37 24 42 30Z" fill="#FFE29A" stroke="#E5B04A" stroke-width="1"/><path d="M66 32 Q70 18 62 14 Q63 24 58 30Z" fill="#FFE29A" stroke="#E5B04A" stroke-width="1"/>`,
+    petal:`${[-24,0,24].map(a=>`<ellipse cx="29" cy="22" rx="7" ry="14" fill="${G2}" ${st} transform="rotate(${a-20} 29 36)"/><ellipse cx="71" cy="22" rx="7" ry="14" fill="${G2}" ${st} transform="rotate(${a+20} 71 36)"/>`).join('')}`,
+    star:`<path d="M50 ${p.body==='drop'?22:30} Q46 14 50 9" stroke="${p.c3}" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M50 1 l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z" fill="#FFD94D" stroke="#F2B705" stroke-width=".8"/>`,
+    tufts:`<path d="M26 36 L20 16 L40 28Z" fill="${p.c3}"/><path d="M74 36 L80 16 L60 28Z" fill="${p.c3}"/>`,
+  }[p.ear]||'';
+  const tops={
+    bow:`<g transform="translate(66 30) rotate(18)"><path d="M0 0 L-10 -7 L-10 7Z M0 0 L10 -7 L10 7Z" fill="#FF7FAE"/><circle r="3" fill="#FF5C97"/></g>`,
+    flower:`<g transform="translate(50 29)">${[0,72,144,216,288].map(a=>`<ellipse cx="0" cy="-5" rx="3.5" ry="5.5" fill="#FFB3D9" transform="rotate(${a})"/>`).join('')}<circle r="3" fill="#FFD94D"/></g>`,
+    star:`<path d="M66 22 l2 4 4.5.6-3.3 3.1.8 4.4-4-2.1-4 2.1.8-4.4-3.3-3.1 4.5-.6z" fill="#FFD94D" stroke="#F2B705" stroke-width=".7"/>`,
+    halo:`<ellipse cx="50" cy="${F[1]-36}" rx="16" ry="4.5" fill="none" stroke="#FFD24D" stroke-width="3.2"/>`,
+    sprout:`<path d="M50 ${F[1]-30} Q49 ${F[1]-38} 50 ${F[1]-42}" stroke="#4E9A2F" stroke-width="2.2" fill="none" stroke-linecap="round"/><ellipse cx="44" cy="${F[1]-43}" rx="6" ry="3.4" fill="#7CCB4A" transform="rotate(-25 44 ${F[1]-43})"/><ellipse cx="56" cy="${F[1]-44}" rx="6" ry="3.4" fill="#7CCB4A" transform="rotate(25 56 ${F[1]-44})"/>`,
+    leafcap:`${[-40,-15,15,40].map(a=>`<ellipse cx="50" cy="20" rx="4" ry="8" fill="#5DBB4A" transform="rotate(${a} 50 26)"/>`).join('')}<path d="M50 20 V12" stroke="#3E8E2F" stroke-width="2" stroke-linecap="round"/>`,
+    tuft:`<path d="M47 ${F[1]-28} q-2 -8 3 -10 q-1 5 2 6 q1 -6 5 -6 q-4 4 -2 10" fill="${p.c3}"/>`,
+    moon:`<path d="M70 14 a9 9 0 1 0 8 13 a7 7 0 1 1 -8 -13z" fill="#FFE27A" stroke="#E8B923" stroke-width=".8"/>`,
+  }[p.top]||'';
+  const wings={
+    angel:`<path d="M24 62 Q4 52 8 38 Q18 48 26 52Z" fill="#fff" stroke="#E6DDC6" stroke-width="1"/><path d="M76 62 Q96 52 92 38 Q82 48 74 52Z" fill="#fff" stroke="#E6DDC6" stroke-width="1"/>`,
+    fairy:`<ellipse cx="18" cy="56" rx="13" ry="8" fill="#DFF3FF" opacity=".85" transform="rotate(-30 18 56)" stroke="#A9D8F5"/><ellipse cx="82" cy="56" rx="13" ry="8" fill="#DFF3FF" opacity=".85" transform="rotate(30 82 56)" stroke="#A9D8F5"/>`,
+    dragon:`<path d="M26 66 L6 50 L12 64 L4 66 L24 74Z" fill="${p.c2}" stroke="${p.c3}" stroke-width="1" stroke-linejoin="round"/><path d="M74 66 L94 50 L88 64 L96 66 L76 74Z" fill="${p.c2}" stroke="${p.c3}" stroke-width="1" stroke-linejoin="round"/>`,
+    tiny:`<ellipse cx="21" cy="70" rx="6" ry="11" fill="${p.c3}" transform="rotate(25 21 70)"/><ellipse cx="79" cy="70" rx="6" ry="11" fill="${p.c3}" transform="rotate(-25 79 70)"/>`,
+  }[p.wings]||'';
+  const tails={
+    curl:`<path d="M70 84 Q92 84 90 68 Q88 58 80 62 Q76 66 82 69" fill="none" stroke="${G2}" stroke-width="5" stroke-linecap="round"/>`,
+    puff:`<circle cx="76" cy="86" r="7" fill="#fff" ${st}/>`,
+    fox:`<path d="M66 86 Q96 90 92 62 Q84 74 70 76Z" fill="${p.c2}" stroke="${p.c3}" stroke-width="1"/><path d="M92 62 Q90 72 84 74 Q90 66 92 62Z" fill="#fff"/>`,
+    line:`<path d="M68 88 Q88 92 90 80 Q92 70 84 72" fill="none" stroke="${p.c3}" stroke-width="2" stroke-linecap="round"/>`,
+    rainbow:`<path d="M70 82 Q92 86 92 66" fill="none" stroke="#FF9CC8" stroke-width="4" stroke-linecap="round"/><path d="M70 86 Q96 90 96 66" fill="none" stroke="#9FD7FF" stroke-width="4" stroke-linecap="round"/><path d="M70 78 Q88 82 88 66" fill="none" stroke="#FFE27A" stroke-width="4" stroke-linecap="round"/>`,
+  }[p.tail]||'';
+  const bellyC=typeof p.belly==='string'?p.belly:p.c1;
+  let body='';
+  if(p.body==='jelly')body=`<ellipse cx="50" cy="80" rx="20" ry="14" fill="${G2}"/>${p.belly?`<ellipse cx="50" cy="82" rx="12" ry="9" fill="${bellyC}" opacity=".85"/>`:''}<circle cx="50" cy="56" r="27" fill="${G2}"/><ellipse cx="41" cy="91" rx="6" ry="4" fill="${G2}"/><ellipse cx="59" cy="91" rx="6" ry="4" fill="${G2}"/>`;
+  else if(p.body==='bean')body=`<ellipse cx="41" cy="91" rx="7" ry="4" fill="${p.c3}"/><ellipse cx="59" cy="91" rx="7" ry="4" fill="${p.c3}"/><ellipse cx="50" cy="62" rx="31" ry="31" fill="${G2}"/>${p.belly?`<ellipse cx="50" cy="76" rx="18" ry="15" fill="${bellyC}" opacity=".9"/>`:''}`;
+  else if(p.body==='drop')body=`<path d="M50 14 C64 34 80 52 80 68 A30 26 0 0 1 20 68 C20 52 36 34 50 14Z" fill="${G2}"/>${p.dots?[[36,74],[50,84],[64,74],[42,58],[58,58],[50,70]].map(([x,y])=>`<ellipse cx="${x}" cy="${y+4}" rx="1.6" ry="2.4" fill="#FFF3B0"/>`).join(''):''}`;
+  else if(p.body==='ghost')body=`<path d="M22 56 A28 28 0 0 1 78 56 V86 Q72 80 66 88 Q58 80 50 88 Q42 80 34 88 Q28 80 22 86Z" fill="${G2}"/>`;
+  else if(p.body==='octo')body=`${[24,36,48,60,72].map((x,i)=>`<path d="M${x} 62 Q${x-6+i*3} 82 ${x+(i-2)*4} 90" stroke="${p.c2}" stroke-width="8" fill="none" stroke-linecap="round"/>`).join('')}<ellipse cx="50" cy="48" rx="30" ry="28" fill="${G2}"/>`;
+  else if(p.body==='turtle')body=`<ellipse cx="28" cy="86" rx="7" ry="5" fill="${p.c2}"/><ellipse cx="72" cy="86" rx="7" ry="5" fill="${p.c2}"/><ellipse cx="50" cy="76" rx="32" ry="16" fill="#C8955B"/><path d="M26 74 Q50 54 74 74" fill="#E3B47A" stroke="#A9743F" stroke-width="1.2"/><path d="M38 70 L44 62 M50 66 V58 M62 70 L56 62" stroke="#A9743F" stroke-width="1.2"/><circle cx="50" cy="46" r="22" fill="${G2}"/>`;
+  else if(p.body==='fish')body=`<path d="M70 52 L92 36 Q88 52 92 68Z" fill="${p.c3}"/><ellipse cx="46" cy="54" rx="32" ry="26" fill="${G2}"/><path d="M40 30 Q50 18 60 30" fill="${p.c3}"/><path d="M58 50 q4 4 0 8 M64 48 q5 6 0 12" stroke="${p.c3}" stroke-width="1.4" fill="none" opacity=".6"/>`;
+  else if(p.body==='fluff'){
+    const fur=Array.from({length:34},(_,i)=>{const a=i/34*Math.PI*2,r=29+(i%3)*1.2;return `<circle cx="${(50+Math.cos(a)*r).toFixed(1)}" cy="${(60+Math.sin(a)*r*.92).toFixed(1)}" r="${6+(i%2)}" fill="${i%2?p.c2:p.c1}"/>`}).join('');
+    body=`<ellipse cx="38" cy="90" rx="6" ry="3.5" fill="${p.c3}"/><ellipse cx="62" cy="90" rx="6" ry="3.5" fill="${p.c3}"/>${fur}<ellipse cx="50" cy="60" rx="31" ry="28" fill="${G2}"/>`;
+  }
+  const shine=`<ellipse cx="${fx-10}" cy="${fy-18}" rx="8" ry="4.5" fill="#fff" opacity=".45" transform="rotate(-25 ${fx-10} ${fy-18})"/>`;
+  const glow=p.glow?`<circle cx="50" cy="60" r="44" fill="${p.glow}" opacity=".35"/>`:'';
+  return `<svg class="pet-svg" viewBox="0 0 100 100" aria-hidden="true"><defs>
+    <radialGradient id="${id}b" cx=".38" cy=".3" r=".85"><stop offset="0" stop-color="${p.c1}"/><stop offset=".62" stop-color="${p.c2}"/><stop offset="1" stop-color="${p.c3}"/></radialGradient></defs>
+    ${glow}<ellipse cx="50" cy="96" rx="27" ry="3.5" fill="#000" opacity=".12"/>${wings}${tails}${ears}${body}${shine}${patch}${eyes}${blush}${nose}${mouth}${tops}</svg>`;
+}
 function petSVG(k){
+  if(PETS2[k])return cuteSVG(PETS2[k],'pt'+(++petN));
   const p=PET_LOOK[k];if(!p)return '';const id='pt'+(++petN);
   const eyes=`<g><ellipse cx="38" cy="54" rx="9" ry="10.5" fill="${p.eye}"/><ellipse cx="62" cy="54" rx="9" ry="10.5" fill="${p.eye}"/>
     <ellipse cx="38" cy="57" rx="6" ry="5" fill="${p.c3}" opacity=".55"/><ellipse cx="62" cy="57" rx="6" ry="5" fill="${p.c3}" opacity=".55"/>
@@ -225,7 +336,9 @@ function petSVG(k){
     <ellipse cx="38" cy="90" rx="6" ry="3.5" fill="${p.c3}"/><ellipse cx="62" cy="90" rx="6" ry="3.5" fill="${p.c3}"/></svg>`;
 }
 /* the companion as a small picture: drawn creature, or the old emoji */
-const petIcon=k=>{const m=MASCOTS[k]||MASCOTS.plant;return PET_LOOK[k]?petSVG(k):`<span class="e">${m.e}</span>`};
+Object.entries(PETS2).forEach(([k,v])=>{MASCOTS[k]={e:v.e,n:v.n}});
+const petGroup=k=>PETS2[k]?PETS2[k].g:PET_LOOK[k]?'glow':'classic';
+const petIcon=k=>{const m=MASCOTS[k]||MASCOTS.plant;return hasArt(k)?petSVG(k):`<span class="e">${m.e}</span>`};
 
 /* ---------- how the app talks to you ---------- */
 const VOICES={
@@ -268,7 +381,8 @@ function voicePickHTML(cur){
   return `<div class="voices">${Object.entries(VOICES).map(([k,v])=>`<button data-voice="${k}" aria-pressed="${k===cur}"><span class="ve">${v.e}</span><b>${v.n}</b><small>${v.d}</small><span class="vs">"${esc(G(v.s))}"</span></button>`).join('')}</div>`;
 }
 function petPickHTML(cur){
-  return `<div class="pick pets">${Object.entries(MASCOTS).map(([k,v])=>`<button data-masc="${k}" aria-pressed="${k===cur}">${petIcon(k)}${v.n}</button>`).join('')}</div>`;
+  return PET_GROUPS.map(([g,t])=>{const L=Object.entries(MASCOTS).filter(([k])=>petGroup(k)===g);
+    return L.length?`<div class="pet-grp"><span class="emo-h">${t}</span><div class="pick pets">${L.map(([k,v])=>`<button data-masc="${k}" aria-pressed="${k===cur}">${petIcon(k)}${v.n}</button>`).join('')}</div></div>`:''}).join('');
 }
 /* once after the update (and from settings): choose how the app talks to you, and meet the new companions */
 function openVoicePicker(fromSettings){
@@ -496,7 +610,7 @@ function scene(stage){
       '<text x="104" y="62" font-size="16" style="font-family:var(--emoji)">✨</text><text x="44" y="78" font-size="13" style="font-family:var(--emoji)">✨</text>'
   };
   const mk=MASCOTS[S.settings.mascot]?S.settings.mascot:'plant';
-  const pet=PET_LOOK[mk]?`<g class="pet-bob"><svg x="100" y="94" width="44" height="44" viewBox="0 0 100 100">${petSVG(mk).replace(/^<svg[^>]*>|<\/svg>$/g,'')}</svg></g>`:mk!=='plant'?`<text x="116" y="136" font-size="22" style="font-family:var(--emoji)">${MASCOTS[mk].e}</text>`:'';
+  const pet=hasArt(mk)?`<g class="pet-bob"><svg x="100" y="94" width="44" height="44" viewBox="0 0 100 100">${petSVG(mk).replace(/^<svg[^>]*>|<\/svg>$/g,'')}</svg></g>`:mk!=='plant'?`<text x="116" y="136" font-size="22" style="font-family:var(--emoji)">${MASCOTS[mk].e}</text>`:'';
   return `<svg class="scene" viewBox="0 0 320 150" preserveAspectRatio="xMinYMax slice" aria-hidden="true">
     <defs><linearGradient id="skyg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="sky1"/><stop offset="1" class="sky2"/></linearGradient></defs>
     <rect width="320" height="150" fill="url(#skyg)"/>
@@ -987,7 +1101,8 @@ function applyLook(size){
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>applyLook());
 
 /* what's new, once per version */
-const WHATS_NEW={v:'7.0',items:[
+const WHATS_NEW={v:'7.1',items:[
+  ['🐾','עשרות חברים חדשים ללוות אותך','חתלתולה, ארנבונת, דובון, פנדה, חד-קרן, דרקון קטן, פינגווין, תמנון ועוד הרבה. כולם רכים וזוהרים, {בחר|בחרי} מי ילווה אותך.','pets','7.1'],
   ['🫧','פינת הרגעה','נשימה מונחית עם הדמות שלך, תרגיל קרקוע 5-4-3-2-1 וצליל רך. נמצאת ליד כפתור "יום קשה".','calm'],
   ['💌','המאמן פונה ראשון','הודעת בוקר אישית בכל בוקר, ותזכורת "חשבנו עליך" אם לא נכנסים כמה ימים.','morning'],
   ['🔍','מכתב השבוע','פעם בשבוע מכתב חם עם דפוסים שהאפליקציה שמה לב אליהם, למשל מה משפר לך את מצב הרוח.','insight'],
@@ -999,11 +1114,11 @@ function maybeWhatsNew(){
   if(!S.onboarded)return;
   if(S.seenNew===WHATS_NEW.v)return;
   if(!S.settings.voice){openVoicePicker(false);return}
-  S.seenNew=WHATS_NEW.v;save();
+  const prevSeen=S.seenNew;S.seenNew=WHATS_NEW.v;save();
   const app=!!window.TsaadApp,hasW=app&&!!TsaadApp.setWidget;
-  const tryBtn=k=>k==='widget'?(hasW?'<span class="hint" style="margin:0">לחיצה ארוכה על מסך הבית ← ווידג׳טים ← צעד קטן</span>':app?'<span class="hint" style="margin:0">צריך לעדכן את האפליקציה (יש כפתור "לעדכן" למעלה)</span>':''):`<button class="btn small ghost" data-try="${k}">לנסות</button>`;
-  openSheet(`<div class="wn-hero"><div class="wn-pet">${petIcon(S.settings.mascot)}</div><h2 id="sheet-title">🎁 צעד קטן 7.0</h2><p>${G('הרבה דברים חדשים מחכים לך'+(S.settings.name?', '+esc(S.settings.name):'')+'. הנה מה שהגיע:')}</p></div>
-    <div class="wn-list">${WHATS_NEW.items.filter(x=>x[3]!=='widget'||/Android/i.test(navigator.userAgent)).map(([e,t,d,k])=>`<div class="wn-it"><span class="wn-e e">${e}</span><div><b>${t}</b><p>${G(d)}</p>${tryBtn(k)}</div></div>`).join('')}</div>
+  const tryBtn=k=>k==='pets'?`<button class="btn small" data-try="pets">🐾 לבחור חבר</button>`:k==='widget'?(hasW?'<span class="hint" style="margin:0">לחיצה ארוכה על מסך הבית ← ווידג׳טים ← צעד קטן</span>':app?'<span class="hint" style="margin:0">צריך לעדכן את האפליקציה (יש כפתור "לעדכן" למעלה)</span>':''):`<button class="btn small ghost" data-try="${k}">לנסות</button>`;
+  openSheet(`<div class="wn-hero"><div class="wn-pet">${petIcon(S.settings.mascot)}</div><h2 id="sheet-title">🎁 צעד קטן ${WHATS_NEW.v}</h2><p>${G('הרבה דברים חדשים מחכים לך'+(S.settings.name?', '+esc(S.settings.name):'')+'. הנה מה שהגיע:')}</p></div>
+    <div class="wn-list">${WHATS_NEW.items.filter(x=>(x[3]!=='widget'||/Android/i.test(navigator.userAgent))&&(prevSeen!=='7.0'||x[4]==='7.1')).map(([e,t,d,k])=>`<div class="wn-it"><span class="wn-e e">${e}</span><div><b>${t}</b><p>${G(d)}</p>${tryBtn(k)}</div></div>`).join('')}</div>
     <button class="btn wide" data-act="sheet-close">יופי, תודה 💛</button>`);
   $('sheet').querySelectorAll('[data-try]').forEach(b=>b.onclick=()=>{const f=NEW_TRY[b.dataset.try];closeSheet();f&&setTimeout(f,120)});
 }
@@ -1052,7 +1167,7 @@ function openSettings(){
     <div class="setrow"><label for="set-name">📛 השם שלך</label><input id="set-name" value="${esc(S.settings.name)}" style="max-width:150px"></div>
     <div class="setrow"><span>🗣️ איך לפנות אליך</span><div class="seg"><button data-addr="m" aria-pressed="${S.settings.address==='m'}">אתה</button><button data-addr="f" aria-pressed="${S.settings.address==='f'}">את</button></div></div>
     <div class="setrow"><span>💬 איך האפליקציה מדברת אליי</span><button class="btn small ghost" id="set-voice">${voice().e} ${voice().n}</button></div>
-    <div class="fieldcol" style="padding-block:10px">🧸 מי מלווה אותך<div class="pick pets">${Object.entries(MASCOTS).map(([k,v])=>`<button data-masc="${k}" aria-pressed="${k===S.settings.mascot}">${petIcon(k)}${v.n}</button>`).join('')}</div></div>
+    <div class="setrow"><span>🧸 מי מלווה אותך</span><button class="btn small ghost pet-cur" id="set-pet">${petIcon(S.settings.mascot)} ${esc((MASCOTS[S.settings.mascot]||MASCOTS.plant).n.split(',')[0])}</button></div>
     ${sw('faith','🕯️ משפטים מהמקורות')}
     <h3>🎨 מראה</h3>
     <div class="setrow"><span>🌗 תצוגה</span><div class="seg" id="set-theme">${[['light','☀️ בהיר'],['dark','🌙 כהה'],['system','📱 כמו בטלפון']].map(([k,l])=>`<button data-th="${k}" aria-pressed="${(S.settings.theme||'system')===k}">${l}</button>`).join('')}</div></div>
@@ -1104,6 +1219,7 @@ function openSettings(){
   $('whatsnew').onclick=()=>{S.seenNew='x';maybeWhatsNew()};
   $('rewiz').onclick=()=>{closeSheet();openWizard()};
   $('set-voice').onclick=()=>{closeSheet();openVoicePicker(true)};
+  $('set-pet').onclick=()=>{closeSheet();openPetPicker()};
   $('reset').onclick=()=>{if(!armed){armed=true;$('reset').textContent='בטוח? ללחוץ שוב';return}
     const st=S.settings,old=S;S={v:3,tasks:{},goals:[],moods:{},journal:[],hard:{},seeded:false,onboarded:true,seenNew:old.seenNew,colorIx:0,lastOpen:T,lastSeen:T,carryNote:null,injectSkip:{},reviewed:{},askNext:{},daily:[],settings:st,del:old.del||{}};
     Object.values(old.tasks).forEach(L=>L.forEach(x=>tomb(x.id)));old.goals.forEach(x=>tomb(x.id));old.journal.forEach(x=>tomb(x.id));
@@ -1135,6 +1251,7 @@ window.TK={
     S.goals.unshift(g);inject();save();renderAll()},
   tab:()=>curTab,
   save:()=>save(), addJournal:(type,text)=>{addJournal(type,text);save();renderAll()}, celebrate:(el,msg,big)=>celebrate(el||document.querySelector('.garden'),msg,big),
+  mascotEmoji:()=>(MASCOTS[S.settings.mascot]||MASCOTS.plant).e,
   isDistress, helpHTML:()=>helpCard(), openCalm:t=>openCalm(t), T:()=>T, MOODS, JOYS, goodDay:k=>goodDay(k),
   setAccent(a){S.settings.accent=a;save();applyLook()},
 };

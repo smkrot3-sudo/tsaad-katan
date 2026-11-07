@@ -12,7 +12,7 @@ const conf=()=>{const S=TK.get();return S.buddies||(S.buddies={})};
 let links=null,missing=false;
 
 function snapshot(c){
-  const S=TK.get(),st=S.settings,T=TK.T(),out={name:st.name||'',address:st.address||'m',pet:st.mascot||'plant',at:Date.now()};
+  const S=TK.get(),st=S.settings,T=TK.T(),out={name:st.name||'',address:st.address||'m',pet:st.mascot||'plant',petE:(TK.mascotEmoji?TK.mascotEmoji():''),at:Date.now()};
   if(c.day){const L=S.tasks[T]||[];out.today={done:L.filter(t=>t.done).length,total:L.length};
     out.week=Array.from({length:7},(_,i)=>{const d=new Date();d.setDate(d.getDate()-6+i);const k=ymd(d);const x={d:k,c:(S.tasks[k]||[]).filter(t=>t.done).length};if(c.mood&&S.moods[k]!=null)x.m=S.moods[k];return x});
     out.good30=Array.from({length:30},(_,i)=>{const d=new Date();d.setDate(d.getDate()-i);return ymd(d)}).filter(k=>TK.goodDay(k)).length}

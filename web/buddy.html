@@ -65,7 +65,7 @@ rpc('buddy_view',{p_token:token}).then(r=>r.json()).then(d=>{
 function render(s,upd){
   const f=s.address==='f',G=(m,w)=>f?w:m,name=s.name||G('החבר שלך','החברה שלך');
   const ago=upd?Math.round((Date.now()-Date.parse(upd))/36e5):null;
-  let h=`<div class="card hero"><div class="pet">${PETS[s.pet]||'🌱'}</div><h1>${esc(name)} בדרך ${G('שלו','שלה')} 🌱</h1>
+  let h=`<div class="card hero"><div class="pet">${esc(s.petE||PETS[s.pet]||'🌱')}</div><h1>${esc(name)} בדרך ${G('שלו','שלה')} 🌱</h1>
     <p>${G('הוא בחר','היא בחרה')} לשתף אותך בצעדים הקטנים. כל לב ממך ${G('מגיע אליו','מגיע אליה')} כהפתעה קטנה.</p>
     ${ago!=null?`<span class="mut">עודכן ${ago<1?'ממש עכשיו':ago<24?'לפני '+ago+' שעות':'לפני '+Math.round(ago/24)+' ימים'}</span>`:''}</div>`;
   if(s.today||s.mood!=null){
