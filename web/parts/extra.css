@@ -230,3 +230,11 @@
 .cheer-pop .big{font-size:4rem;animation:petbob 2.4s ease-in-out infinite}
 .cheer-pop .msg{background:var(--joy1);color:var(--joy-ink);border-radius:16px;padding:14px;font-size:1.1rem;white-space:pre-wrap;align-self:stretch}
 .sheet .big-e{font-size:3rem;font-family:var(--emoji);display:flex;justify-content:center;line-height:1.1}.sheet .big-e .pet-svg{width:90px;height:90px;animation:petbob 3.2s ease-in-out infinite}
+/* 7.1 companions gallery */
+.pet-grp{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.pick.pets{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
+.pick.pets button{padding:10px 4px;font-size:.82rem;line-height:1.25;text-align:center}
+.pet-prev{position:sticky;top:-18px;z-index:2;background:var(--surface);display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0 10px;border-bottom:1px solid var(--line)}
+.pp-art{width:96px;height:96px;display:grid;place-items:center;font-size:3.6rem}.pp-art .pet-svg{width:96px;height:96px;animation:petbob 3.2s ease-in-out infinite}
+.pet-save{position:sticky;bottom:0;margin-top:12px;box-shadow:0 -6px 16px var(--bg)}
+.pet-cur{display:flex;align-items:center;gap:6px}.pet-cur .pet-svg{width:28px;height:28px}.pet-cur .e{font-size:1.2rem}
