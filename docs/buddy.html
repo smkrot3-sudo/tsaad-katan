@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>חבר לדרך · צעד קטן</title>
+<meta name="robots" content="noindex">
+<meta property="og:title" content="חבר לדרך · צעד קטן"><meta property="og:description" content="מישהו קרוב שיתף איתך את הדרך שלו 🌱"><meta property="og:image" content="https://smkrot3-sudo.github.io/tsaad-katan/icons/icon-512.png">
+<link rel="icon" href="icons/icon-192.png">
+<style>
+@font-face{font-family:"Varela Round";src:url(fonts/varela-round-hebrew-400-normal.woff2) format("woff2");unicode-range:U+0590-05FF,U+200C-2010,U+20AA,U+25CC,U+FB1D-FB4F;font-display:swap}
+@font-face{font-family:"Varela Round";src:url(fonts/varela-round-latin-400-normal.woff2) format("woff2");font-display:swap}
+@font-face{font-family:"Suez One";src:url(fonts/suez-one-hebrew-400-normal.woff2) format("woff2");unicode-range:U+0590-05FF,U+200C-2010,U+20AA,U+25CC,U+FB1D-FB4F;font-display:swap}
+:root{--bg:#FFF7EF;--surface:#fff;--soft:#FFEFE0;--fg:#3B2F4A;--muted:#7D708A;--line:#F2E2D2;--accent:#FF7F50;--accent-ink:#fff;--joy1:#FFE27A;--joy2:#B4ECD6;--joy3:#BFE0FF;--joy4:#FFC6DC;--joy5:#DCCBFF;--joy-ink:#3B2F4A;--ok:#3FB58F;
+  --shadow:0 6px 18px rgba(255,127,80,.12),0 1px 3px rgba(59,47,74,.06);--emoji:"Noto Color Emoji","Apple Color Emoji","Segoe UI Emoji",sans-serif}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#1D1A26;--surface:#282434;--soft:#332E42;--fg:#F4EEF8;--muted:#B5A9C2;--line:#3B3550;--accent:#FF9A73;--accent-ink:#2A1A14;--joy1:#6E5B1C;--joy2:#1F5845;--joy3:#24486F;--joy4:#6C2F4A;--joy5:#4A3A78;--joy-ink:#FFF8F2;--ok:#5DD3AA;--shadow:0 6px 18px rgba(0,0,0,.25);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1D1A26;--surface:#282434;--soft:#332E42;--fg:#F4EEF8;--muted:#B5A9C2;--line:#3B3550;--accent:#FF9A73;--accent-ink:#2A1A14;--joy1:#6E5B1C;--joy2:#1F5845;--joy3:#24486F;--joy4:#6C2F4A;--joy5:#4A3A78;--joy-ink:#FFF8F2;--ok:#5DD3AA;color-scheme:dark}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Varela Round",system-ui,Arial,sans-serif;line-height:1.55}
+.wrap{max-width:520px;margin:0 auto;padding:18px 16px 40px;display:flex;flex-direction:column;gap:14px}
+h1,h2{font-family:"Suez One","Varela Round",sans-serif;font-weight:400;margin:0;line-height:1.25}
+h1{font-size:1.5rem}h2{font-size:1.1rem}p{margin:0}
+.e{font-family:var(--emoji);font-style:normal}
+.card{background:var(--surface);border-radius:20px;box-shadow:var(--shadow);padding:16px;display:flex;flex-direction:column;gap:10px}
+.hero{text-align:center;align-items:center;background:linear-gradient(160deg,var(--joy3),var(--joy5));color:var(--joy-ink)}
+.hero .pet{font-size:3.4rem;font-family:var(--emoji);animation:bob 3s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-4px)}}
+.mut{color:var(--muted);font-size:.9rem}
+.big{font-family:"Suez One",sans-serif;font-size:2.1rem;color:var(--accent);line-height:1}
+.row{display:flex;gap:10px}.row>div{flex:1;background:var(--soft);border-radius:14px;padding:10px;text-align:center}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;font-size:.8rem;color:var(--muted)}
+.week .dot{display:block;font-size:1.3rem;font-family:var(--emoji);margin-bottom:2px}
+.goal{display:flex;flex-direction:column;gap:4px}
+.bar{height:10px;border-radius:99px;background:var(--soft);overflow:hidden}.bar span{display:block;height:100%;background:var(--ok);border-radius:99px}
+.emos{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.emos button{font-family:var(--emoji);font-size:1.9rem;width:58px;height:58px;border-radius:50%;border:2px solid var(--line);background:var(--surface);cursor:pointer;transition:transform .15s}
+.emos button[aria-pressed="true"]{border-color:var(--accent);background:var(--soft);transform:scale(1.1)}
+textarea,input{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:10px 12px;width:100%}
+textarea{min-height:80px;resize:vertical}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chips button{font:inherit;font-size:.85rem;border:1px solid var(--line);background:var(--soft);color:var(--fg);border-radius:99px;padding:4px 10px;cursor:pointer}
+.btn{font:inherit;border:0;border-radius:99px;padding:12px 18px;background:var(--accent);color:var(--accent-ink);font-size:1rem;cursor:pointer}
+.btn:disabled{opacity:.6}
+.thanks{text-align:center;align-items:center}
+.foot{text-align:center;font-size:.85rem;color:var(--muted)}.foot a{color:inherit}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"><div class="card" style="text-align:center"><span class="mut">טוען... 🌱</span></div></div>
+<script>
+(function(){
+const SB='https://jgqlwuvmwbsgrcqddeyw.supabase.co',KEY='sb_publishable_0LbF_Fxj9W3RbHVri_VFHQ_FCG_GQJy';
+const token=(location.hash||'').slice(1).trim();
+const app=document.getElementById('app');
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const PETS={leafy:'🍃',puff:'☁️',bloom:'🌸',sunny:'🌟',plant:'🌱',cat:'🐱',bear:'🧸',bunny:'🐰'};
+const MOODS=[['😔','קשה'],['😕','לא משהו'],['🙂','בסדר'],['😊','טוב'],['😄','מצוין']];
+const rpc=(fn,body)=>fetch(SB+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});
+const fail=t=>{app.innerHTML=`<div class="card hero"><div class="pet">🌱</div><h1>חבר לדרך</h1><p>${t}</p></div>`};
+if(!/^[0-9a-f-]{36}$/i.test(token)){fail('הקישור לא שלם. כדאי לבקש אותו שוב 💛');return}
+rpc('buddy_view',{p_token:token}).then(r=>r.json()).then(d=>{
+  if(!d||!d.snapshot){fail('הקישור הזה כבר לא פעיל. אולי כדאי לבקש קישור חדש 💛');return}
+  render(d.snapshot,d.updated_at);
+}).catch(()=>fail(navigator.onLine?'משהו לא הסתדר. אפשר לנסות שוב עוד רגע.':'אין חיבור לאינטרנט כרגע.'));
+
+function render(s,upd){
+  const f=s.address==='f',G=(m,w)=>f?w:m,name=s.name||G('החבר שלך','החברה שלך');
+  const ago=upd?Math.round((Date.now()-Date.parse(upd))/36e5):null;
+  let h=`<div class="card hero"><div class="pet">${PETS[s.pet]||'🌱'}</div><h1>${esc(name)} בדרך ${G('שלו','שלה')} 🌱</h1>
+    <p>${G('הוא בחר','היא בחרה')} לשתף אותך בצעדים הקטנים. כל לב ממך ${G('מגיע אליו','מגיע אליה')} כהפתעה קטנה.</p>
+    ${ago!=null?`<span class="mut">עודכן ${ago<1?'ממש עכשיו':ago<24?'לפני '+ago+' שעות':'לפני '+Math.round(ago/24)+' ימים'}</span>`:''}</div>`;
+  if(s.today||s.mood!=null){
+    h+=`<div class="card"><h2>☀️ היום</h2><div class="row">${s.today?`<div><div class="big">${s.today.done}</div><span class="mut">${s.today.total?'מתוך '+s.today.total+' דברים':'דברים'}</span></div>`:''}${s.mood!=null?`<div><div class="big e" style="font-size:2rem">${MOODS[s.mood][0]}</div><span class="mut">${G('מרגיש','מרגישה')}: ${MOODS[s.mood][1]}</span></div>`:''}</div>
+      ${s.week?`<div class="week">${s.week.map((x,i)=>`<div><span class="dot">${x.m!=null?MOODS[x.m][0]:x.c?(x.c>=3?'🌻':'🌼'):'·'}</span>${i===6?'היום':['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','ש׳'][new Date(x.d+'T12:00').getDay()]}</div>`).join('')}</div>`:''}
+      ${s.good30?`<p class="mut" style="text-align:center">☀️ ${s.good30} ימים טובים בחודש האחרון</p>`:''}</div>`;
+  }
+  if(s.goals&&s.goals.length)h+=`<div class="card"><h2>🎯 המטרות ${G('שלו','שלה')}</h2>${s.goals.map(g=>`<div class="goal"><div>${esc(g.e)} <b>${esc(g.t)}</b>${g.won?' · 🏆 הושגה!':''}</div><div class="bar"><span style="width:${g.total?Math.round(g.got/g.total*100):0}%"></span></div><span class="mut">${g.got} מתוך ${g.total} צעדים</span></div>`).join('')}</div>`;
+  let me='';try{me=localStorage.getItem('tk-buddy-name')||''}catch(e){}
+  h+=`<div class="card" id="cheer"><h2>💌 לשלוח ${G('לו','לה')} עידוד</h2>
+    <div class="emos">${['💛','🌟','💪','🤗','🌸','🔥'].map((e,i)=>`<button data-e="${e}" aria-pressed="${i===0}">${e}</button>`).join('')}</div>
+    <div class="chips">${['גאה בך!','אני איתך 💛','צעד קטן זה עדיין צעד','חושב/ת עליך','איזה יופי של התקדמות'].map(t=>`<button data-t="${esc(t)}">${esc(t)}</button>`).join('')}</div>
+    <textarea id="msg" maxlength="280" placeholder="מילה טובה (רשות)"></textarea>
+    <input id="from" maxlength="40" placeholder="השם שלך, כדי ${G('שידע','שתדע')} ממי" value="${esc(me)}">
+    <button class="btn" id="send">לשלוח 💌</button></div>
+    <p class="foot">🌱 <a href="./" target="_blank" rel="noopener">צעד קטן</a> · כל צעד נחשב</p>`;
+  app.innerHTML=h;
+  let emo='💛';
+  app.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{emo=b.dataset.e;app.querySelectorAll('[data-e]').forEach(x=>x.setAttribute('aria-pressed',x===b))});
+  app.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{const m=document.getElementById('msg');m.value=(m.value?m.value+' ':'')+b.dataset.t});
+  document.getElementById('send').onclick=async()=>{
+    const btn=document.getElementById('send'),from=document.getElementById('from').value.trim(),body=document.getElementById('msg').value.trim();
+    btn.disabled=true;try{localStorage.setItem('tk-buddy-name',from)}catch(e){}
+    try{const r=await rpc('buddy_cheer',{p_token:token,p_from:from,p_emoji:emo,p_body:body});const ok=await r.json();
+      if(ok===true){document.getElementById('cheer').outerHTML=`<div class="card thanks"><div style="font-size:3rem" class="e">${emo}</div><h2>נשלח! 💛</h2><p>${esc(name)} ${G('יראה','תראה')} את זה בפעם הבאה ${G('שיפתח','שתפתח')} את האפליקציה.</p><button class="btn" onclick="location.reload()">לשלוח עוד</button></div>`;return}
+      btn.disabled=false;btn.textContent='היום כבר נשלחו הרבה. אפשר לנסות מחר 💛';
+    }catch(e){btn.disabled=false;btn.textContent='לא נשלח. לנסות שוב'}
+  };
+}
+})();
+</script>
+</body>
+</html>

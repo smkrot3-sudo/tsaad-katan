@@ -44,6 +44,16 @@ async function reschedule(){
     if(st.noon!==false){const t=at(12,30);if(t>now&&!quiet(t))list.push({id:100+i,at:t,title:'צעד קטן',body:G(NOON[(d.getDate()+i)%NOON.length])})}
     const eh=st.eveningHour||19;const t2=at(eh,0);if(t2>now&&!quiet(t2))list.push({id:200+i,at:t2,title:'צעד קטן',body:G(EVE[d.getDate()%EVE.length])});
   }
+  // morning note: today's small step (the app writes a fuller note inside)
+  const T0=ymd(new Date()),L0=(S.tasks[T0]||[]),step=(L0.find(t=>!t.done&&t.auto)||{}).text||((S.goals||[]).map(g=>!g.achievedAt&&(g.steps||[]).find(x=>!x.done)).find(Boolean)||{}).text;
+  const name=st.name?' '+st.name:'';
+  const MORN=['☀️ בוקר טוב'+name+'. אין לחץ, רק צעד קטן אחד','🌱 בוקר טוב'+name+'. מה הדבר הכי קטן שאפשר היום?','💛 בוקר טוב'+name+'. {אתה|את} לא {צריך|צריכה} להספיק הכל','🌤️ בוקר טוב'+name+'. יום חדש, דף חדש'];
+  if(st.morning!==false)for(let i=0;i<7;i++){const d=new Date();d.setDate(d.getDate()+i);d.setHours(9,15,0,0);const t=+d;
+    if(t>now&&!quiet(t))list.push({id:500+i,at:t,title:'💌 הודעת בוקר',body:G(i<=1&&step?'☀️ בוקר טוב'+name+'. הצעד הקטן של היום: '+step:MORN[(d.getDate()+i)%MORN.length])})}
+  // "we thought of you": these are pushed forward on every visit, so they only arrive after a few days away
+  if(st.missYou!==false){const away=(days,id,title,body)=>{let t=new Date();t.setDate(t.getDate()+days);t.setHours(12,0,0,0);t=+t;let n=0;while(quiet(t)&&n++<8)t+=36e5*3;list.push({id,at:t,title,body:G(body)})};
+    away(3,400,'חשבנו עליך 💛','אין מה להשלים ואין מה להסביר. אפשר לחזור מתי {שתרצה|שתרצי}, אפילו רק לסמן איך {אתה מרגיש|את מרגישה} 🌱');
+    away(7,401,'עדיין כאן בשבילך 🤗','הגינה שלך מחכה, בלי שום לחץ. צעד אחד קטן מספיק כדי להתחיל מחדש.')}
   w.forEach(([a],i)=>{const t=a-36e5;if(t>now&&new Date(a).getDay()===5)list.push({id:300+i,at:t,title:'שבת שלום 🕯️',body:G('עוד מעט שבת. כל מה {שעשית|שעשית} השבוע נחשב. מגיע לך לנוח 💛')})});
   try{app.schedule(JSON.stringify(list))}catch(e){}
 }

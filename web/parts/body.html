@@ -28,7 +28,7 @@
       <div class="moods" id="moods" role="group" aria-label="בחירת מצב רוח"></div>
     </section>
     <section class="qod" id="quote-box" aria-label="משפטי מוטיבציה, אפשר להחליק או ללחוץ למשפט הבא"><button class="qarrow" id="q-prev" aria-label="המשפט הקודם">›</button><div class="qtext"><p id="quote" aria-live="polite"></p><span class="who" id="quote-who"></span></div><button class="qarrow" id="q-next" aria-label="המשפט הבא">‹</button></section>
-    <button class="hardbtn" data-act="hardday" id="hardbtn" aria-pressed="false"></button>
+    <div class="hardrow"><button class="hardbtn" data-act="hardday" id="hardbtn" aria-pressed="false"></button><button class="calmbtn" data-act="calm" aria-label="פינת הרגעה"><span class="e">🫧</span> רגע של רוגע</button></div>
     <div id="banners" style="display:flex;flex-direction:column;gap:12px"></div>
     <form class="addbox" id="add-task">
       <div class="add">
@@ -93,6 +93,12 @@
   <!-- PROGRESS + JOURNAL -->
   <main class="view" id="v-progress" hidden>
     <h2><span class="e">🌷</span> הדרך שעשית</h2>
+    <section class="garden-big" id="garden-big" aria-label="הגינה שלי"></section>
+    <div class="tools">
+      <button class="tool" data-act="insight"><span class="e">🔍</span><b>מכתב השבוע</b><small>מה שמתי לב אליו</small></button>
+      <button class="tool" data-act="buddy"><span class="e">🤝</span><b>חבר לדרך</b><small>לשתף מישהו קרוב</small></button>
+      <button class="tool" data-act="report"><span class="e">📄</span><b>סיכום למטפל</b><small>PDF או וואטסאפ</small></button>
+    </div>
     <div class="stats">
       <div class="stat" style="background:var(--joy2)"><span class="se e">✅</span><div class="n" id="st-week">0</div><div class="l">דברים שעשית השבוע</div></div>
       <div class="stat" style="background:var(--joy3)"><span class="se e">🌱</span><div class="n" id="st-steps">0</div><div class="l">צעדים קטנים למטרות</div></div>
