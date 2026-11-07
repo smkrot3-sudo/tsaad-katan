@@ -295,12 +295,12 @@ function cuteSVG(p,id){
   const glow=p.glow?`<circle cx="50" cy="60" r="44" fill="${p.glow}" opacity=".35"/>`:'';
   return `<svg class="pet-svg" viewBox="0 0 100 100" aria-hidden="true"><defs>
     <radialGradient id="${id}b" cx=".38" cy=".3" r=".85"><stop offset="0" stop-color="${p.c1}"/><stop offset=".62" stop-color="${p.c2}"/><stop offset="1" stop-color="${p.c3}"/></radialGradient></defs>
-    ${glow}<ellipse cx="50" cy="96" rx="27" ry="3.5" fill="#000" opacity=".12"/>${wings}${tails}${ears}${body}${shine}${patch}${eyes}${blush}${nose}${mouth}${tops}</svg>`;
+    ${glow}<ellipse cx="50" cy="96" rx="27" ry="3.5" fill="#000" opacity=".12"/>${wings}${tails}${ears}${body}${shine}${patch}<g class="pe">${eyes}</g>${blush}${nose}${mouth}${tops}</svg>`;
 }
 function petSVG(k){
   if(PETS2[k])return cuteSVG(PETS2[k],'pt'+(++petN));
   const p=PET_LOOK[k];if(!p)return '';const id='pt'+(++petN);
-  const eyes=`<g><ellipse cx="38" cy="54" rx="9" ry="10.5" fill="${p.eye}"/><ellipse cx="62" cy="54" rx="9" ry="10.5" fill="${p.eye}"/>
+  const eyes=`<g class="pe"><ellipse cx="38" cy="54" rx="9" ry="10.5" fill="${p.eye}"/><ellipse cx="62" cy="54" rx="9" ry="10.5" fill="${p.eye}"/>
     <ellipse cx="38" cy="57" rx="6" ry="5" fill="${p.c3}" opacity=".55"/><ellipse cx="62" cy="57" rx="6" ry="5" fill="${p.c3}" opacity=".55"/>
     <circle cx="35" cy="50" r="3.2" fill="#fff"/><circle cx="59" cy="50" r="3.2" fill="#fff"/><circle cx="41" cy="58" r="1.4" fill="#fff"/><circle cx="65" cy="58" r="1.4" fill="#fff"/></g>
     <ellipse cx="27" cy="66" rx="6" ry="3.6" fill="#FF8FA3" opacity=".55"/><ellipse cx="73" cy="66" rx="6" ry="3.6" fill="#FF8FA3" opacity=".55"/>`;
@@ -465,7 +465,7 @@ function sample(){
     {id:uid(),date:D(-2),type:'thanks',text:'על השמש בבוקר',sample:true,at:now-864e5*2},
     {id:uid(),date:D(-3),type:'letter',text:'אם קשה לך עכשיו, תזכור את היום הזה: יצאת, דיברת, צחקת. זה עוד יחזור. 💛',sample:true,at:now-864e5*3}];
   return {v:3,tasks,goals:[g1,g2],moods,journal,hard:{},seeded:true,onboarded:false,colorIx:0,lastOpen:T,lastSeen:T,carryNote:{date:T,n:1},injectSkip:{},reviewed:{},askNext:{},
-    settings:{sound:false,confetti:true,address:'m',name:'',faith:false,mascot:'plant',eveningHour:19,noon:true}};
+    settings:{sound:false,confetti:true,address:'m',name:'',faith:false,mascot:'plant',eveningHour:19,noon:true,splash:true,seasons:true}};
 }
 
 let S=null;
@@ -474,7 +474,7 @@ if(!S||!S.tasks||!S.settings)S=sample();
 /* upgrade older saves */
 if(S.v!==3){
   S.v=3;S.moods=S.moods||{};S.journal=S.journal||[];S.hard=S.hard||{};S.askNext=S.askNext||{};S.onboarded=false;
-  S.settings=Object.assign({sound:false,confetti:true,address:'m',name:'',faith:false,mascot:'plant',eveningHour:19,noon:true},S.settings);
+  S.settings=Object.assign({sound:false,confetti:true,address:'m',name:'',faith:false,mascot:'plant',eveningHour:19,noon:true,splash:true,seasons:true},S.settings);
   Object.values(S.tasks).forEach(L=>L.forEach(t=>{if(!t.energy)t.energy=t.auto?'light':'mid'}));
   S.goals.forEach(g=>g.steps.forEach(s=>{delete s.days}));
 }
@@ -528,16 +528,19 @@ rollover();inject();save();
 
 /* ---------- celebration ---------- */
 let actx;
-function chime(){
+// a soft little bell: a few overtones that fade slowly (two bells for a big moment)
+function chime(big){
   if(!S.settings.sound)return;
-  try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();const t0=actx.currentTime;
-    [784,988,1319].forEach((f,i)=>{const o=actx.createOscillator(),g=actx.createGain(),s=t0+i*.09;
-      o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0,s);g.gain.linearRampToValueAtTime(.16,s+.02);g.gain.exponentialRampToValueAtTime(.001,s+.55);
-      o.connect(g);g.connect(actx.destination);o.start(s);o.stop(s+.6)})}catch(e){}
+  try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();if(actx.state==='suspended')actx.resume();const t0=actx.currentTime;
+    const bell=(f,s,v)=>[[1,1],[2.76,.32],[5.4,.12],[1.5,.18]].forEach(([m,a])=>{const o=actx.createOscillator(),g=actx.createGain();
+      o.type='sine';o.frequency.value=f*m;g.gain.setValueAtTime(0,s);g.gain.linearRampToValueAtTime(v*a,s+.008);g.gain.exponentialRampToValueAtTime(.0005,s+(m===1?1.6:.7));
+      o.connect(g);g.connect(actx.destination);o.start(s);o.stop(s+1.7)});
+    bell(1046.5,t0,.13);if(big){bell(1318.5,t0+.16,.1);bell(1568,t0+.32,.09)}}catch(e){}
 }
-const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const reduceOS=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const noMotion=()=>reduceOS||!!S.settings.still;
 function confetti(el,big){
-  if(reduce||!S.settings.confetti||!el)return;const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
+  if(noMotion()||!S.settings.confetti||!el)return;const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
   const c=$('confetti'),ctx=c.getContext('2d'),dpr=window.devicePixelRatio||1;c.width=innerWidth*dpr;c.height=innerHeight*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
   const cs=getComputedStyle(document.documentElement);const cols=['--joy1','--joy2','--joy3','--joy4','--joy5','--accent','--ok'].map(v=>cs.getPropertyValue(v).trim());
   const emos=['✨','🌟','💛','🎉','🌸'];
@@ -552,7 +555,7 @@ function toast(msg,undo){$('toast-msg').textContent=G(msg);undoFn=undo||null;$('
 $('toast-undo').onclick=()=>{if(undoFn){undoFn();undoFn=null}$('toast').classList.remove('show')};
 let lastCheer=-1;
 function cheer(){const C=voice().cheers.length&&Math.random()<.7?voice().cheers:CHEERS;let i;do{i=Math.floor(Math.random()*C.length)}while(i===lastCheer&&C.length>1);lastCheer=i;return C[i]}
-function celebrate(el,msg,big){chime();confetti(el,big);toast(msg||cheer());try{navigator.vibrate&&navigator.vibrate(18)}catch(e){}}
+function celebrate(el,msg,big){chime(big);confetti(el,big);leaves(el,big);petJoy();toast(msg||cheer());haptic(big?[14,60,22]:16)}
 
 /* ---------- task + step logic ---------- */
 function setTask(t,v){
@@ -614,13 +617,14 @@ function scene(stage){
   return `<svg class="scene" viewBox="0 0 320 150" preserveAspectRatio="xMinYMax slice" aria-hidden="true">
     <defs><linearGradient id="skyg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="sky1"/><stop offset="1" class="sky2"/></linearGradient></defs>
     <rect width="320" height="150" fill="url(#skyg)"/>
-    <circle class="sunglow" cx="40" cy="34" r="28"/><circle class="sun" cx="40" cy="34" r="17"/>
+    <g class="stars">${[[150,16],[178,40],[232,30],[262,12],[290,44],[112,52],[204,8]].map(([x,y],i)=>`<circle cx="${x}" cy="${y}" r="${i%3?1.1:1.6}" style="animation-delay:${i*.4}s"/>`).join('')}</g>
+    <circle class="sunglow" cx="40" cy="34" r="28"/><circle class="sun" cx="40" cy="34" r="17"/><circle class="mooncut" cx="47" cy="29" r="14"/>
     <g class="cloud drift"><ellipse cx="120" cy="30" rx="22" ry="9"/><ellipse cx="134" cy="24" rx="13" ry="10"/></g>
     <g class="cloud drift2"><ellipse cx="200" cy="18" rx="16" ry="6"/><ellipse cx="210" cy="14" rx="9" ry="7"/></g>
     <path class="hill2" d="M0 116 Q70 94 150 110 T320 102 V150 H0Z"/>
     <path class="hill1" d="M0 130 Q90 112 190 128 T320 122 V150 H0Z"/>
     <ellipse class="soil" cx="80" cy="131" rx="20" ry="5"/>
-    <g class="grow" id="plant-g">${leaves[stage]}</g>${pet}
+    ${sceneExtras()}<g class="grow" id="plant-g">${leaves[stage]}</g>${pet}${sceneFront()}
   </svg>`;
 }
 const POT='<svg viewBox="0 0 120 90" aria-hidden="true"><ellipse cx="60" cy="84" rx="34" ry="4" fill="var(--line)"/><path d="M38 52 H82 L76 82 H44Z" fill="var(--accent)"/><rect x="34" y="46" width="52" height="9" rx="4" fill="var(--accent)"/><path class="stem" d="M60 46 V24"/><ellipse class="leaf" cx="50" cy="30" rx="11" ry="5" transform="rotate(-30 50 30)"/><ellipse class="leaf" cx="70" cy="26" rx="11" ry="5" transform="rotate(30 70 26)"/><circle cx="50" cy="66" r="2" fill="var(--accent-ink)"/><circle cx="70" cy="66" r="2" fill="var(--accent-ink)"/><path d="M54 72 Q60 77 66 72" stroke="var(--accent-ink)" stroke-width="2" fill="none" stroke-linecap="round"/></svg>';
@@ -632,7 +636,7 @@ const X='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="cur
 function renderHeader(){
   const h=new Date().getHours();
   $('hello').textContent=(h<5?'לילה טוב':h<12?'בוקר טוב':h<17?'צהריים טובים':h<21?'ערב טוב':'לילה טוב')+(S.settings.name?' '+S.settings.name:'')+' '+(h<5||h>=21?'🌙':h<12?'☀️':h<17?'🌤️':'🌇');
-  $('today-date').textContent=new Date().toLocaleDateString('he-IL',{weekday:'long',day:'numeric',month:'long'})+' · כל צעד נחשב';
+  $('today-date').textContent=new Date().toLocaleDateString('he-IL',{weekday:'long',day:'numeric',month:'long'})+' · '+G(dayLine());
   $('task-input').placeholder=G('מה {תרצה|תרצי} לעשות היום?');
   showQuote(0);
 }
@@ -646,7 +650,7 @@ function showQuote(step){
   try{localStorage.setItem(KEY+'-quote',qIx)}catch(e){}
   const q=pool[qIx],box=$('quote').parentNode;
   const put=()=>{$('quote').textContent=G(q.t);$('quote-who').textContent=q.w||'';$('quote-who').hidden=!q.w;};
-  if(!step||reduce){put();return}
+  if(!step||noMotion()){put();return}
   box.classList.add('fade');setTimeout(()=>{put();box.classList.remove('fade')},160);
 }
 $('q-next').onclick=e=>{e.stopPropagation();showQuote(1)};
@@ -1087,21 +1091,30 @@ function openLetterRead(){
 
 /* look: theme, accent, text size */
 const ACCENTS={coral:['#FF7F50','#FFE1D3','#FF9A73','#4A3030','🧡'],pink:['#F2709C','#FFDDEA','#FF96BA','#4A2836','🩷'],lavender:['#9B7BEA','#E9E0FF','#B8A0FF','#352B52','💜'],mint:['#2FAE86','#D6F4EA','#5DD3AA','#1F3F35','💚'],sky:['#3C9BE8','#DCEEFF','#7BBEF5','#1F3550','💙'],sun:['#E9A417','#FFF0C7','#F6C64E','#47391A','💛'],gold:['#C8961E','#FBEFC9','#E8C15A','#3F3415','👑']};
-const SIZES=[[1,'רגיל'],[1.12,'גדול'],[1.25,'גדול מאוד']];
-function isDark(){const t=S.settings.theme||'system';return t==='dark'||(t==='system'&&matchMedia('(prefers-color-scheme: dark)').matches)}
+const SIZES=[[1,'רגיל'],[1.12,'גדול'],[1.25,'גדול מאוד'],[1.4,'ענק']];
+function isDark(){const t=S.settings.theme||'system';if(t==='time'){const h=new Date().getHours();return h>=20||h<6}return t==='dark'||(t==='system'&&matchMedia('(prefers-color-scheme: dark)').matches)}
 function applyLook(size){
   const r=document.documentElement,t=S.settings.theme||'system';
-  if(t==='system')r.removeAttribute('data-theme');else r.setAttribute('data-theme',t);
+  if(t==='system')r.removeAttribute('data-theme');else if(t==='time')r.setAttribute('data-theme',isDark()?'dark':'light');else r.setAttribute('data-theme',t);
   const a=ACCENTS[S.settings.accent||'coral'],d=isDark();
+  r.classList.toggle('dk',d);r.dataset.pal=S.settings.palette||'pastel';r.classList.toggle('still',!!S.settings.still);r.classList.toggle('hc',!!S.settings.contrast);
   r.style.setProperty('--accent',d?a[2]:a[0]);r.style.setProperty('--accent-soft',d?a[3]:a[1]);
   r.style.setProperty('--fs',size||S.settings.size||1);
   const h=S.settings.hide||{};['mood','quote','hard'].forEach(k=>r.classList.toggle('hide-'+k,!!h[k]));
-  if(window.TsaadApp&&TsaadApp.setStatusBar)try{TsaadApp.setStatusBar(d?'#1D1A26':'#FFF7EF',!d)}catch(e){}
+  if(window.TsaadApp&&TsaadApp.setStatusBar)try{TsaadApp.setStatusBar(getComputedStyle(r).getPropertyValue('--bg').trim()||(d?'#1D1A26':'#FFF7EF'),!d)}catch(e){}
 }
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>applyLook());
 
 /* what's new, once per version */
-const WHATS_NEW={v:'7.2',items:[
+const WHATS_NEW={v:'7.3',items:[
+  ['🐾','החבר שלך חי!','ממצמץ, נרדם בלילה, קופץ משמחה כשמסמנים משימה, ומחבק ביום קשה. {נסה|נסי} ללחוץ עליו.','petlive','7.3'],
+  ['🌅','שמיים לפי השעה','בבוקר שמיים ורודים, בערב שקיעה, ובלילה ירח וכוכבים. אפשר גם מצב כהה אוטומטי בלילה.','sky','7.3'],
+  ['🎨','ערכות צבעים','פסטל, יער, ים, שקיעה ולילך. בהגדרות, תחת "מראה".','pal','7.3'],
+  ['🔔','פעמון רך ועלים קטנים','סימון משימה קופץ, עלים עפים ממנו, רטט קטן וצליל פעמון עדין (אפשר לכבות).','bell','7.3'],
+  ['🌧️','צלילי רקע לנשימה','בפינת הרגעה: גשם, גלים, אש מתפצפצת וציפורים.','sounds','7.3'],
+  ['🕎','חגים ועונות','קישוטים קטנים בחגים, פריחה באביב, עלים בסתיו וטיפות בחורף.','seasons','7.3'],
+  ['🖼️','כרטיסי רגע יפה','כל משפט אפשר להפוך לכרטיס מעוצב, לשמור או לשלוח למישהו.','card','7.3'],
+  ['🔠','נוח לעיניים','טקסט ענק, מצב "פחות תנועה" וניגודיות גבוהה, בהגדרות.','access','7.3'],
   ['📲','לבקש תמיכה בלחיצה','בפינת הרגעה יש עכשיו "אנשים שלי": שומרים אנשים קרובים, וביום קשה שולחים להם הודעה בוואטסאפ בלחיצה אחת.','sos','7.2'],
   ['🐾','עשרות חברים חדשים ללוות אותך','חתלתולה, ארנבונת, דובון, פנדה, חד-קרן, דרקון קטן, פינגווין, תמנון ועוד הרבה. כולם רכים וזוהרים, {בחר|בחרי} מי ילווה אותך.','pets','7.1'],
   ['🫧','פינת הרגעה','נשימה מונחית עם הדמות שלך, תרגיל קרקוע 5-4-3-2-1 וצליל רך. נמצאת ליד כפתור "יום קשה".','calm'],
@@ -1171,11 +1184,16 @@ function openSettings(){
     <div class="setrow"><span>🧸 מי מלווה אותך</span><button class="btn small ghost pet-cur" id="set-pet">${petIcon(S.settings.mascot)} ${esc((MASCOTS[S.settings.mascot]||MASCOTS.plant).n.split(',')[0])}</button></div>
     ${sw('faith','🕯️ משפטים מהמקורות')}
     <h3>🎨 מראה</h3>
-    <div class="setrow"><span>🌗 תצוגה</span><div class="seg" id="set-theme">${[['light','☀️ בהיר'],['dark','🌙 כהה'],['system','📱 כמו בטלפון']].map(([k,l])=>`<button data-th="${k}" aria-pressed="${(S.settings.theme||'system')===k}">${l}</button>`).join('')}</div></div>
+    <div class="setrow"><span>🌗 תצוגה</span><div class="seg" id="set-theme">${[['light','☀️ בהיר'],['dark','🌙 כהה'],['time','🕰️ לפי השעה'],['system','📱 כמו בטלפון']].map(([k,l])=>`<button data-th="${k}" aria-pressed="${(S.settings.theme||'system')===k}">${l}</button>`).join('')}</div></div>
+    <div class="setrow col"><span>🎨 ערכת צבעים</span><div class="pals" id="set-pal">${Object.entries(PALETTES).map(([k,v])=>`<button data-pal="${k}" aria-pressed="${(S.settings.palette||'pastel')===k}"><i style="background:linear-gradient(135deg,${v.sw.join(',')})"></i>${v.n}</button>`).join('')}</div></div>
     <div class="setrow"><span>🖍️ צבע מועדף</span><div class="swatches" id="set-accent">${Object.entries(ACCENTS).filter(([k])=>k!=='gold'||document.documentElement.classList.contains('vip')).map(([k,a])=>`<button data-ac="${k}" aria-pressed="${(S.settings.accent||'coral')===k}" style="background:${a[0]}" aria-label="צבע ${a[4]}"></button>`).join('')}</div></div>
     <div class="setrow"><span>🔠 גודל טקסט</span><div class="seg" id="set-size">${SIZES.map(([v,l])=>`<button data-sz="${v}" aria-pressed="${size===v}">${l}</button>`).join('')}</div></div>
     <div id="size-confirm" class="actions" hidden><span style="font-size:.9rem;color:var(--muted)">ככה נוח?</span><button class="btn small" id="size-ok">לשמור</button><button class="btn small ghost" id="size-cancel">ביטול</button></div>
+    ${sw('still','🐢 פחות תנועה ואנימציות')}
+    ${sw('contrast','🔲 ניגודיות גבוהה (קל יותר לקרוא)')}
     <h3>🏡 מה מופיע במסך היום</h3>
+    ${sw('splash','👋 ברכה קטנה כשנכנסים')}
+    ${sw('seasons','🕎 קישוטי חגים ועונות')}
     ${sh2('mood','😊 שורת מצב הרוח')}${sh2('quote','✨ המשפט של היום')}${sh2('hard','💜 כפתור יום קשה')}
     <h3>🎉 חגיגה ותזכורות</h3>
     ${sw('confetti','🎉 קונפטי בסימון משימה')}
@@ -1205,11 +1223,12 @@ function openSettings(){
   const sh=$('sheet');
   if(window.TKcloud)TKcloud.renderSettings($('acct-slot'));
   $('set-name').oninput=e=>{S.settings.name=e.target.value.trim();save();renderHeader()};
-  sh.querySelectorAll('[data-sw]').forEach(b=>b.onclick=()=>{const k=b.dataset.sw;S.settings[k]=!S.settings[k];b.setAttribute('aria-checked',S.settings[k]);save();renderAll();if(k==='sound'&&S.settings.sound)chime();if(window.TKnative)TKnative.reschedule()});
+  sh.querySelectorAll('[data-sw]').forEach(b=>b.onclick=()=>{const k=b.dataset.sw;S.settings[k]=!S.settings[k];b.setAttribute('aria-checked',S.settings[k]);save();applyLook();if(k==='seasons')lastStage=-1;renderAll();if(k==='sound'&&S.settings.sound)chime();if(window.TKnative)TKnative.reschedule()});
   sh.querySelectorAll('[data-hide]').forEach(b=>b.onclick=()=>{const k=b.dataset.hide;S.settings.hide=Object.assign({},S.settings.hide);S.settings.hide[k]=!S.settings.hide[k];b.setAttribute('aria-checked',!S.settings.hide[k]);save();applyLook()});
   sh.querySelectorAll('[data-addr]').forEach(b=>b.onclick=()=>{S.settings.address=b.dataset.addr;sh.querySelectorAll('[data-addr]').forEach(x=>x.setAttribute('aria-pressed',x===b));save();renderAll()});
   sh.querySelectorAll('[data-masc]').forEach(b=>b.onclick=()=>{S.settings.mascot=b.dataset.masc;sh.querySelectorAll('[data-masc]').forEach(x=>x.setAttribute('aria-pressed',x===b));save();lastStage=-1;renderAll()});
   $('set-theme').onclick=e=>{const b=e.target.closest('[data-th]');if(!b)return;S.settings.theme=b.dataset.th;$('set-theme').querySelectorAll('[data-th]').forEach(x=>x.setAttribute('aria-pressed',x===b));save();applyLook()};
+  $('set-pal').onclick=e=>{const b=e.target.closest('[data-pal]');if(!b)return;S.settings.palette=b.dataset.pal;$('set-pal').querySelectorAll('[data-pal]').forEach(x=>x.setAttribute('aria-pressed',x===b));save();applyLook();lastStage=-1;renderToday()};
   $('set-accent').onclick=e=>{const b=e.target.closest('[data-ac]');if(!b)return;S.settings.accent=b.dataset.ac;$('set-accent').querySelectorAll('[data-ac]').forEach(x=>x.setAttribute('aria-pressed',x===b));save();applyLook()};
   $('set-size').onclick=e=>{const b=e.target.closest('[data-sz]');if(!b)return;size=+b.dataset.sz;$('set-size').querySelectorAll('[data-sz]').forEach(x=>x.setAttribute('aria-pressed',x===b));applyLook(size);$('size-confirm').hidden=size===(S.settings.size||1)};
   $('size-ok').onclick=()=>{S.settings.size=size;save();$('size-confirm').hidden=true;toast('🔠 נשמר')};
@@ -1240,7 +1259,7 @@ window.TK={
   render:()=>{applyLook();renderAll()},
   /* replace all data (from the cloud or a backup) without marking it as a new local change */
   replace(d,fromCloud){const keepDevice={lastSeenPrev:S.lastSeenPrev};S=Object.assign({},d,keepDevice);
-    S.settings=Object.assign({sound:false,confetti:true,address:'m',name:'',faith:false,mascot:'plant',eveningHour:19,noon:true,morning:true,missYou:true},S.settings||{});
+    S.settings=Object.assign({sound:false,confetti:true,address:'m',name:'',faith:false,mascot:'plant',eveningHour:19,noon:true,morning:true,missYou:true,splash:true,seasons:true},S.settings||{});
     ['moods','hard','askNext','injectSkip','reviewed','del'].forEach(k=>S[k]=S[k]||{});S.journal=S.journal||[];
     quiet=!!fromCloud;rollover();inject();save();quiet=false;lastStage=-1;applyLook();renderAll()},
   markSaved(){quiet=true;save();quiet=false},
@@ -1313,14 +1332,14 @@ document.addEventListener('click',e=>{
   }
 });
 
-function renderAll(){renderHeader();renderToday();renderGoals();renderProgress();renderGarden();pushWidget()}
+function renderAll(){renderHeader();renderToday();renderGoals();renderProgress();renderGarden();pushWidget();petMood()}
 takeWidgetMood();applyLook();renderEnergyPick();renderAll();
 S.lastSeen=T;save();
 $('ver-line').textContent=versionLine();
-if(!S.onboarded)setTimeout(openWizard,250);else setTimeout(maybeWhatsNew,400);
+if(!S.onboarded)setTimeout(openWizard,250);else{splash();setTimeout(maybeWhatsNew,400)}
 
 /* new day while open, or back to front */
-function dayCheck(){takeWidgetMood();const k=dkey();if(k!==T){T=k;rollover();inject();S.lastSeen=T;save();renderAll()}else{renderToday();pushWidget()}}
+function dayCheck(){takeWidgetMood();const k=dkey();if(k!==T){T=k;rollover();inject();S.lastSeen=T;save();renderAll()}else{renderToday();pushWidget();petMood();if((S.settings.theme||'')==='time')applyLook()}}
 setInterval(dayCheck,60000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)dayCheck()});
 window.onAndroidResume=dayCheck;

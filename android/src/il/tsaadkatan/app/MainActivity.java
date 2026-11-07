@@ -20,6 +20,9 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import java.io.OutputStream;
+import android.content.ContentValues;
+import android.provider.MediaStore;
+import android.util.Base64;
 import org.json.JSONObject;
 
 /** The app is the live site (always the latest version) in a WebView, plus a small bridge: TsaadApp. */
@@ -29,7 +32,9 @@ public class MainActivity extends Activity {
     static final int REQ_SAVE = 11, REQ_PICK = 12, REQ_NOTIF = 13, REQ_MIC = 14;
     private PermissionRequest micRequest;
     private WebView web, printView;
-    private String pendingAuth, saveContent;
+    private String pendingAuth;
+    private byte[] saveBytes;
+    private boolean saveIsImage;
     private ValueCallback<Uri[]> pickCallback;
 
     @Override
@@ -141,11 +146,11 @@ public class MainActivity extends Activity {
             pickCallback = null;
         } else if (req == REQ_SAVE) {
             boolean ok = false;
-            if (res == RESULT_OK && data != null && data.getData() != null && saveContent != null) {
-                try (OutputStream o = getContentResolver().openOutputStream(data.getData())) { o.write(saveContent.getBytes("UTF-8")); ok = true; } catch (Exception e) { }
+            if (res == RESULT_OK && data != null && data.getData() != null && saveBytes != null) {
+                try (OutputStream o = getContentResolver().openOutputStream(data.getData())) { o.write(saveBytes); ok = true; } catch (Exception e) { }
             }
-            saveContent = null;
-            if (ok) web.evaluateJavascript("window.TK&&TK.toast('💾 הגיבוי נשמר')", null);
+            saveBytes = null;
+            if (ok) web.evaluateJavascript(saveIsImage ? "window.TK&&TK.toast('🖼️ הכרטיס נשמר')" : "window.TK&&TK.toast('💾 הגיבוי נשמר')", null);
         }
     }
 
@@ -186,9 +191,32 @@ public class MainActivity extends Activity {
             runOnUiThread(new Runnable() { public void run() { try { setBars(color, light); } catch (Exception e) { } } });
         }
         @JavascriptInterface public void saveFile(String name, String mime, String content) {
-            saveContent = content;
+            try { saveBytes = content.getBytes("UTF-8"); } catch (Exception e) { return; }
+            saveIsImage = false;
             Intent i = new Intent(Intent.ACTION_CREATE_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE).setType(mime).putExtra(Intent.EXTRA_TITLE, name);
             startActivityForResult(i, REQ_SAVE);
+        }
+        @JavascriptInterface public void saveImage(String b64, String name) {
+            try { saveBytes = Base64.decode(b64, Base64.DEFAULT); } catch (Exception e) { return; }
+            saveIsImage = true;
+            Intent i = new Intent(Intent.ACTION_CREATE_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE).setType("image/png").putExtra(Intent.EXTRA_TITLE, name);
+            startActivityForResult(i, REQ_SAVE);
+        }
+        /** a picture to send: kept in the gallery (Pictures/צעד קטן) and handed to the share menu */
+        @JavascriptInterface public void shareImage(String b64, String name) {
+            if (Build.VERSION.SDK_INT < 29) { saveImage(b64, name); return; }
+            try {
+                byte[] png = Base64.decode(b64, Base64.DEFAULT);
+                ContentValues v = new ContentValues();
+                v.put(MediaStore.MediaColumns.DISPLAY_NAME, name);
+                v.put(MediaStore.MediaColumns.MIME_TYPE, "image/png");
+                v.put("relative_path", "Pictures/צעד קטן");
+                Uri uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, v);
+                if (uri == null) { saveImage(b64, name); return; }
+                try (OutputStream o = getContentResolver().openOutputStream(uri)) { o.write(png); }
+                Intent i = new Intent(Intent.ACTION_SEND).setType("image/png").putExtra(Intent.EXTRA_STREAM, uri).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivity(Intent.createChooser(i, "לשלוח את הכרטיס"));
+            } catch (Exception e) { saveImage(b64, name); }
         }
         @JavascriptInterface public void schedule(String json) { Reminders.schedule(MainActivity.this, json); }
         @JavascriptInterface public void askNotifications() {
