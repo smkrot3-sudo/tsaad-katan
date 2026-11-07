@@ -42,6 +42,7 @@ function actionCard(a,i,mi){
 }
 function bubbles(){
   return chat.map((m,mi)=>{if(m.role==='user')return `<div class="ai-msg me">${esc(m.text)}</div>`;
+    if(m.role==='help')return `<div class="ai-help">${G('נשמע שקשה לך מאוד עכשיו 💜 {אתה לא לבד|את לא לבד}. אפשר לדבר עם אדם אמיתי, עכשיו:')}${TK.helpHTML?TK.helpHTML():''}</div>`;
     const {clean,actions}=parse(m.text);
     return `<div class="ai-msg bot">${esc(clean)||'<span class="thinking">חושב...</span>'}</div>${actions.map((a,i)=>m.done&&m.done.includes(i)?'<div class="ai-act done">✓ נוסף</div>':actionCard(a,i,mi)).join('')}`}).join('');
 }
@@ -66,11 +67,11 @@ function draw(){
 function refresh(){const lg=$('ai-log');if(!lg)return;lg.innerHTML=bubbles();lg.scrollTop=lg.scrollHeight}
 async function send(text){
   text=(text||'').trim();if(!text||busy)return;busy=true;
-  chat.push({role:'user',text});const bot={role:'model',text:''};chat.push(bot);keep();draw();$('ai-send').disabled=true;
+  chat.push({role:'user',text});if(TK.isDistress&&TK.isDistress(text))chat.push({role:'help'});const bot={role:'model',text:''};chat.push(bot);keep();draw();$('ai-send').disabled=true;
   try{
     const {data:{session}}=await TKcloud.client.auth.getSession();
     const r=await fetch(SB_URL+'/functions/v1/coach',{method:'POST',headers:{'Content-Type':'application/json',apikey:SB_KEY,Authorization:'Bearer '+session.access_token},
-      body:JSON.stringify({messages:chat.slice(0,-1).map(m=>({role:m.role,text:m.text})),context:context()})});
+      body:JSON.stringify({messages:chat.slice(0,-1).filter(m=>m.role!=='help').map(m=>({role:m.role,text:m.text})),context:context()})});
     if(!r.ok){const e=await r.json().catch(()=>({}));
       bot.text=e.error==='limit'?G('היום כבר {שאלת|שאלת} '+e.limit+' שאלות, וזה המון 💛 מחר יש עוד.'):e.error==='no_key'?'המאמן עוד לא הופעל. זה יקרה בקרוב 🌱':'🌧️ המאמן לא זמין כרגע. אפשר לנסות שוב עוד רגע.';
     }else{
@@ -82,6 +83,16 @@ async function send(text){
   busy=false;keep();draw();
 }
 
+// one full answer without the chat window (the morning note, the weekly letter); uses one question of the day
+async function ask(prompt){
+  if(!TKcloud.user()||!navigator.onLine)throw {code:'unavailable'};
+  const {data:{session}}=await TKcloud.client.auth.getSession();if(!session)throw {code:'unavailable'};
+  const r=await fetch(SB_URL+'/functions/v1/coach',{method:'POST',headers:{'Content-Type':'application/json',apikey:SB_KEY,Authorization:'Bearer '+session.access_token},
+    body:JSON.stringify({messages:[{role:'user',text:prompt}],context:context()})});
+  if(!r.ok)throw {code:'busy'};
+  const x=r.headers.get('x-remaining');if(x)left=+x;
+  const t=await r.text();return parse(t).clean.trim();
+}
 // short answers the app asks for by itself: steps for a new goal, tiny actions for a stuck task
 async function quick(mode,payload){
   if(!TKcloud.user()||!navigator.onLine)throw {code:'unavailable'};
@@ -173,7 +184,7 @@ function drawPlanner(){
 
 const pb=document.getElementById('plan-btn');if(pb)pb.onclick=openPlanner;
 
-window.TKai={plan:openPlanner,ready:()=>!!TKcloud.user()&&navigator.onLine,steps:(title,why,days)=>quick('steps',{title,why,days}),smaller:text=>quick('smaller',{text}),open:draw};
+window.TKai={ask,plan:openPlanner,ready:()=>!!TKcloud.user()&&navigator.onLine,steps:(title,why,days)=>quick('steps',{title,why,days}),smaller:text=>quick('smaller',{text}),open:draw};
 
 const fab=document.createElement('button');fab.className='ai-fab';fab.id='ai-fab';fab.setAttribute('aria-label','המאמן העדין');fab.innerHTML='<span class="e">✨</span><span class="l">המאמן</span>';
 fab.onclick=draw;document.body.appendChild(fab);

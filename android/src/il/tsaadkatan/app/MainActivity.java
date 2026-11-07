@@ -28,7 +28,7 @@ public class MainActivity extends Activity {
     static final String OFFLINE = "file:///android_asset/index.html";
     static final int REQ_SAVE = 11, REQ_PICK = 12, REQ_NOTIF = 13, REQ_MIC = 14;
     private PermissionRequest micRequest;
-    private WebView web;
+    private WebView web, printView;
     private String pendingAuth, saveContent;
     private ValueCallback<Uri[]> pickCallback;
 
@@ -208,6 +208,24 @@ public class MainActivity extends Activity {
             String s = p.getString("stash", null);
             p.edit().remove("stash").apply();
             return s;
+        }
+        @JavascriptInterface public void setWidget(String json) { Widget.save(MainActivity.this, json); }
+        @JavascriptInterface public String takeWidgetMood() { return Widget.takeMood(MainActivity.this); }
+        /** the therapist summary: Android's print screen, where "Save as PDF" is one of the printers */
+        @JavascriptInterface public void printHtml(final String html, final String name) {
+            runOnUiThread(new Runnable() { public void run() {
+                final WebView pv = new WebView(MainActivity.this);
+                pv.setWebViewClient(new WebViewClient() {
+                    @Override public void onPageFinished(WebView view, String url) {
+                        try {
+                            android.print.PrintManager pm = (android.print.PrintManager) getSystemService(PRINT_SERVICE);
+                            pm.print(name, view.createPrintDocumentAdapter(name), new android.print.PrintAttributes.Builder().build());
+                        } catch (Exception e) { }
+                    }
+                });
+                printView = pv;
+                pv.loadDataWithBaseURL(SITE, html, "text/html", "UTF-8", null);
+            } });
         }
         @JavascriptInterface public void goSite() {
             runOnUiThread(new Runnable() { public void run() { web.loadUrl(SITE); } });

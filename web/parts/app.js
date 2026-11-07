@@ -364,6 +364,7 @@ if(S.v!==3){
   Object.values(S.tasks).forEach(L=>L.forEach(t=>{if(!t.energy)t.energy=t.auto?'light':'mid'}));
   S.goals.forEach(g=>g.steps.forEach(s=>{delete s.days}));
 }
+S.settings=Object.assign({morning:true,missYou:true},S.settings);
 S.lastSeenPrev=S.lastSeen||T;
 let quiet=false;
 function save(){S.u=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}if(!quiet&&window.TKcloud)TKcloud.dirty()}
@@ -589,11 +590,12 @@ function renderToday(){
   $('hardbtn').setAttribute('aria-pressed',hard);
   $('hardbtn').innerHTML=hard?'<span class="e">💜</span> מצב יום קשה פעיל · לחזרה ליום רגיל':'<span class="e">😮‍💨</span> יום קשה? להוריד הכל למינימום';
   // banners
-  let b='';
+  let b=morningCard();
   if(between(S.lastSeenPrev,T)>=3&&!S.absenceShown)b+=`<div class="banner"><div class="row1"><span class="bico e">🤗</span><div><h3>חשבנו עליך${esc(nm())} 💛</h3><p class="sub">${G('טוב {שחזרת|שחזרת}. אין מה להשלים ואין מה להסביר. מתחילים מהיום, בקטן.')}</p></div><button class="del" data-act="absence-ok" aria-label="סגירה">${X}</button></div></div>`;
   if(hard)b+=`<div class="banner" style="background:var(--joy5);border-color:var(--joy5);color:var(--joy-ink)"><div class="row1"><span class="bico e">💜</span><div><h3>יום קשה זה בסדר</h3><p>${G('השארנו רק את הדברים הקלים. כל השאר מחכה ליום אחר, בלי שום לחץ.')}</p></div></div>
-    <div class="actions"><button class="btn small" data-act="read-letter">💌 מכתב שכתבתי לעצמי</button><button class="btn small ghost" data-act="go-journal">📔 ההישגים שלי</button></div></div>`;
+    <div class="actions"><button class="btn small" data-act="read-letter">💌 מכתב שכתבתי לעצמי</button><button class="btn small ghost" data-act="calm">🫧 פינת הרגעה</button><button class="btn small ghost" data-act="go-journal">📔 ההישגים שלי</button></div></div>`;
   if((m===0)||hard)b+=helpCard();
+  if(insightDue())b+=`<div class="banner"><div class="row1"><span class="bico e">🔍</span><div><h3>מכתב השבוע מחכה לך</h3><p class="sub">${G('המאמן קרא את השבוע שלך ושם לב לכמה דברים טובים')}</p></div></div><div class="actions"><button class="btn small" data-act="insight">💌 לפתוח את המכתב</button></div></div>`;
   if(S.carryNote&&S.carryNote.date===T)b+=`<div class="banner"><div class="row1"><span class="bico e">🌅</span><div><h3>זה בסדר, היום יום חדש</h3><p class="sub">${S.carryNote.n===1?'משימה אחת עברה':S.carryNote.n+' משימות עברו'} איתך מאתמול. אפשר לנסות שוב, בלי לחץ.</p></div><button class="del" data-act="carry-ok" aria-label="סגירה">${X}</button></div></div>`;
   Object.entries(S.askNext).forEach(([gid,sid])=>{const g=goalOf(gid);if(g&&stepOf(g,sid)&&!stepOf(g,sid).done)b+=nextCard(g,stepOf(g,sid))});
   const h=new Date().getHours();
@@ -774,7 +776,7 @@ function openGoalEdit(g){
 
 /* ---------- PROGRESS + JOURNAL ---------- */
 let jf='all';
-const JTYPES={all:'הכל',win:'🏆 הישגים',done:'✅ מה עשיתי',good:'🌼 דברים טובים',thanks:'🙏 תודה',letter:'💌 מכתבים לעצמי'};
+const JTYPES={all:'הכל',win:'🏆 הישגים',done:'✅ מה עשיתי',good:'🌼 דברים טובים',thanks:'🙏 תודה',letter:'💌 מכתבים לעצמי',insight:'🔍 תובנות',cheer:'🤝 עידוד'};
 function goodDay(k){return (S.tasks[k]||[]).some(t=>t.done||t.partial)||S.journal.some(j=>j.date===k&&(j.type==='good'||j.type==='thanks'))}
 function renderProgress(){
   const dayNames=['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','ש׳'];let week=0,prev=0,html='';
@@ -794,7 +796,7 @@ function renderProgress(){
   S.journal.forEach(j=>{if(jf==='all'||jf===j.type)items.push({type:j.type,text:j.text,at:j.at,id:j.id})});
   items.sort((a,b)=>b.at-a.at);
   const rel=at=>{const d=between(dkey(new Date(at)),T);return d<=0?'היום':d===1?'אתמול':'לפני '+d+' ימים'};
-  const te={win:'🏆',good:'🌼',thanks:'🙏',letter:'💌',feel:'💭'};
+  const te={win:'🏆',good:'🌼',thanks:'🙏',letter:'💌',feel:'💭',insight:'🔍',cheer:'🤝'};
   $('wins').innerHTML=items.length?items.slice(0,30).map(w=>w.type==='done'
     ?`<li style="flex-direction:row;align-items:center"><span class="emo" style="background:${JOYS[(w.color||0)%JOYS.length]};width:34px;height:34px;font-size:1.1rem">${w.e}</span><span class="wt">${esc(w.text)}</span><span class="when">${rel(w.at)}</span></li>`
     :`<li><div class="jh"><span>${te[w.type]||'✨'} ${JTYPES[w.type]?JTYPES[w.type].replace(/^\S+ /,''):''}</span><span>${rel(w.at)}</span></div><span class="wt" style="white-space:pre-wrap">${esc(w.text)}</span></li>`).join('')
@@ -867,7 +869,7 @@ function openPulse(g){
   };
   const go=()=>{const note=$('pulse-note').value.trim();
     addJournal('feel','בדיקת דופק ב"'+g.title+'": '+(face==='hard'?'קשה לי':face==='ok'?'בסדר, הולך':G('{מרגיש|מרגישה} שיפור'))+(note?'. '+note:''));
-    const won=completeStep(g,s);save();closeSheet();renderAll();
+    const won=completeStep(g,s);save();closeSheet();renderAll();distressCheck(note);
     if(won)openAchieved(g);else{const nx=curStep(g);celebrate($('banners'),'🚀 '+G('עוברים לצעד הבא')+': '+(nx?nx.text:''))}};
   draw();
 }
@@ -948,7 +950,7 @@ function openEvening(){
     L.forEach(t=>t.letGo&&tomb(t.id));const keep=L.filter(t=>!t.letGo);L.splice(0,L.length,...keep);
     if(mood!=null)S.moods[T]=mood;
     const g=$('ev-good').value.trim(),th=$('ev-thanks').value.trim();if(g)addJournal('good',g);if(th)addJournal('thanks',th);
-    S.reviewed[T]=true;save();closeSheet();renderAll();
+    S.reviewed[T]=true;save();closeSheet();renderAll();distressCheck(g+' '+th);
     if(marked){chime();confetti(document.querySelector('.garden'))}
     toast(undone.length-marked>0?'🌙 זה בסדר, מחר יום חדש. לילה טוב'+nm()+'.':'🌸 איזה יום. לילה טוב'+nm()+'.');
   };
@@ -985,13 +987,25 @@ function applyLook(size){
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>applyLook());
 
 /* what's new, once per version */
-const WHATS_NEW={v:'6.2',items:['💬 בוחרים איך האפליקציה מדברת אליך: הורה, חבר, פסיכולוג, רב, מפקד ועוד','✨ ארבעה חברים חדשים וזוהרים שמלווים אותך','🔁 משימה שחוזרת כל יום, והמאמן שמסדר לך את היום מהקלטה']};
+const WHATS_NEW={v:'7.0',items:[
+  ['🫧','פינת הרגעה','נשימה מונחית עם הדמות שלך, תרגיל קרקוע 5-4-3-2-1 וצליל רך. נמצאת ליד כפתור "יום קשה".','calm'],
+  ['💌','המאמן פונה ראשון','הודעת בוקר אישית בכל בוקר, ותזכורת "חשבנו עליך" אם לא נכנסים כמה ימים.','morning'],
+  ['🔍','מכתב השבוע','פעם בשבוע מכתב חם עם דפוסים שהאפליקציה שמה לב אליהם, למשל מה משפר לך את מצב הרוח.','insight'],
+  ['🌳','הגינה שלי','כל מטרה היא צמח שגדל עם כל צעד, ומטרה שהושגה פורחת לתמיד. בלשונית "הדרך שלי".','garden'],
+  ['🤝','חבר לדרך','שולחים קישור לאדם קרוב. הוא רואה רק מה שבוחרים, ויכול לשלוח לב ומילה טובה.','buddy'],
+  ['📄','סיכום למטפל','לחיצה אחת מפיקה סיכום יפה של התקופה: מצב רוח, מה נעשה, מטרות. ל-PDF, להדפסה או לוואטסאפ.','report'],
+  ['📱','ווידג׳ט למסך הבית','באפליקציה לאנדרואיד: הצעד של היום ומצב הרוח, בלי לפתוח את האפליקציה.','widget']]};
 function maybeWhatsNew(){
   if(!S.onboarded)return;
   if(S.seenNew===WHATS_NEW.v)return;
   if(!S.settings.voice){openVoicePicker(false);return}
   S.seenNew=WHATS_NEW.v;save();
-  openSheet(sheetHead('🎁 מה חדש בצעד קטן')+`<ul class="newlist">${WHATS_NEW.items.map(x=>`<li>${x}</li>`).join('')}</ul><button class="btn wide" data-act="sheet-close">יופי, תודה</button>`);
+  const app=!!window.TsaadApp,hasW=app&&!!TsaadApp.setWidget;
+  const tryBtn=k=>k==='widget'?(hasW?'<span class="hint" style="margin:0">לחיצה ארוכה על מסך הבית ← ווידג׳טים ← צעד קטן</span>':app?'<span class="hint" style="margin:0">צריך לעדכן את האפליקציה (יש כפתור "לעדכן" למעלה)</span>':''):`<button class="btn small ghost" data-try="${k}">לנסות</button>`;
+  openSheet(`<div class="wn-hero"><div class="wn-pet">${petIcon(S.settings.mascot)}</div><h2 id="sheet-title">🎁 צעד קטן 7.0</h2><p>${G('הרבה דברים חדשים מחכים לך'+(S.settings.name?', '+esc(S.settings.name):'')+'. הנה מה שהגיע:')}</p></div>
+    <div class="wn-list">${WHATS_NEW.items.filter(x=>x[3]!=='widget'||/Android/i.test(navigator.userAgent)).map(([e,t,d,k])=>`<div class="wn-it"><span class="wn-e e">${e}</span><div><b>${t}</b><p>${G(d)}</p>${tryBtn(k)}</div></div>`).join('')}</div>
+    <button class="btn wide" data-act="sheet-close">יופי, תודה 💛</button>`);
+  $('sheet').querySelectorAll('[data-try]').forEach(b=>b.onclick=()=>{const f=NEW_TRY[b.dataset.try];closeSheet();f&&setTimeout(f,120)});
 }
 
 function shareApp(){
@@ -1050,7 +1064,9 @@ function openSettings(){
     <h3>🎉 חגיגה ותזכורות</h3>
     ${sw('confetti','🎉 קונפטי בסימון משימה')}
     ${sw('sound','🔔 צליל מתוק בסימון משימה')}
+    ${sw('morning','💌 הודעת בוקר אישית מהמאמן')}
     ${sw('noon','☀️ תזכורת עדינה בצהריים')}
+    ${sw('missYou','🤗 "חשבנו עליך" אם לא נכנסים כמה ימים')}
     <div class="setrow"><label for="eve-h">🌙 שעת סקירת הערב</label><select id="eve-h">${[17,18,19,20,21].map(h=>`<option value="${h}"${h===S.settings.eveningHour?' selected':''}>${h}:00</option>`).join('')}</select></div>
     ${sw('shabbatOn','🕯️ תזכורות גם בשבת ובחג',false)}
     <p class="hint">${app?'🔕 בלילה (22:00 עד 09:00) לא נשלחות תזכורות. בשבת ובחג רק אם מסמנים למעלה. ביום שישי תגיע ברכה קטנה שעה לפני כניסת שבת.':'🔔 התזכורות עובדות באפליקציה לאנדרואיד.'}</p>
@@ -1058,6 +1074,10 @@ function openSettings(){
     <div class="setrow"><span>💾 גיבוי לקובץ</span><button class="btn small ghost" id="bk">גיבוי</button></div>
     <div class="setrow"><span>📂 שחזור מקובץ</span><label class="btn small ghost" style="cursor:pointer">שחזור<input type="file" id="rs" accept="application/json,.json" hidden></label></div>
     <div class="setrow"><span>🧽 להתחיל מחדש עם דף נקי</span><button class="btn small ghost" id="reset">איפוס</button></div>
+    <h3>🤝 לשתף ולהיעזר</h3>
+    <div class="setrow"><span>🤝 חבר לדרך</span><button class="btn small ghost" data-act="buddy">לפתוח</button></div>
+    <div class="setrow"><span>📄 סיכום למטפל</span><button class="btn small ghost" data-act="report">להפיק</button></div>
+    <div class="setrow"><span>🫧 פינת הרגעה</span><button class="btn small ghost" data-act="calm">לפתוח</button></div>
     <h3>💛 עוד</h3>
     <div class="setrow"><span>📣 לספר לחבר</span><button class="btn small ghost" id="share-app">לשתף</button></div>
     <div class="setrow"><span>💬 רעיון או תקלה</span><button class="btn small ghost" id="fb">לכתוב לנו</button></div>
@@ -1095,13 +1115,15 @@ function versionLine(){
   return 'צעד קטן · גרסה '+WHATS_NEW.v+v+b;
 }
 
+/*@MORE@*/
+
 /* other scripts (cloud sync, Android bridge) reach the app through this */
 window.TK={
   get:()=>S, G, esc, toast, voice:()=>voice(), petIcon, openSheet, closeSheet, sheetHead, X, versionLine, version:WHATS_NEW.v,
   render:()=>{applyLook();renderAll()},
   /* replace all data (from the cloud or a backup) without marking it as a new local change */
   replace(d,fromCloud){const keepDevice={lastSeenPrev:S.lastSeenPrev};S=Object.assign({},d,keepDevice);
-    S.settings=Object.assign({sound:false,confetti:true,address:'m',name:'',faith:false,mascot:'plant',eveningHour:19,noon:true},S.settings||{});
+    S.settings=Object.assign({sound:false,confetti:true,address:'m',name:'',faith:false,mascot:'plant',eveningHour:19,noon:true,morning:true,missYou:true},S.settings||{});
     ['moods','hard','askNext','injectSkip','reviewed','del'].forEach(k=>S[k]=S[k]||{});S.journal=S.journal||[];
     quiet=!!fromCloud;rollover();inject();save();quiet=false;lastStage=-1;applyLook();renderAll()},
   markSaved(){quiet=true;save();quiet=false},
@@ -1112,11 +1134,14 @@ window.TK={
       steps:(steps.length?steps:localBreakdown(o.title).map(x=>x.text)).map(text=>({id:uid(),text,doneDays:[],done:false}))};
     S.goals.unshift(g);inject();save();renderAll()},
   tab:()=>curTab,
+  save:()=>save(), addJournal:(type,text)=>{addJournal(type,text);save();renderAll()}, celebrate:(el,msg,big)=>celebrate(el||document.querySelector('.garden'),msg,big),
+  isDistress, helpHTML:()=>helpCard(), openCalm:t=>openCalm(t), T:()=>T, MOODS, JOYS, goodDay:k=>goodDay(k),
   setAccent(a){S.settings.accent=a;save();applyLook()},
 };
 
 /* ---------- one click handler ---------- */
 document.addEventListener('click',e=>{
+  const gp=e.target.closest('[data-gp]');if(gp){const g=goalOf(gp.dataset.gp);if(g)openGardenGoal(g);return}
   const b=e.target.closest('[data-act]');if(!b||b.tagName==='FORM')return;const act=b.dataset.act;
   const li=b.closest('.task'),t=li&&today().find(x=>x.id===li.dataset.id);
   const art=b.closest('[data-g]'),g=art&&goalOf(art.dataset.g);
@@ -1134,6 +1159,13 @@ document.addEventListener('click',e=>{
     case 'keep':if(t){t.carried=3;save();renderAll();toast('💪 נשאר איתך. קדימה!')}break;
     case 'hardday':{S.hard[T]=!S.hard[T];save();renderAll();if(S.hard[T])toast('💜 מצב יום קשה. רק הדברים הקלים נשארו.');break}
     case 'read-letter':openLetterRead();break;
+    case 'calm':openCalm();break;
+    case 'report':openReport();break;
+    case 'insight':openInsight();break;
+    case 'insight-new':openInsight(true);break;
+    case 'buddy':if(window.TKbuddy)TKbuddy.open();else toast('☁️ צריך חיבור לרשת');break;
+    case 'coach':S.morningSeen=T;save();renderToday();if(window.TKai)TKai.open();break;
+    case 'morning-ok':S.morningSeen=T;save();renderToday();break;
     case 'letter-new':openLetterNew();break;
     case 'go-journal':showTab('progress');break;
     case 'absence-ok':S.absenceShown=true;S.lastSeenPrev=T;save();renderAll();break;
@@ -1162,14 +1194,14 @@ document.addEventListener('click',e=>{
   }
 });
 
-function renderAll(){renderHeader();renderToday();renderGoals();renderProgress()}
-applyLook();renderEnergyPick();renderAll();
+function renderAll(){renderHeader();renderToday();renderGoals();renderProgress();renderGarden();pushWidget()}
+takeWidgetMood();applyLook();renderEnergyPick();renderAll();
 S.lastSeen=T;save();
 $('ver-line').textContent=versionLine();
 if(!S.onboarded)setTimeout(openWizard,250);else setTimeout(maybeWhatsNew,400);
 
 /* new day while open, or back to front */
-function dayCheck(){const k=dkey();if(k!==T){T=k;rollover();inject();S.lastSeen=T;save();renderAll()}else renderToday()}
+function dayCheck(){takeWidgetMood();const k=dkey();if(k!==T){T=k;rollover();inject();S.lastSeen=T;save();renderAll()}else{renderToday();pushWidget()}}
 setInterval(dayCheck,60000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)dayCheck()});
 window.onAndroidResume=dayCheck;

@@ -9,7 +9,7 @@ SITE = 'https://smkrot3-sudo.github.io/tsaad-katan/'
 BUILD = int(time.time() * 1000)
 css = read('web/parts/base.css') + read('web/parts/extra.css')
 body = read('web/parts/body.html')
-app = read('web/parts/app.js')
+app = read('web/parts/app.js').replace('/*@MORE@*/', read('web/parts/app-more.js'))
 local_fonts = '''<style>
 @font-face{font-family:"Varela Round";src:url(fonts/varela-round-hebrew-400-normal.woff2) format("woff2");unicode-range:U+0590-05FF,U+200C-2010,U+20AA,U+25CC,U+FB1D-FB4F;font-display:swap}
 @font-face{font-family:"Varela Round";src:url(fonts/varela-round-latin-400-normal.woff2) format("woff2");font-display:swap}
@@ -53,6 +53,8 @@ def page(asset_prefix=''):
 <script>
 {read('web/parts/ai.js')}</script>
 <script>
+{read('web/parts/buddy.js')}</script>
+<script>
 {read('web/parts/donate.js')}</script>
 <script>
 if('serviceWorker' in navigator&&location.protocol==='https:')addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{{}}));
@@ -69,6 +71,7 @@ if MAINT:
     if os.path.exists(P('docs/admin.html')): os.remove(P('docs/admin.html'))
 else:
     shutil.copy(P('web/admin.html'), P('docs/admin.html'))
+    shutil.copy(P('web/buddy.html'), P('docs/buddy.html'))
 sw = read('web/sw.js').replace('__BUILD__', str(BUILD))
 open(P('docs/sw.js'), 'w', encoding='utf8').write(sw)
 

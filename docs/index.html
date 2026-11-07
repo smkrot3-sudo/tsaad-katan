@@ -374,6 +374,82 @@ button:disabled{opacity:.6;cursor:default}
 .voices button small{color:var(--muted);font-size:.78rem}
 .voices button .vs{margin-top:4px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:6px 8px;font-size:.8rem;line-height:1.35}
 .voices button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+/* ===== 7.0 ===== */
+.hardrow{display:flex;gap:8px}
+.hardrow .hardbtn{flex:1}
+.calmbtn{flex:none;display:flex;align-items:center;gap:6px;border:2px solid var(--joy3);background:var(--joy3);color:var(--joy-ink);border-radius:var(--r);padding:10px 14px;font:inherit;font-size:.95rem;cursor:pointer}
+.hide-hard .hardrow .calmbtn{flex:1;justify-content:center}
+/* calm corner */
+.calm-tabs{justify-content:center;margin-bottom:10px}
+.breath{display:flex;flex-direction:column;align-items:center;gap:10px;padding:6px 0}
+.b-stage{position:relative;width:230px;height:230px;display:grid;place-items:center}
+.b-ring{position:absolute;inset:0;margin:auto;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle at 40% 35%,var(--joy3),var(--joy5) 70%);box-shadow:0 0 0 14px color-mix(in srgb,var(--joy3) 35%,transparent),0 0 40px color-mix(in srgb,var(--joy5) 60%,transparent);transform:scale(.72);transition:transform 4s ease-in-out}
+.b-ring.big{transform:scale(1.45)}
+.b-pet{position:relative;width:86px;height:86px;display:grid;place-items:center;font-size:3rem}
+.b-pet .pet-svg{width:86px;height:86px;animation:petbob 3.2s ease-in-out infinite}
+.b-word{font-family:var(--display);font-size:1.4rem;text-align:center;min-height:1.6em}
+.b-count{color:var(--muted);font-size:.92rem;text-align:center;min-height:1.4em}
+.ground{display:flex;flex-direction:column;align-items:center;gap:10px}
+.g-big{display:flex;align-items:center;gap:10px;font-size:3rem}.g-big b{font-family:var(--display);color:var(--accent)}
+.g-t{font-size:1.15rem;text-align:center}
+.g-dots{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.g-dots button{width:46px;height:46px;border-radius:50%;border:3px solid var(--joy3);background:var(--surface);cursor:pointer;transition:background .2s,transform .2s}
+.g-dots button[aria-pressed="true"]{background:var(--joy2);border-color:var(--ok);transform:scale(1.08)}
+.ground-done,.calm-words{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+.cw{font-family:var(--display);font-size:1.3rem;line-height:1.5;padding:18px 6px;min-height:5em;display:grid;place-items:center}
+.calm-words .help{align-self:stretch;text-align:start}
+.calm-help{text-align:center;margin-top:14px}.calm-help a{color:inherit}
+.ai-help{display:flex;flex-direction:column;gap:8px;font-size:.92rem}
+/* morning note */
+.banner.morning{background:linear-gradient(135deg,var(--joy1),var(--joy6));border-color:transparent;color:var(--joy-ink)}
+.banner.morning .sub{color:inherit;opacity:.9;font-size:.95rem}
+.pet-mini{width:44px;height:44px;display:grid;place-items:center;flex:none}.pet-mini .pet-svg{width:44px;height:44px}.pet-mini .e{font-size:1.8rem}
+/* garden */
+.garden-big{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:12px;display:flex;flex-direction:column;gap:8px}
+.gb-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.garden-svg{width:100%;border-radius:14px;display:block}
+.garden-svg .gp{cursor:pointer;outline:none}
+.garden-svg .gp:focus-visible rect:first-child{stroke:var(--accent);stroke-width:2}
+.sway{transform-box:fill-box;transform-origin:50% 100%;animation:sway 5s ease-in-out infinite}
+.gp:nth-child(2n) .sway{animation-delay:-2s}.gp:nth-child(3n) .sway{animation-delay:-3.5s}
+@keyframes sway{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+.twinkle{animation:twinkle 2.4s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:.3}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.sway,.twinkle,.b-pet .pet-svg{animation:none}}
+.tools{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tool{display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px 6px;font:inherit;color:var(--fg);cursor:pointer;text-align:center;box-shadow:var(--shadow)}
+.tool .e{font-size:1.6rem}.tool b{font-size:.9rem}.tool small{font-size:.75rem;color:var(--muted)}
+/* insight letter */
+.letter.insight{background:linear-gradient(160deg,var(--joy3),var(--joy5));font-size:1.02rem}
+/* report */
+.rp-inc{display:grid;grid-template-columns:1fr 1fr;gap:2px 10px;margin:10px 0}
+.rp-prev{background:#fff;color:#3B2F4A;border-radius:16px;padding:14px;margin:10px 0;border:1px solid var(--line);max-height:46vh;overflow:auto;font-size:.88rem;line-height:1.5}
+.rp-prev header{border-bottom:3px solid #FFE1D3;padding-bottom:8px;margin-bottom:10px}.rp-prev .logo{color:#FF7F50}
+.rp-prev h1{font-size:1.2rem}.rp-prev h2{font-size:1rem;margin:1em 0 .3em;color:#5a4670}.rp-prev .mut{color:#7D708A;font-size:.85rem}
+.rp-prev .kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}.rp-prev .kpis div{background:#FFF7EF;border-radius:10px;padding:8px;text-align:center}.rp-prev .kpis b{display:block;font-size:1.3rem;color:#FF7F50}.rp-prev .kpis span{font-size:.75rem}
+.rp-prev .dist{display:flex;flex-wrap:wrap;gap:5px}.rp-prev .dist span{background:#F4EEF8;border-radius:99px;padding:1px 8px;font-size:.8rem}
+.rp-prev table{width:100%;border-collapse:collapse}.rp-prev td,.rp-prev th{border-bottom:1px solid #F2E2D2;padding:5px;text-align:right;vertical-align:top}
+.rp-prev ul{padding-inline-start:18px;margin:.3em 0}.rp-prev footer{margin-top:14px;text-align:center;color:#FF7F50}
+.rp-actions{display:flex;gap:8px}.rp-actions .btn{flex:1}
+/* what's new 7.0 */
+.wn-hero{text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;padding-top:6px}
+.wn-pet{width:84px;height:84px;display:grid;place-items:center;font-size:3rem}.wn-pet .pet-svg{width:84px;height:84px;animation:petbob 3.2s ease-in-out infinite}
+.wn-hero p{color:var(--muted)}
+.wn-list{display:flex;flex-direction:column;gap:10px;margin:14px 0}
+.wn-it{display:flex;gap:12px;align-items:flex-start;background:var(--soft);border-radius:16px;padding:12px}
+.wn-it:nth-child(6n+1){background:color-mix(in srgb,var(--joy3) 55%,var(--surface))}.wn-it:nth-child(6n+2){background:color-mix(in srgb,var(--joy1) 55%,var(--surface))}.wn-it:nth-child(6n+3){background:color-mix(in srgb,var(--joy5) 55%,var(--surface))}
+.wn-it:nth-child(6n+4){background:color-mix(in srgb,var(--joy2) 55%,var(--surface))}.wn-it:nth-child(6n+5){background:color-mix(in srgb,var(--joy4) 55%,var(--surface))}.wn-it:nth-child(6n){background:color-mix(in srgb,var(--joy6) 55%,var(--surface))}
+.wn-e{font-size:1.8rem;flex:none}
+.wn-it b{font-size:1rem}.wn-it p{font-size:.9rem;margin:2px 0 6px}
+/* buddy */
+.bd-list{display:flex;flex-direction:column;gap:10px;margin:10px 0}
+.bd-card{background:var(--soft);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.bd-card .r{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.bd-goals{display:flex;flex-direction:column;gap:2px;max-height:180px;overflow:auto}
+.cheer-pop{text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
+.cheer-pop .big{font-size:4rem;animation:petbob 2.4s ease-in-out infinite}
+.cheer-pop .msg{background:var(--joy1);color:var(--joy-ink);border-radius:16px;padding:14px;font-size:1.1rem;white-space:pre-wrap;align-self:stretch}
+.sheet .big-e{font-size:3rem;font-family:var(--emoji);display:flex;justify-content:center;line-height:1.1}.sheet .big-e .pet-svg{width:90px;height:90px;animation:petbob 3.2s ease-in-out infinite}
 </style>
 </head>
 <body>
@@ -407,7 +483,7 @@ button:disabled{opacity:.6;cursor:default}
       <div class="moods" id="moods" role="group" aria-label="בחירת מצב רוח"></div>
     </section>
     <section class="qod" id="quote-box" aria-label="משפטי מוטיבציה, אפשר להחליק או ללחוץ למשפט הבא"><button class="qarrow" id="q-prev" aria-label="המשפט הקודם">›</button><div class="qtext"><p id="quote" aria-live="polite"></p><span class="who" id="quote-who"></span></div><button class="qarrow" id="q-next" aria-label="המשפט הבא">‹</button></section>
-    <button class="hardbtn" data-act="hardday" id="hardbtn" aria-pressed="false"></button>
+    <div class="hardrow"><button class="hardbtn" data-act="hardday" id="hardbtn" aria-pressed="false"></button><button class="calmbtn" data-act="calm" aria-label="פינת הרגעה"><span class="e">🫧</span> רגע של רוגע</button></div>
     <div id="banners" style="display:flex;flex-direction:column;gap:12px"></div>
     <form class="addbox" id="add-task">
       <div class="add">
@@ -472,6 +548,12 @@ button:disabled{opacity:.6;cursor:default}
   <!-- PROGRESS + JOURNAL -->
   <main class="view" id="v-progress" hidden>
     <h2><span class="e">🌷</span> הדרך שעשית</h2>
+    <section class="garden-big" id="garden-big" aria-label="הגינה שלי"></section>
+    <div class="tools">
+      <button class="tool" data-act="insight"><span class="e">🔍</span><b>מכתב השבוע</b><small>מה שמתי לב אליו</small></button>
+      <button class="tool" data-act="buddy"><span class="e">🤝</span><b>חבר לדרך</b><small>לשתף מישהו קרוב</small></button>
+      <button class="tool" data-act="report"><span class="e">📄</span><b>סיכום למטפל</b><small>PDF או וואטסאפ</small></button>
+    </div>
     <div class="stats">
       <div class="stat" style="background:var(--joy2)"><span class="se e">✅</span><div class="n" id="st-week">0</div><div class="l">דברים שעשית השבוע</div></div>
       <div class="stat" style="background:var(--joy3)"><span class="se e">🌱</span><div class="n" id="st-steps">0</div><div class="l">צעדים קטנים למטרות</div></div>
@@ -502,7 +584,7 @@ button:disabled{opacity:.6;cursor:default}
 <section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" hidden></section>
 
 <div class="toast" id="toast" role="status"><span id="toast-msg"></span><button id="toast-undo" hidden>ביטול</button></div>
-<script>window.TK_SITE="https://smkrot3-sudo.github.io/tsaad-katan/";window.TK_BUILD=1792766328778;</script>
+<script>window.TK_SITE="https://smkrot3-sudo.github.io/tsaad-katan/";window.TK_BUILD=1794067798970;</script>
 <script>
 (function(){
 const KEY='tsaad-katan-v2';
@@ -870,6 +952,7 @@ if(S.v!==3){
   Object.values(S.tasks).forEach(L=>L.forEach(t=>{if(!t.energy)t.energy=t.auto?'light':'mid'}));
   S.goals.forEach(g=>g.steps.forEach(s=>{delete s.days}));
 }
+S.settings=Object.assign({morning:true,missYou:true},S.settings);
 S.lastSeenPrev=S.lastSeen||T;
 let quiet=false;
 function save(){S.u=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}if(!quiet&&window.TKcloud)TKcloud.dirty()}
@@ -1095,11 +1178,12 @@ function renderToday(){
   $('hardbtn').setAttribute('aria-pressed',hard);
   $('hardbtn').innerHTML=hard?'<span class="e">💜</span> מצב יום קשה פעיל · לחזרה ליום רגיל':'<span class="e">😮‍💨</span> יום קשה? להוריד הכל למינימום';
   // banners
-  let b='';
+  let b=morningCard();
   if(between(S.lastSeenPrev,T)>=3&&!S.absenceShown)b+=`<div class="banner"><div class="row1"><span class="bico e">🤗</span><div><h3>חשבנו עליך${esc(nm())} 💛</h3><p class="sub">${G('טוב {שחזרת|שחזרת}. אין מה להשלים ואין מה להסביר. מתחילים מהיום, בקטן.')}</p></div><button class="del" data-act="absence-ok" aria-label="סגירה">${X}</button></div></div>`;
   if(hard)b+=`<div class="banner" style="background:var(--joy5);border-color:var(--joy5);color:var(--joy-ink)"><div class="row1"><span class="bico e">💜</span><div><h3>יום קשה זה בסדר</h3><p>${G('השארנו רק את הדברים הקלים. כל השאר מחכה ליום אחר, בלי שום לחץ.')}</p></div></div>
-    <div class="actions"><button class="btn small" data-act="read-letter">💌 מכתב שכתבתי לעצמי</button><button class="btn small ghost" data-act="go-journal">📔 ההישגים שלי</button></div></div>`;
+    <div class="actions"><button class="btn small" data-act="read-letter">💌 מכתב שכתבתי לעצמי</button><button class="btn small ghost" data-act="calm">🫧 פינת הרגעה</button><button class="btn small ghost" data-act="go-journal">📔 ההישגים שלי</button></div></div>`;
   if((m===0)||hard)b+=helpCard();
+  if(insightDue())b+=`<div class="banner"><div class="row1"><span class="bico e">🔍</span><div><h3>מכתב השבוע מחכה לך</h3><p class="sub">${G('המאמן קרא את השבוע שלך ושם לב לכמה דברים טובים')}</p></div></div><div class="actions"><button class="btn small" data-act="insight">💌 לפתוח את המכתב</button></div></div>`;
   if(S.carryNote&&S.carryNote.date===T)b+=`<div class="banner"><div class="row1"><span class="bico e">🌅</span><div><h3>זה בסדר, היום יום חדש</h3><p class="sub">${S.carryNote.n===1?'משימה אחת עברה':S.carryNote.n+' משימות עברו'} איתך מאתמול. אפשר לנסות שוב, בלי לחץ.</p></div><button class="del" data-act="carry-ok" aria-label="סגירה">${X}</button></div></div>`;
   Object.entries(S.askNext).forEach(([gid,sid])=>{const g=goalOf(gid);if(g&&stepOf(g,sid)&&!stepOf(g,sid).done)b+=nextCard(g,stepOf(g,sid))});
   const h=new Date().getHours();
@@ -1280,7 +1364,7 @@ function openGoalEdit(g){
 
 /* ---------- PROGRESS + JOURNAL ---------- */
 let jf='all';
-const JTYPES={all:'הכל',win:'🏆 הישגים',done:'✅ מה עשיתי',good:'🌼 דברים טובים',thanks:'🙏 תודה',letter:'💌 מכתבים לעצמי'};
+const JTYPES={all:'הכל',win:'🏆 הישגים',done:'✅ מה עשיתי',good:'🌼 דברים טובים',thanks:'🙏 תודה',letter:'💌 מכתבים לעצמי',insight:'🔍 תובנות',cheer:'🤝 עידוד'};
 function goodDay(k){return (S.tasks[k]||[]).some(t=>t.done||t.partial)||S.journal.some(j=>j.date===k&&(j.type==='good'||j.type==='thanks'))}
 function renderProgress(){
   const dayNames=['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','ש׳'];let week=0,prev=0,html='';
@@ -1300,7 +1384,7 @@ function renderProgress(){
   S.journal.forEach(j=>{if(jf==='all'||jf===j.type)items.push({type:j.type,text:j.text,at:j.at,id:j.id})});
   items.sort((a,b)=>b.at-a.at);
   const rel=at=>{const d=between(dkey(new Date(at)),T);return d<=0?'היום':d===1?'אתמול':'לפני '+d+' ימים'};
-  const te={win:'🏆',good:'🌼',thanks:'🙏',letter:'💌',feel:'💭'};
+  const te={win:'🏆',good:'🌼',thanks:'🙏',letter:'💌',feel:'💭',insight:'🔍',cheer:'🤝'};
   $('wins').innerHTML=items.length?items.slice(0,30).map(w=>w.type==='done'
     ?`<li style="flex-direction:row;align-items:center"><span class="emo" style="background:${JOYS[(w.color||0)%JOYS.length]};width:34px;height:34px;font-size:1.1rem">${w.e}</span><span class="wt">${esc(w.text)}</span><span class="when">${rel(w.at)}</span></li>`
     :`<li><div class="jh"><span>${te[w.type]||'✨'} ${JTYPES[w.type]?JTYPES[w.type].replace(/^\S+ /,''):''}</span><span>${rel(w.at)}</span></div><span class="wt" style="white-space:pre-wrap">${esc(w.text)}</span></li>`).join('')
@@ -1373,7 +1457,7 @@ function openPulse(g){
   };
   const go=()=>{const note=$('pulse-note').value.trim();
     addJournal('feel','בדיקת דופק ב"'+g.title+'": '+(face==='hard'?'קשה לי':face==='ok'?'בסדר, הולך':G('{מרגיש|מרגישה} שיפור'))+(note?'. '+note:''));
-    const won=completeStep(g,s);save();closeSheet();renderAll();
+    const won=completeStep(g,s);save();closeSheet();renderAll();distressCheck(note);
     if(won)openAchieved(g);else{const nx=curStep(g);celebrate($('banners'),'🚀 '+G('עוברים לצעד הבא')+': '+(nx?nx.text:''))}};
   draw();
 }
@@ -1454,7 +1538,7 @@ function openEvening(){
     L.forEach(t=>t.letGo&&tomb(t.id));const keep=L.filter(t=>!t.letGo);L.splice(0,L.length,...keep);
     if(mood!=null)S.moods[T]=mood;
     const g=$('ev-good').value.trim(),th=$('ev-thanks').value.trim();if(g)addJournal('good',g);if(th)addJournal('thanks',th);
-    S.reviewed[T]=true;save();closeSheet();renderAll();
+    S.reviewed[T]=true;save();closeSheet();renderAll();distressCheck(g+' '+th);
     if(marked){chime();confetti(document.querySelector('.garden'))}
     toast(undone.length-marked>0?'🌙 זה בסדר, מחר יום חדש. לילה טוב'+nm()+'.':'🌸 איזה יום. לילה טוב'+nm()+'.');
   };
@@ -1491,13 +1575,25 @@ function applyLook(size){
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>applyLook());
 
 /* what's new, once per version */
-const WHATS_NEW={v:'6.2',items:['💬 בוחרים איך האפליקציה מדברת אליך: הורה, חבר, פסיכולוג, רב, מפקד ועוד','✨ ארבעה חברים חדשים וזוהרים שמלווים אותך','🔁 משימה שחוזרת כל יום, והמאמן שמסדר לך את היום מהקלטה']};
+const WHATS_NEW={v:'7.0',items:[
+  ['🫧','פינת הרגעה','נשימה מונחית עם הדמות שלך, תרגיל קרקוע 5-4-3-2-1 וצליל רך. נמצאת ליד כפתור "יום קשה".','calm'],
+  ['💌','המאמן פונה ראשון','הודעת בוקר אישית בכל בוקר, ותזכורת "חשבנו עליך" אם לא נכנסים כמה ימים.','morning'],
+  ['🔍','מכתב השבוע','פעם בשבוע מכתב חם עם דפוסים שהאפליקציה שמה לב אליהם, למשל מה משפר לך את מצב הרוח.','insight'],
+  ['🌳','הגינה שלי','כל מטרה היא צמח שגדל עם כל צעד, ומטרה שהושגה פורחת לתמיד. בלשונית "הדרך שלי".','garden'],
+  ['🤝','חבר לדרך','שולחים קישור לאדם קרוב. הוא רואה רק מה שבוחרים, ויכול לשלוח לב ומילה טובה.','buddy'],
+  ['📄','סיכום למטפל','לחיצה אחת מפיקה סיכום יפה של התקופה: מצב רוח, מה נעשה, מטרות. ל-PDF, להדפסה או לוואטסאפ.','report'],
+  ['📱','ווידג׳ט למסך הבית','באפליקציה לאנדרואיד: הצעד של היום ומצב הרוח, בלי לפתוח את האפליקציה.','widget']]};
 function maybeWhatsNew(){
   if(!S.onboarded)return;
   if(S.seenNew===WHATS_NEW.v)return;
   if(!S.settings.voice){openVoicePicker(false);return}
   S.seenNew=WHATS_NEW.v;save();
-  openSheet(sheetHead('🎁 מה חדש בצעד קטן')+`<ul class="newlist">${WHATS_NEW.items.map(x=>`<li>${x}</li>`).join('')}</ul><button class="btn wide" data-act="sheet-close">יופי, תודה</button>`);
+  const app=!!window.TsaadApp,hasW=app&&!!TsaadApp.setWidget;
+  const tryBtn=k=>k==='widget'?(hasW?'<span class="hint" style="margin:0">לחיצה ארוכה על מסך הבית ← ווידג׳טים ← צעד קטן</span>':app?'<span class="hint" style="margin:0">צריך לעדכן את האפליקציה (יש כפתור "לעדכן" למעלה)</span>':''):`<button class="btn small ghost" data-try="${k}">לנסות</button>`;
+  openSheet(`<div class="wn-hero"><div class="wn-pet">${petIcon(S.settings.mascot)}</div><h2 id="sheet-title">🎁 צעד קטן 7.0</h2><p>${G('הרבה דברים חדשים מחכים לך'+(S.settings.name?', '+esc(S.settings.name):'')+'. הנה מה שהגיע:')}</p></div>
+    <div class="wn-list">${WHATS_NEW.items.filter(x=>x[3]!=='widget'||/Android/i.test(navigator.userAgent)).map(([e,t,d,k])=>`<div class="wn-it"><span class="wn-e e">${e}</span><div><b>${t}</b><p>${G(d)}</p>${tryBtn(k)}</div></div>`).join('')}</div>
+    <button class="btn wide" data-act="sheet-close">יופי, תודה 💛</button>`);
+  $('sheet').querySelectorAll('[data-try]').forEach(b=>b.onclick=()=>{const f=NEW_TRY[b.dataset.try];closeSheet();f&&setTimeout(f,120)});
 }
 
 function shareApp(){
@@ -1556,7 +1652,9 @@ function openSettings(){
     <h3>🎉 חגיגה ותזכורות</h3>
     ${sw('confetti','🎉 קונפטי בסימון משימה')}
     ${sw('sound','🔔 צליל מתוק בסימון משימה')}
+    ${sw('morning','💌 הודעת בוקר אישית מהמאמן')}
     ${sw('noon','☀️ תזכורת עדינה בצהריים')}
+    ${sw('missYou','🤗 "חשבנו עליך" אם לא נכנסים כמה ימים')}
     <div class="setrow"><label for="eve-h">🌙 שעת סקירת הערב</label><select id="eve-h">${[17,18,19,20,21].map(h=>`<option value="${h}"${h===S.settings.eveningHour?' selected':''}>${h}:00</option>`).join('')}</select></div>
     ${sw('shabbatOn','🕯️ תזכורות גם בשבת ובחג',false)}
     <p class="hint">${app?'🔕 בלילה (22:00 עד 09:00) לא נשלחות תזכורות. בשבת ובחג רק אם מסמנים למעלה. ביום שישי תגיע ברכה קטנה שעה לפני כניסת שבת.':'🔔 התזכורות עובדות באפליקציה לאנדרואיד.'}</p>
@@ -1564,6 +1662,10 @@ function openSettings(){
     <div class="setrow"><span>💾 גיבוי לקובץ</span><button class="btn small ghost" id="bk">גיבוי</button></div>
     <div class="setrow"><span>📂 שחזור מקובץ</span><label class="btn small ghost" style="cursor:pointer">שחזור<input type="file" id="rs" accept="application/json,.json" hidden></label></div>
     <div class="setrow"><span>🧽 להתחיל מחדש עם דף נקי</span><button class="btn small ghost" id="reset">איפוס</button></div>
+    <h3>🤝 לשתף ולהיעזר</h3>
+    <div class="setrow"><span>🤝 חבר לדרך</span><button class="btn small ghost" data-act="buddy">לפתוח</button></div>
+    <div class="setrow"><span>📄 סיכום למטפל</span><button class="btn small ghost" data-act="report">להפיק</button></div>
+    <div class="setrow"><span>🫧 פינת הרגעה</span><button class="btn small ghost" data-act="calm">לפתוח</button></div>
     <h3>💛 עוד</h3>
     <div class="setrow"><span>📣 לספר לחבר</span><button class="btn small ghost" id="share-app">לשתף</button></div>
     <div class="setrow"><span>💬 רעיון או תקלה</span><button class="btn small ghost" id="fb">לכתוב לנו</button></div>
@@ -1601,13 +1703,336 @@ function versionLine(){
   return 'צעד קטן · גרסה '+WHATS_NEW.v+v+b;
 }
 
+/* ================= 7.0 ================= */
+
+/* ---------- calm corner: breathing with the companion, grounding 5-4-3-2-1, soft sound ---------- */
+let calmTimer=null,calmAudio=null;
+function calmSound(on){
+  if(!on){if(calmAudio){const a=calmAudio;calmAudio=null;clearInterval(a.iv);try{a.g.gain.cancelScheduledValues(a.ctx.currentTime);a.g.gain.setValueAtTime(a.g.gain.value,a.ctx.currentTime);a.g.gain.linearRampToValueAtTime(0,a.ctx.currentTime+1.2);setTimeout(()=>a.ctx.close(),1500)}catch(e){}}return}
+  if(calmAudio)return;
+  try{
+    const ctx=new (window.AudioContext||window.webkitAudioContext)(),g=ctx.createGain();g.gain.value=0;
+    const lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=900;g.connect(lp);lp.connect(ctx.destination);
+    // a slow, warm pad: three soft notes that drift from chord to chord
+    const chords=[[220,277.18,329.63],[196,246.94,293.66],[174.61,220,261.63],[196,246.94,329.63]];
+    const oscs=[0,1,2].map(i=>{const o=ctx.createOscillator(),og=ctx.createGain();o.type=i===1?'triangle':'sine';o.frequency.value=chords[0][i];o.detune.value=(i-1)*4;og.gain.value=i===1?.07:.11;o.connect(og);og.connect(g);o.start();return o});
+    const lfo=ctx.createOscillator(),lg=ctx.createGain();lfo.frequency.value=.1;lg.gain.value=.035;lfo.connect(lg);lg.connect(g.gain);lfo.start();
+    g.gain.linearRampToValueAtTime(.16,ctx.currentTime+2.5);
+    let ci=0;const iv=setInterval(()=>{ci=(ci+1)%chords.length;oscs.forEach((o,i)=>o.frequency.linearRampToValueAtTime(chords[ci][i],ctx.currentTime+4))},10000);
+    calmAudio={ctx,g,iv};
+  }catch(e){}
+}
+const GROUND=[[5,'👀','דברים {שאתה רואה|שאת רואה} סביבך'],[4,'✋','דברים {שאתה יכול|שאת יכולה} לגעת בהם'],[3,'👂','קולות {שאתה שומע|שאת שומעת} עכשיו'],[2,'👃','ריחות {שאתה מריח|שאת מריחה}, או ריח {שאתה אוהב|שאת אוהבת}'],[1,'💛','דבר אחד טוב {שתגיד|שתגידי} לעצמך']];
+const CALM_WORDS=['🌊 הרגש הזה הוא גל. הוא יעלה, ואז הוא ירד.','🫧 לא צריך לעשות שום דבר עכשיו. רק לנשום.','🧸 {אתה בטוח|את בטוחה} כאן, ברגע הזה.','🌙 גם הלילה הכי ארוך נגמר בבוקר.','🍃 מותר לעצור. העולם יחכה.','💛 {אתה לא לבד|את לא לבד}. יש אנשים שרוצים לשמוע אותך.','🌱 {עברת|עברת} רגעים קשים בעבר, ויצאת מהם.','☁️ מחשבות הן עננים. הן עוברות.','🕯️ אור קטן מספיק כדי לראות את הצעד הבא.','🫶 {תניח|תניחי} יד על הלב. {תרגיש|תרגישי} אותו פועם. {אתה|את} כאן.'];
+function openCalm(tab){
+  tab=tab||'breath';let gi=0,gn=0,wi=Math.floor(Math.random()*CALM_WORDS.length);
+  const stop=()=>{clearTimeout(calmTimer);calmTimer=null};
+  const draw=()=>{stop();
+    const tabs=`<div class="seg calm-tabs">${[['breath','🫧 נשימה'],['ground','🖐️ 5-4-3-2-1'],['words','💛 מילים']].map(([k,l])=>`<button data-ct="${k}" aria-pressed="${k===tab}">${l}</button>`).join('')}</div>`;
+    let body='';
+    if(tab==='breath')body=`<div class="breath"><div class="b-stage"><div class="b-ring" id="b-ring"></div><div class="b-pet">${petIcon(S.settings.mascot)}</div></div>
+      <div class="b-word" id="b-word">${G('נושמים ביחד, בקצב רגוע')}</div><div class="b-count" id="b-count">${G('שאיפה 4 שניות · להחזיק 4 · נשיפה 6')}</div>
+      <div class="actions" style="justify-content:center"><button class="btn" id="b-go">▶️ להתחיל</button><button class="btn ghost" id="b-snd">${calmAudio?'🔇 בלי צליל':'🎵 צליל רך'}</button></div></div>`;
+    else if(tab==='ground'){
+      if(gi>=GROUND.length)body=`<div class="ground-done"><div class="big-e">🌿</div><h3>${G('{חזרת|חזרת} לכאן ועכשיו')}</h3><p>${G('כל הכבוד. {אתה|את} כאן, נושם'+(S.settings.address==='f'?'ת':'')+', וזה מה שחשוב עכשיו.')}</p><button class="btn ghost" id="g-again">עוד פעם</button></div>`;
+      else{const [n,e,t]=GROUND[gi];body=`<div class="ground"><p class="hint" style="text-align:center">${G('תרגיל קרקוע: מחזיר את הגוף לרגע הזה. לא צריך לכתוב, רק לשים לב.')}</p>
+        <div class="g-big"><span class="e">${e}</span><b>${n}</b></div><p class="g-t">${G(t)}</p>
+        <div class="g-dots">${Array.from({length:n},(_,i)=>`<button data-gd="${i}" aria-pressed="${i<gn}" aria-label="${i+1}"></button>`).join('')}</div>
+        <p class="hint" style="text-align:center">${G('{לחץ|לחצי} על עיגול על כל דבר {שמצאת|שמצאת}')}</p></div>`}
+    }else body=`<div class="calm-words"><p class="cw" id="cw">${esc(G(CALM_WORDS[wi]))}</p><div class="actions" style="justify-content:center"><button class="btn ghost small" id="cw-next">עוד משפט</button>${S.journal.some(j=>j.type==='letter')?'<button class="btn ghost small" data-act="read-letter">💌 מכתב שכתבתי לעצמי</button>':''}</div>${helpCard()}</div>`;
+    openSheet(sheetHead('🫧 פינת הרגעה')+tabs+body+(tab!=='words'?`<p class="hint calm-help">🫂 ${G('צריך לדבר עם מישהו? ער"ן')} <a href="tel:1201" dir="ltr">1201</a> · ${G('סה"ר')} <a href="https://sahar.org.il" target="_blank" rel="noopener">sahar.org.il</a></p>`:''),()=>{stop();calmSound(false)});
+    const s=$('sheet');
+    s.querySelectorAll('[data-ct]').forEach(b=>b.onclick=()=>{tab=b.dataset.ct;draw()});
+    if(tab==='breath'){
+      $('b-snd').onclick=()=>{calmSound(!calmAudio);$('b-snd').textContent=calmAudio?'🔇 בלי צליל':'🎵 צליל רך'};
+      $('b-go').onclick=()=>{if(calmTimer){stop();draw();return}$('b-go').textContent='⏸️ לעצור';breathe()};
+    }
+    if(tab==='ground'){
+      s.querySelectorAll('[data-gd]').forEach(b=>b.onclick=()=>{b.setAttribute('aria-pressed','true');gn=s.querySelectorAll('[data-gd][aria-pressed="true"]').length;
+        try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}
+        if(gn>=GROUND[gi][0])setTimeout(()=>{gi++;gn=0;draw()},450)});
+      if($('g-again'))$('g-again').onclick=()=>{gi=0;gn=0;draw()};
+    }
+    if(tab==='words')$('cw-next').onclick=()=>{wi=(wi+1)%CALM_WORDS.length;$('cw').textContent=G(CALM_WORDS[wi])};
+  };
+  const PH=[['שאיפה...',4000,1],['להחזיק',4000,1],['נשיפה...',6000,0]];
+  const breathe=()=>{let n=0,pi=0;
+    const step=()=>{const r=$('b-ring');if(!r){stop();return}
+      const [w,ms,big]=PH[pi];r.style.transitionDuration=ms+'ms';r.classList.toggle('big',!!big);$('b-word').textContent=w;
+      if(pi===0){n++;$('b-count').textContent=n<5?'נשימה '+n:G(n===5?'🌿 יפה מאוד. אפשר להמשיך כמה {שתרצה|שתרצי}':'נשימה '+n)}
+      try{if(window.TsaadApp&&TsaadApp.vibrate)TsaadApp.vibrate(15)}catch(e){}
+      pi=(pi+1)%3;calmTimer=setTimeout(step,ms)};
+    step()};
+  draw();
+}
+
+/* ---------- words that need a person, not an app: show the help lines right away ---------- */
+const DISTRESS=/להתאבד|התאבדות|לא רוצה לחיות|לא רוצה להמשיך לחיות|לא רוצה להיות (פה|בחיים|קיים|קיימת)|לגמור עם (זה|הכל|החיים)|לשים קץ|לסיים את החיים|לפגוע בעצמי|פוגע בעצמי|פוגעת בעצמי|לחתוך את עצמי|אין לי בשביל מה לחיות|אין טעם לחיות|אין טעם בחיים|עדיף שאמות|עדיף שלא אהיה|רוצה למות|הלוואי שאמות|נמאס לי מהחיים|kill myself|suicid/i;
+const isDistress=t=>DISTRESS.test(String(t||''));
+function openHelpNow(){
+  openSheet(sheetHead('🫂 אנחנו כאן איתך')+`<p>${G('נשמע שעובר עליך משהו ממש כבד. {אתה לא לבד|את לא לבד} בזה, ומגיע לך שמישהו יקשיב לך, עכשיו.')}</p>${helpCard()}
+    <p class="hint">בחירום: מד"א <a href="tel:101">101</a> · משטרה <a href="tel:100">100</a></p>
+    <div class="actions"><button class="btn" data-act="calm">🫧 לנשום רגע ביחד</button><button class="btn ghost" data-act="sheet-close">סגירה</button></div>`);
+}
+const distressCheck=t=>{if(!isDistress(t))return false;setTimeout(openHelpNow,350);return true};
+
+/* ---------- a summary for the therapist: mood, what was done, goals, the journal ---------- */
+function periodKeys(days){return Array.from({length:days},(_,i)=>addDays(T,i-days+1))}
+function moodChart(keys,w,h){
+  w=w||600;h=h||150;const pad=34,iw=w-pad-8,ih=h-26,step=keys.length>1?iw/(keys.length-1):0;
+  const pts=keys.map((k,i)=>S.moods[k]!=null?[pad+i*step,8+ih-(S.moods[k]/4)*ih,S.moods[k],k]:null);
+  let path='',on=false;pts.forEach(p=>{if(!p){on=false;return}path+=(on?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1);on=true});
+  const cols=['#B58BDE','#8FB4E8','#9FD7B5','#FFC861','#FF9A73'];
+  const grid=[0,1,2,3,4].map(m=>{const y=8+ih-(m/4)*ih;return `<line x1="${pad}" x2="${w-8}" y1="${y}" y2="${y}" stroke="#eadfd3" stroke-width="1"/><text x="${pad-6}" y="${y+5}" font-size="13" text-anchor="end" font-family="sans-serif">${MOODS[m][0]}</text>`}).join('');
+  const hard=keys.map((k,i)=>S.hard[k]?`<rect x="${pad+i*step-Math.max(step/2,2)}" y="8" width="${Math.max(step,4)}" height="${ih}" fill="#DCCBFF" opacity=".35"/>`:'').join('');
+  const lab=[0,Math.floor((keys.length-1)/2),keys.length-1].filter((v,i,a)=>a.indexOf(v)===i).map(i=>`<text x="${pad+i*step}" y="${h-4}" font-size="11" text-anchor="middle" fill="#7D708A" font-family="sans-serif">${kdate(keys[i]).toLocaleDateString('he-IL',{day:'numeric',month:'numeric'})}</text>`).join('');
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" role="img" aria-label="מצב הרוח לאורך התקופה">${grid}${hard}<path d="${path}" fill="none" stroke="#C9B6E8" stroke-width="2" stroke-linejoin="round"/>${pts.filter(Boolean).map(p=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${keys.length>40?3:4.5}" fill="${cols[p[2]]}"/>`).join('')}${lab}</svg>`;
+}
+function reportData(days){
+  const keys=periodKeys(days),from=keys[0],inP=k=>k>=from&&k<=T,atIn=at=>at&&inP(dkey(new Date(at)));
+  const moods=keys.filter(k=>S.moods[k]!=null).map(k=>S.moods[k]);
+  const dist=[0,0,0,0,0];moods.forEach(m=>dist[m]++);
+  const done=[];keys.forEach(k=>(S.tasks[k]||[]).forEach(t=>{if(t.done)done.push(t)}));
+  const active=keys.filter(goodDay).length,hard=keys.filter(k=>S.hard[k]).length;
+  const cats={};done.forEach(t=>{const k=GOAL_KINDS.find(([,r])=>r.test(t.text));const n=k?k[0]:'אחר';cats[n]=(cats[n]||0)+1});
+  const goals=S.goals.map(g=>({g,got:g.steps.filter(s=>s.done).length,total:g.steps.length,inP:g.steps.filter(s=>atIn(s.doneAt)).length,achieved:atIn(g.achievedAt)}));
+  const j=type=>S.journal.filter(x=>x.type===type&&inP(x.date)).sort((a,b)=>(a.at||0)-(b.at||0));
+  return {keys,from,moods,dist,avg:moods.length?moods.reduce((a,b)=>a+b,0)/moods.length:null,done,active,hard,cats,goals,feel:j('feel'),good:j('good'),thanks:j('thanks'),letters:j('letter'),wins:j('win'),insight:j('insight')};
+}
+function reportHTML(days,inc,forPrint){
+  const D=reportData(days),nm2=S.settings.name||'';
+  const sec=(t,b)=>`<section><h2>${t}</h2>${b}</section>`;
+  const li=a=>a.length?`<ul>${a.map(x=>`<li>${x}</li>`).join('')}</ul>`:'<p class="mut">אין רישומים בתקופה הזאת.</p>';
+  const per=fmtDate(D.from)+' עד '+fmtDate(T)+' '+kdate(T).getFullYear();
+  let h=`<header><div class="logo">🌱 צעד קטן</div><h1>סיכום ${days===7?'שבועי':days===30?'חודשי':'של 3 חודשים'}${nm2?' · '+esc(nm2):''}</h1><p class="mut">${per} · הופק מתוך האפליקציה "צעד קטן"</p></header>`;
+  h+=`<div class="kpis"><div><b>${D.active}</b><span>ימים עם פעולה</span></div><div><b>${D.done.length}</b><span>דברים שבוצעו</span></div><div><b>${D.goals.reduce((a,x)=>a+x.inP,0)}</b><span>צעדים במטרות</span></div><div><b>${D.hard}</b><span>ימים שסומנו "יום קשה"</span></div></div>`;
+  if(inc.mood)h+=sec('😊 מצב רוח',D.moods.length?moodChart(D.keys)+`<p>דווח ב-${D.moods.length} מתוך ${days} ימים. ממוצע: <b>${MOODS[Math.round(D.avg)][0]} ${MOODS[Math.round(D.avg)][1]}</b> (${(D.avg+1).toFixed(1)} מתוך 5).</p>
+    <p class="dist">${D.dist.map((n,i)=>n?`<span>${MOODS[i][0]} ${MOODS[i][1]}: ${n}</span>`:'').join('')}</p>${D.hard?'<p class="mut">רקע סגול בגרף = ימים שסומנו "יום קשה".</p>':''}`:'<p class="mut">לא דווח מצב רוח בתקופה הזאת.</p>');
+  if(inc.tasks){const top=Object.entries(D.cats).sort((a,b)=>b[1]-a[1]).slice(0,6);
+    h+=sec('✅ מה נעשה',`<p>${D.done.length} דברים בוצעו ב-${D.active} ימים${D.active?` (בממוצע ${(D.done.length/Math.max(1,D.active)).toFixed(1)} ביום פעיל)`:''}.</p>${top.length?`<p class="dist">${top.map(([n,c])=>`<span>${n}: ${c}</span>`).join('')}</p>`:''}
+      ${D.done.length?`<details${forPrint?' open':''}><summary>כל הפעולות</summary>${li(D.done.slice(-80).map(t=>esc(t.text)))}</details>`:''}`)}
+  if(inc.goals)h+=sec('🎯 מטרות',D.goals.length?`<table><tr><th>מטרה</th><th>התקדמות</th><th>בתקופה</th></tr>${D.goals.map(x=>`<tr><td>${x.g.emoji||'🎯'} ${esc(x.g.title)}${x.g.why?`<div class="mut">למה: ${esc(x.g.why)}</div>`:''}</td><td>${x.got}/${x.total}${x.g.achievedAt?' 🏆':''}</td><td>${x.inP?x.inP+' צעדים':''}${x.achieved?' · הושגה':''}</td></tr>`).join('')}</table>`:'<p class="mut">אין מטרות.</p>');
+  if(inc.feel)h+=sec('💓 בדיקות דופק בין שלבים',li(D.feel.map(x=>`<span class="mut">${fmtDate(x.date)}:</span> ${esc(x.text.replace(/^בדיקת דופק ב/,''))}`)));
+  if(inc.good)h+=sec('🌼 דברים טובים ותודה',li([...D.good.map(x=>['🌼',x]),...D.thanks.map(x=>['🙏',x]),...D.wins.map(x=>['🏆',x])].sort((a,b)=>(a[1].at||0)-(b[1].at||0)).map(([e,x])=>`<span class="mut">${fmtDate(x.date)}:</span> ${e} ${esc(x.text)}`)));
+  if(inc.letters)h+=sec('💌 מכתבים לעצמי',li(D.letters.map(x=>`<span class="mut">${fmtDate(x.date)}:</span> ${esc(x.text)}`)));
+  if(inc.note&&inc.note.trim())h+=sec('📝 מה חשוב לי לספר',`<p style="white-space:pre-wrap">${esc(inc.note.trim())}</p>`);
+  h+=`<footer>כל צעד נחשב 🌱</footer>`;
+  return h;
+}
+const REPORT_CSS=`body{font-family:"Varela Round",Arial,sans-serif;direction:rtl;color:#3B2F4A;background:#fff;margin:0;padding:24px;line-height:1.55}
+.rep{max-width:760px;margin:0 auto}header{border-bottom:3px solid #FFE1D3;padding-bottom:10px;margin-bottom:14px}.logo{color:#FF7F50;font-weight:bold}
+h1{font-size:1.5rem;margin:.2em 0}h2{font-size:1.1rem;margin:1.2em 0 .4em;color:#5a4670}.mut{color:#7D708A;font-size:.9rem}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.kpis div{background:#FFF7EF;border-radius:12px;padding:10px;text-align:center}.kpis b{display:block;font-size:1.5rem;color:#FF7F50}.kpis span{font-size:.8rem}
+.dist{display:flex;flex-wrap:wrap;gap:6px}.dist span{background:#F4EEF8;border-radius:99px;padding:2px 10px;font-size:.88rem}
+table{width:100%;border-collapse:collapse}td,th{border-bottom:1px solid #F2E2D2;padding:6px;text-align:right;vertical-align:top}th{font-size:.85rem;color:#7D708A}
+ul{padding-inline-start:20px;margin:.3em 0}li{margin:.2em 0}footer{margin-top:24px;text-align:center;color:#FF7F50}
+section{break-inside:avoid}@media print{body{padding:0}details>summary{display:none}}@media(max-width:520px){.kpis{grid-template-columns:repeat(2,1fr)}}`;
+const reportDoc=(days,inc)=>`<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>סיכום צעד קטן</title><style>${REPORT_CSS}</style></head><body><div class="rep">${reportHTML(days,inc,true)}</div></body></html>`;
+function reportText(days,inc){
+  const D=reportData(days),L=['🌱 סיכום מצעד קטן'+(S.settings.name?' · '+S.settings.name:''),fmtDate(D.from)+' עד '+fmtDate(T),''];
+  L.push(`✅ ${D.done.length} דברים ב-${D.active} ימים · 🌱 ${D.goals.reduce((a,x)=>a+x.inP,0)} צעדים במטרות · 💜 ${D.hard} ימים קשים`);
+  if(inc.mood&&D.moods.length)L.push(`😊 מצב רוח ממוצע: ${MOODS[Math.round(D.avg)][0]} ${MOODS[Math.round(D.avg)][1]} (${D.moods.length} ימים דווחו)`);
+  if(inc.goals&&D.goals.length){L.push('','🎯 מטרות:');D.goals.forEach(x=>L.push(`${x.g.emoji||'🎯'} ${x.g.title}: ${x.got}/${x.total}${x.g.achievedAt?' 🏆':''}`))}
+  if(inc.feel&&D.feel.length){L.push('','💓 בדיקות דופק:');D.feel.slice(-8).forEach(x=>L.push('• '+x.text.replace(/^בדיקת דופק ב/,'')))}
+  if(inc.good&&(D.good.length||D.thanks.length)){L.push('','🌼 דברים טובים:');[...D.good,...D.thanks].slice(-10).forEach(x=>L.push('• '+x.text))}
+  if(inc.note&&inc.note.trim())L.push('','📝 '+inc.note.trim());
+  return L.join('\n');
+}
+function shareTextOut(text){
+  if(window.TsaadApp&&TsaadApp.shareText){TsaadApp.shareText(text);return}
+  if(navigator.share){navigator.share({text}).catch(()=>{});return}
+  window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank','noopener');
+}
+function printDoc(html,name){
+  if(window.TsaadApp&&TsaadApp.printHtml){try{TsaadApp.printHtml(html,name);return}catch(e){}}
+  if(window.TsaadApp&&TsaadApp.saveFile){TsaadApp.saveFile(name+'.html','text/html',html);toast(G('💾 נשמר כקובץ. {עדכן|עדכני} את האפליקציה כדי לשמור ישר כ-PDF'));return}
+  const f=document.createElement('iframe');f.style.cssText='position:fixed;width:0;height:0;border:0;left:0;bottom:0';document.body.appendChild(f);
+  f.contentDocument.open();f.contentDocument.write(html);f.contentDocument.close();
+  setTimeout(()=>{try{f.contentWindow.focus();f.contentWindow.print()}catch(e){}setTimeout(()=>f.remove(),60000)},400);
+}
+function openReport(){
+  let days=30;const inc={mood:true,tasks:true,goals:true,feel:true,good:true,letters:false,note:''};
+  const draw=()=>{
+    openSheet(sheetHead('📄 סיכום למטפל')+`<p>${G('סיכום מסודר של התקופה האחרונה, לשתף עם מטפל, רופא או מישהו קרוב. {אתה בוחר|את בוחרת} מה נכנס.')}</p>
+      <div class="seg" id="rp-days">${[[7,'שבוע'],[30,'חודש'],[90,'3 חודשים']].map(([d,l])=>`<button data-d="${d}" aria-pressed="${d===days}">${l}</button>`).join('')}</div>
+      <div class="rp-inc">${[['mood','😊 מצב רוח וגרף'],['tasks','✅ מה עשיתי'],['goals','🎯 מטרות'],['feel','💓 בדיקות דופק'],['good','🌼 דברים טובים ותודה'],['letters','💌 מכתבים לעצמי']].map(([k,l])=>`<label class="check-row"><input type="checkbox" data-inc="${k}" ${inc[k]?'checked':''}>${l}</label>`).join('')}</div>
+      <label class="fieldcol" for="rp-note">📝 משהו שחשוב לי לספר (רשות)<textarea id="rp-note" placeholder="${G('למשל: מה עזר לי החודש, מה קשה לי, על מה {הייתי רוצה|הייתי רוצה} לדבר')}">${esc(inc.note)}</textarea></label>
+      <div class="rp-prev" id="rp-prev"><div class="rep">${reportHTML(days,inc)}</div></div>
+      <div class="rp-actions"><button class="btn" id="rp-pdf">🖨️ ${window.TsaadApp&&!TsaadApp.printHtml?'לשמור כקובץ':'PDF או הדפסה'}</button><button class="btn ghost" id="rp-share">📤 לשתף כטקסט</button></div>`);
+    $('rp-days').onclick=e=>{const b=e.target.closest('[data-d]');if(!b)return;days=+b.dataset.d;inc.note=$('rp-note').value;draw()};
+    $('sheet').querySelectorAll('[data-inc]').forEach(c=>c.onchange=()=>{inc[c.dataset.inc]=c.checked;inc.note=$('rp-note').value;draw()});
+    $('rp-note').oninput=e=>{inc.note=e.target.value};
+    $('rp-note').onblur=()=>{const p=$('rp-prev');if(p)p.querySelector('.rep').innerHTML=reportHTML(days,inc)};
+    $('rp-pdf').onclick=()=>{inc.note=$('rp-note').value;printDoc(reportDoc(days,inc),'tsaad-katan-summary-'+T)};
+    $('rp-share').onclick=()=>{inc.note=$('rp-note').value;shareTextOut(reportText(days,inc))};
+  };
+  draw();
+}
+
+/* ---------- weekly letter of insights: patterns from mood, tasks and the journal ---------- */
+function patterns(){
+  const N=35,keys=Array.from({length:N},(_,i)=>addDays(T,-i-1)),md=keys.filter(k=>S.moods[k]!=null);
+  const lines=[],av=x=>x.reduce((s,k)=>s+S.moods[k],0)/x.length;
+  const doneSome=(k,r)=>(S.tasks[k]||[]).some(t=>t.done&&r.test(t.text));
+  const test=(fn,txt,tip)=>{const a=md.filter(fn),b=md.filter(k=>!fn(k));if(a.length<3||b.length<3)return;const d=av(a)-av(b);if(d>=.45)lines.push({d,t:G(txt),tip:G(tip)})};
+  test(k=>doneSome(k,/לצאת|הליכה|ללכת|בחוץ|טיול|מרפסת|פארק|לים /),'בימים {שיצאת|שיצאת} מהבית, מצב הרוח שלך היה טוב יותר','אולי השבוע לשלב עוד יציאה קטנה, אפילו 5 דקות');
+  test(k=>(S.tasks[k]||[]).some(t=>t.done&&t.goalId),'בימים {שעשית|שעשית} צעד קטן למטרה, {הרגשת|הרגשת} טוב יותר','הצעד היומי למטרה עושה לך טוב, גם כשהוא קטן');
+  test(k=>doneSome(k,/חבר|אמא|אבא|להתקשר|שיחה|משפחה|להיפגש|הודעה|סבא|סבתא|אח|אחות/),'בימים שהיה לך קשר עם אנשים קרובים, מצב הרוח עלה','אולי הודעה קטנה למישהו קרוב השבוע?');
+  test(k=>doneSome(k,/ספורט|כושר|הליכ|ריצה|לרוץ|יוגה|להתאמן|אימון|לזוז|לרקוד/),'בימים {שזזת|שזזת} קצת, היה לך יותר טוב','תנועה קטנה עושה לך טוב');
+  test(k=>S.journal.some(j=>j.date===k&&(j.type==='good'||j.type==='thanks')),'בימים {שכתבת|שכתבת} בערב משהו טוב, מצב הרוח היה גבוה יותר','סקירת הערב שווה את הדקה שהיא לוקחת');
+  test(k=>doneSome(k,/לישון|שינה|מוקדם|מסכים/),'בימים שהקפדת על שינה, הרגשת טוב יותר','שגרת ערב רגועה יכולה לעזור');
+  lines.sort((a,b)=>b.d-a.d);
+  const wk=Array.from({length:7},(_,i)=>addDays(T,-i-1)),pw=Array.from({length:7},(_,i)=>addDays(T,-i-8));
+  const cnt=L=>L.reduce((a,k)=>a+(S.tasks[k]||[]).filter(t=>t.done).length,0);
+  const byDay=[0,0,0,0,0,0,0];keys.forEach(k=>byDay[kdate(k).getDay()]+=(S.tasks[k]||[]).filter(t=>t.done).length);
+  const best=byDay.indexOf(Math.max(...byDay)),names=['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+  const steps=S.goals.reduce((a,g)=>a+g.steps.reduce((b,s)=>b+(s.doneDays||[]).filter(d=>wk.includes(d)).length,0),0);
+  const wm=wk.filter(k=>S.moods[k]!=null);
+  return {lines:lines.slice(0,3),done:cnt(wk),prev:cnt(pw),good:wk.filter(goodDay).length,steps,hard:wk.filter(k=>S.hard[k]).length,mood:wm.length?av(wm):null,
+    bestDay:Math.max(...byDay)>=4&&byDay.filter(x=>x===Math.max(...byDay)).length===1?names[best]:null,
+    goodThings:S.journal.filter(j=>(j.type==='good'||j.type==='thanks')&&wk.includes(j.date)).map(j=>j.text).slice(0,4)};
+}
+function localLetter(P){
+  const nm3=S.settings.name,pet=MASCOTS[S.settings.mascot]||MASCOTS.plant;
+  const L=[(nm3?nm3+' '+G('{יקר|יקרה}'):G('{חבר יקר|חברה יקרה}'))+',',''];
+  L.push(P.done?G('השבוע {עשית|עשית} '+(P.done===1?'דבר אחד':P.done+' דברים')+', ב-'+P.good+' ימים טובים.')+(P.prev&&P.done>P.prev?' זה יותר מהשבוע שעבר 📈':''):G('השבוע היה שקט יותר, וגם זה בסדר. לפעמים צריך לנוח.'));
+  if(P.steps)L.push(G('{התקדמת|התקדמת} '+P.steps+' צעדים קטנים בדרך למטרות שלך 🌱'));
+  if(P.hard)L.push(G('היו גם '+(P.hard===1?'יום קשה אחד':P.hard+' ימים קשים')+'. {עברת|עברת} '+(P.hard===1?'אותו':'אותם')+', וזה לא מובן מאליו 💜'));
+  if(P.lines.length){L.push('','🔍 שמתי לב לכמה דברים:');P.lines.forEach(x=>L.push('• '+x.t))}
+  if(P.bestDay)L.push('• '+G('היום שבו הכי הולך לך הוא יום '+P.bestDay));
+  if(P.goodThings.length){L.push('',G('🌼 ומהדברים הטובים {שכתבת|שכתבת}')+': "'+P.goodThings[0]+'"')}
+  L.push('',P.lines.length?'💡 '+P.lines[0].tip+'.':G('💡 לשבוע הבא: מספיק צעד אחד קטן ביום.'),'',G('גאה {בך|בך},'),pet.n.split(',')[0]+' '+pet.e);
+  return L.join('\n');
+}
+async function makeInsight(){
+  const P=patterns();let text=null;
+  if(coachOn()&&window.TKai&&TKai.ask){
+    const facts=`נתוני השבוע: ${P.done} דברים בוצעו (שבוע קודם: ${P.prev}), ${P.good} ימים טובים, ${P.steps} צעדים למטרות, ${P.hard} ימים קשים${P.mood!=null?', מצב רוח ממוצע '+(P.mood+1).toFixed(1)+' מתוך 5':''}.
+דפוסים שהאפליקציה זיהתה (מחושבים מהנתונים, אפשר לסמוך עליהם):\n${P.lines.map(x=>'- '+x.t).join('\n')||'- לא נמצאו דפוסים ברורים'}${P.bestDay?'\n- היום הכי פעיל: '+P.bestDay:''}
+דברים טובים שהמשתמש כתב השבוע: ${P.goodThings.join(' | ')||'אין'}`;
+    try{text=await TKai.ask(`כתוב/י לי "מכתב השבוע": מכתב חם ואישי (6 עד 10 שורות) שמסכם את השבוע שלי ומשקף לי דפוסים שאולי לא שמתי לב אליהם. להתבסס רק על הנתונים, בלי להמציא. לפתוח בפנייה בשם (אם ידוע), לציין משהו אחד שאני יכול/ה להיות גאה בו, 1 עד 3 תובנות מהדפוסים, הצעה עדינה אחת לשבוע הבא, ולחתום בשם הדמות המלווה "${(MASCOTS[S.settings.mascot]||MASCOTS.plant).n.split(',')[0]}". בלי ACTION, בלי כותרות.\n\n${facts}`)}catch(e){text=null}
+  }
+  if(!text||text.length<40)text=localLetter(P);
+  addJournal('insight',text);S.insightAt=T;save();return text;
+}
+function insightDue(){
+  if(S.seeded)return false;if(S.insightAt&&between(S.insightAt,T)<7)return false;
+  const wk=Array.from({length:7},(_,i)=>addDays(T,-i-1));return wk.filter(k=>goodDay(k)||S.moods[k]!=null).length>=3;
+}
+async function openInsight(fresh){
+  const last=S.journal.find(j=>j.type==='insight');
+  const show=(text,date)=>openSheet(sheetHead('🔍 מכתב השבוע')+`<div class="letter insight">${esc(text)}</div><p class="hint">${date?'נכתב ב-'+fmtDate(date)+' · ':''}${G('המכתב נשמר ביומן, תחת "תובנות".')}</p>
+    <div class="actions"><button class="btn" data-act="sheet-close" style="flex:1">תודה 💛</button><button class="btn ghost" id="in-share">📤 לשתף</button></div>`);
+  const wire=t=>{const b=$('in-share');if(b)b.onclick=()=>shareTextOut('🔍 מכתב השבוע שלי מצעד קטן\n\n'+t)};
+  if(last&&!fresh&&!insightDue()){show(last.text,last.date);wire(last.text);return}
+  openSheet(sheetHead('🔍 מכתב השבוע')+`<div class="big-e">${petIcon(S.settings.mascot)}</div><div class="thinking" style="text-align:center">${G('קורא את השבוע שלך וכותב לך מכתב...')}</div>`);
+  const text=await makeInsight();renderAll();if($('sheet').hidden)return;show(text,T);wire(text);
+}
+
+/* ---------- the coach speaks first: a morning note ---------- */
+function morningLocal(){
+  const y=addDays(T,-1),ym=S.moods[y],yd=(S.tasks[y]||[]).filter(t=>t.done).length,V=voice();
+  const g=S.goals.find(x=>!x.achievedAt&&curStep(x)),s=g&&curStep(g);
+  const L=[];
+  if(S.hard[y]||ym===0||ym===1)L.push(G('אתמול היה קשה. היום אפשר להתחיל ממש בקטן, ואני פה איתך 💜'));
+  else if(yd>=3)L.push(G('אתמול {עשית|עשית} '+yd+' דברים. זה נשאר שלך 🌸'));
+  else if(yd)L.push(G('אתמול {עשית|עשית} '+(yd===1?'דבר אחד':yd+' דברים')+'. גם זה נחשב 🌱'));
+  else L.push(G('יום חדש, דף חדש. בלי חובות מאתמול 🌤️'));
+  if(s)L.push(G('הצעד הקטן של היום בדרך אל "'+g.title+'": '+s.text+'.'));
+  else L.push(G(V.start));
+  return L.join(' ');
+}
+let morningBusy=false;
+function morningAI(){
+  if(morningBusy||S.settings.morning===false||!coachOn()||!window.TKai||!TKai.ask)return;
+  if(S.morning&&S.morning.date===T)return;
+  morningBusy=true;
+  TKai.ask('כתוב/י לי הודעת בוקר אישית וקצרה (2 עד 3 משפטים), כאילו את/ה פונה אליי ראשון/ה הבוקר. להתייחס בעדינות לאיך היה אתמול (מצב רוח, מה עשיתי), ולהזכיר את הצעד הקטן של היום באחת המטרות אם יש. חם, בלי לחץ, בסגנון הדיבור שבחרתי. בלי ACTION ובלי כותרת.',true)
+    .then(t=>{if(t&&t.length>15){S.morning={date:T,text:t.slice(0,600)};save();renderToday()}}).catch(()=>{}).then(()=>{morningBusy=false});
+}
+function morningCard(){
+  const h=new Date().getHours();
+  if(S.settings.morning===false||S.seeded||!S.onboarded||h<5||h>=13||S.morningSeen===T)return '';
+  setTimeout(morningAI,1200);
+  const text=S.morning&&S.morning.date===T?S.morning.text:morningLocal();
+  return `<div class="banner morning"><div class="row1"><span class="bico pet-mini">${petIcon(S.settings.mascot)}</span><div><h3>💌 ${G('בוקר טוב'+(S.settings.name?' '+esc(S.settings.name):''))}</h3><p class="sub" style="white-space:pre-wrap">${esc(text)}</p></div><button class="del" data-act="morning-ok" aria-label="סגירה">${X}</button></div>
+    <div class="actions"><button class="btn small" data-act="morning-ok">תודה 💛</button>${coachOn()?'<button class="btn small ghost" data-act="coach">✨ לענות למאמן</button>':''}</div></div>`;
+}
+
+/* ---------- the living garden: every goal is a plant that grows with each step ---------- */
+const hashN=s=>{let h=2166136261;for(const c of String(s)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}h^=h>>>13;h=Math.imul(h,0x5bd1e995);h^=h>>>15;return h>>>0};
+function plantG(stage,col,em,seed){
+  const sway=reduce?'':' class="sway"';const fl=(x,y,r)=>`<g transform="translate(${x} ${y})">${[0,72,144,216,288].map(a=>`<ellipse cx="0" cy="${-r}" rx="${r*.6}" ry="${r}" fill="var(--petal)" transform="rotate(${a})"/>`).join('')}<circle r="${r*.7}" fill="var(--core)"/></g>`;
+  let p='';
+  if(stage===0)p=`<ellipse cx="0" cy="0" rx="13" ry="4" fill="var(--soil)"/><ellipse cx="0" cy="-3" rx="3.5" ry="2.6" fill="#8B5E3C"/>`;
+  else if(stage===1)p=`<ellipse cx="0" cy="0" rx="12" ry="3.5" fill="var(--soil)"/><g${sway}><path d="M0 0 V-14" stroke="var(--stem)" stroke-width="2.4" stroke-linecap="round"/><ellipse cx="-5" cy="-14" rx="6" ry="3" fill="var(--leaf)" transform="rotate(-30 -5 -14)"/><ellipse cx="5" cy="-15" rx="6" ry="3" fill="var(--leaf)" transform="rotate(30 5 -15)"/></g>`;
+  else if(stage===2)p=`<ellipse cx="0" cy="0" rx="12" ry="3.5" fill="var(--soil)"/><g${sway}><path d="M0 0 Q-2 -14 0 -30" stroke="var(--stem)" stroke-width="2.6" fill="none" stroke-linecap="round"/>${[[-7,-10,-30],[7,-16,30],[-7,-22,-35],[6,-27,35]].map(([x,y,r])=>`<ellipse cx="${x}" cy="${y}" rx="8" ry="3.8" fill="var(--leaf)" transform="rotate(${r} ${x} ${y})"/>`).join('')}<circle cx="0" cy="-32" r="3.5" fill="${col}"/></g>`;
+  else if(stage===3)p=`<ellipse cx="0" cy="0" rx="18" ry="4" fill="var(--soil)"/><path d="M0 0 V-12" stroke="#8B5E3C" stroke-width="3"/><g${sway}><circle cx="-10" cy="-18" r="11" fill="var(--leaf)"/><circle cx="10" cy="-18" r="11" fill="var(--leaf)"/><circle cx="0" cy="-28" r="13" fill="var(--hill1)"/>${fl(-8,-26,3)}${fl(9,-17,3)}${fl(2,-36,2.6)}</g>`;
+  else if(stage===4)p=`<ellipse cx="0" cy="0" rx="18" ry="4" fill="var(--soil)"/><path d="M-3 0 Q-2 -18 0 -30 Q2 -18 3 0Z" fill="#9A6B45"/><g${sway}><circle cx="-12" cy="-34" r="13" fill="var(--leaf)"/><circle cx="12" cy="-34" r="13" fill="var(--leaf)"/><circle cx="0" cy="-46" r="16" fill="var(--hill1)"/><circle cx="-6" cy="-50" r="5" fill="#fff" opacity=".18"/></g>`;
+  else p=`<ellipse cx="0" cy="0" rx="22" ry="4.5" fill="var(--soil)"/><path d="M-4 0 Q-3 -22 0 -38 Q3 -22 4 0Z" fill="#9A6B45"/><g${sway}><circle cx="-16" cy="-42" r="15" fill="var(--leaf)"/><circle cx="16" cy="-42" r="15" fill="var(--leaf)"/><circle cx="0" cy="-58" r="19" fill="var(--hill1)"/>
+    ${fl(-14,-46,3.6)}${fl(12,-40,3.4)}${fl(-2,-66,3.8)}${fl(10,-58,3)}${fl(-12,-60,3)}<text x="0" y="-38" font-size="13" text-anchor="middle" style="font-family:var(--emoji)">${em}</text></g>
+    <text x="20" y="-70" font-size="11" class="twinkle" style="font-family:var(--emoji)">✨</text>`;
+  return p;
+}
+function gardenStage(g){const total=g.steps.length,got=g.steps.filter(s=>s.done).length;if(g.achievedAt)return 5;if(!total||!got)return (g.steps.some(s=>(s.doneDays||[]).length)?1:0);const r=got/total;return r<.25?1:r<.5?2:r<.75?3:4}
+function gardenHTML(){
+  const goals=S.goals.slice().sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+  const per=3,rows=Math.max(1,Math.ceil(goals.length/per)),RH=118,W=320,H=rows*RH+40;
+  const flowers=Math.min(40,Array.from({length:60},(_,i)=>addDays(T,-i)).filter(goodDay).length);
+  let f='';for(let i=0;i<flowers;i++){const h=hashN('f'+i),x=8+h%304,y=56+((h>>>9)%(H-62)),c=['var(--petal)','var(--joy1)','var(--joy3)','var(--joy5)','#fff'][i%5];f+=`<g transform="translate(${x} ${y})"><circle r="3" fill="${c}"/><circle r="1" fill="var(--core)"/></g>`}
+  const plants=goals.map((g,i)=>{const r=Math.floor(i/per),c=i%per,x=262-c*102-(r%2?22:0),y=r*RH+128;const st=gardenStage(g);
+    return `<g class="gp" data-gp="${g.id}" transform="translate(${x} ${y})" role="button" tabindex="0" aria-label="${esc(g.title)}"><rect x="-44" y="-112" width="88" height="130" fill="transparent"/><g transform="scale(1.3)">${plantG(st,JOYS[(g.color||0)%JOYS.length],g.emoji||'🌱',g.id)}</g>
+      <g transform="translate(0 12)"><rect x="-16" y="-7" width="32" height="14" rx="4" fill="var(--surface)" opacity=".9"/><text x="0" y="4" font-size="10" text-anchor="middle" style="font-family:var(--emoji)">${g.emoji||'🌱'}</text></g></g>`}).join('');
+  return `<svg class="garden-svg" viewBox="0 0 ${W} ${H}" aria-label="הגינה שלי">
+    <defs><linearGradient id="gsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--sky1)"/><stop offset="1" stop-color="var(--sky2)"/></linearGradient></defs>
+    <rect width="${W}" height="${H}" fill="url(#gsky)"/><circle cx="286" cy="26" r="13" fill="var(--sun)"/>
+    <g class="cloud drift" fill="var(--cloud)"><ellipse cx="70" cy="24" rx="20" ry="8"/><ellipse cx="82" cy="19" rx="12" ry="9"/></g>
+    <path d="M0 50 Q80 34 160 46 T320 42 V${H} H0Z" fill="var(--hill2)"/>${f}${plants}
+    ${goals.length?'':`<text x="160" y="${H-20}" text-anchor="middle" font-size="12" fill="var(--fg)">כל מטרה חדשה תהפוך כאן לצמח 🌱</text>`}</svg>`;
+}
+function renderGarden(){const box=$('garden-big');if(!box)return;
+  const got=S.goals.filter(g=>g.achievedAt).length;
+  box.innerHTML=`<div class="gb-head"><h2 style="font-size:1.1rem"><span class="e">🌳</span> הגינה שלי</h2><span class="hint" style="margin:0">${S.goals.length?(got?got+' עצים פורחים · ':'')+G('{לחץ|לחצי} על צמח'):''}</span></div>${gardenHTML()}
+    <p class="hint">${G('כל מטרה היא צמח שגדל עם כל צעד, ומטרה שהושגה פורחת לתמיד. כל יום טוב מוסיף פרח קטן לדשא.')}</p>`}
+function openGardenGoal(g){
+  const total=g.steps.length,got=g.steps.filter(s=>s.done).length,cur=curStep(g),st=gardenStage(g);
+  const names=['זרע שמחכה לצעד הראשון','נבט קטן','שתיל שגדל','שיח פורח','עץ צעיר','עץ פורח 🌸'];
+  openSheet(sheetHead((g.emoji||'🌱')+' '+esc(g.title))+`<svg viewBox="-60 -95 120 110" style="width:150px;display:block;margin:0 auto">${plantG(st,JOYS[(g.color||0)%JOYS.length],g.emoji||'🌱',g.id)}</svg>
+    <p style="text-align:center"><b>${names[st]}</b> · ${got} מתוך ${total} צעדים</p>
+    ${g.createdAt?`<p class="hint" style="text-align:center">🌱 ניטע ב-${fmtDate(dkey(new Date(g.createdAt)))}${g.achievedAt?' · 🏆 פרח ב-'+fmtDate(dkey(new Date(g.achievedAt))):''}</p>`:''}
+    ${g.why?`<div class="why-big"><span class="e">💛</span> <b>למה זה חשוב לי:</b> ${esc(g.why)}</div>`:''}
+    ${cur?`<div class="next"><span>👣 הצעד הבא: <b>${esc(cur.text)}</b></span></div>`:''}
+    <button class="btn wide" id="gg-open">לראות את המטרה</button>`);
+  $('gg-open').onclick=()=>{closeSheet();open.add(g.id);showTab('goals');renderGoals();setTimeout(()=>{const el=document.querySelector(`.goal[data-g="${g.id}"]`);el&&el.scrollIntoView({block:'center'})},50)};
+}
+
+/* ---------- home screen widget (Android app): today's step and mood ---------- */
+let widgetT=0;
+function pushWidget(){
+  if(!window.TsaadApp||!TsaadApp.setWidget)return;clearTimeout(widgetT);
+  widgetT=setTimeout(()=>{try{
+    const L=today(),done=L.filter(t=>t.done).length,next=L.find(t=>!t.done&&t.auto)||L.find(t=>!t.done&&t.energy==='light')||L.find(t=>!t.done);
+    const g=next&&next.goalId&&goalOf(next.goalId);
+    TsaadApp.setWidget(JSON.stringify({date:T,title:next?(g?(g.emoji||'🎯')+' הצעד של היום':'☀️ הבא בתור'):(L.length?'🌸 הכל סומן להיום':'🌤️ יום חדש'),
+      text:next?next.text:(L.length?G('{עשית|עשית} את כל מה {שתכננת|שתכננת}'):G('מה {תרצה|תרצי} לעשות היום?')),
+      progress:L.length?'✨ '+done+' מתוך '+L.length:'🌱 צעד קטן',mood:S.moods[T]==null?-1:S.moods[T],ask:G('איך {אתה מרגיש|את מרגישה}?')}))}catch(e){}},400);
+}
+function takeWidgetMood(){
+  if(!window.TsaadApp||!TsaadApp.takeWidgetMood)return;
+  try{const r=TsaadApp.takeWidgetMood();if(!r)return;const o=JSON.parse(r);if(o&&o.date&&o.m>=0&&o.m<=4&&between(o.date,T)<=2&&S.moods[o.date]!==o.m){S.moods[o.date]=o.m;save();renderAll()}}catch(e){}
+}
+
+/* ---------- what's new in 7.0: each item can be tried right away ---------- */
+const NEW_TRY={calm:()=>openCalm(),report:()=>openReport(),insight:()=>openInsight(),garden:()=>{showTab('progress');setTimeout(()=>{const el=$('garden-big');el&&el.scrollIntoView({block:'start'})},60)},buddy:()=>window.TKbuddy&&TKbuddy.open(),morning:()=>{S.morningSeen='';save();showTab('today');renderToday()}};
+
+
 /* other scripts (cloud sync, Android bridge) reach the app through this */
 window.TK={
   get:()=>S, G, esc, toast, voice:()=>voice(), petIcon, openSheet, closeSheet, sheetHead, X, versionLine, version:WHATS_NEW.v,
   render:()=>{applyLook();renderAll()},
   /* replace all data (from the cloud or a backup) without marking it as a new local change */
   replace(d,fromCloud){const keepDevice={lastSeenPrev:S.lastSeenPrev};S=Object.assign({},d,keepDevice);
-    S.settings=Object.assign({sound:false,confetti:true,address:'m',name:'',faith:false,mascot:'plant',eveningHour:19,noon:true},S.settings||{});
+    S.settings=Object.assign({sound:false,confetti:true,address:'m',name:'',faith:false,mascot:'plant',eveningHour:19,noon:true,morning:true,missYou:true},S.settings||{});
     ['moods','hard','askNext','injectSkip','reviewed','del'].forEach(k=>S[k]=S[k]||{});S.journal=S.journal||[];
     quiet=!!fromCloud;rollover();inject();save();quiet=false;lastStage=-1;applyLook();renderAll()},
   markSaved(){quiet=true;save();quiet=false},
@@ -1618,11 +2043,14 @@ window.TK={
       steps:(steps.length?steps:localBreakdown(o.title).map(x=>x.text)).map(text=>({id:uid(),text,doneDays:[],done:false}))};
     S.goals.unshift(g);inject();save();renderAll()},
   tab:()=>curTab,
+  save:()=>save(), addJournal:(type,text)=>{addJournal(type,text);save();renderAll()}, celebrate:(el,msg,big)=>celebrate(el||document.querySelector('.garden'),msg,big),
+  isDistress, helpHTML:()=>helpCard(), openCalm:t=>openCalm(t), T:()=>T, MOODS, JOYS, goodDay:k=>goodDay(k),
   setAccent(a){S.settings.accent=a;save();applyLook()},
 };
 
 /* ---------- one click handler ---------- */
 document.addEventListener('click',e=>{
+  const gp=e.target.closest('[data-gp]');if(gp){const g=goalOf(gp.dataset.gp);if(g)openGardenGoal(g);return}
   const b=e.target.closest('[data-act]');if(!b||b.tagName==='FORM')return;const act=b.dataset.act;
   const li=b.closest('.task'),t=li&&today().find(x=>x.id===li.dataset.id);
   const art=b.closest('[data-g]'),g=art&&goalOf(art.dataset.g);
@@ -1640,6 +2068,13 @@ document.addEventListener('click',e=>{
     case 'keep':if(t){t.carried=3;save();renderAll();toast('💪 נשאר איתך. קדימה!')}break;
     case 'hardday':{S.hard[T]=!S.hard[T];save();renderAll();if(S.hard[T])toast('💜 מצב יום קשה. רק הדברים הקלים נשארו.');break}
     case 'read-letter':openLetterRead();break;
+    case 'calm':openCalm();break;
+    case 'report':openReport();break;
+    case 'insight':openInsight();break;
+    case 'insight-new':openInsight(true);break;
+    case 'buddy':if(window.TKbuddy)TKbuddy.open();else toast('☁️ צריך חיבור לרשת');break;
+    case 'coach':S.morningSeen=T;save();renderToday();if(window.TKai)TKai.open();break;
+    case 'morning-ok':S.morningSeen=T;save();renderToday();break;
     case 'letter-new':openLetterNew();break;
     case 'go-journal':showTab('progress');break;
     case 'absence-ok':S.absenceShown=true;S.lastSeenPrev=T;save();renderAll();break;
@@ -1668,14 +2103,14 @@ document.addEventListener('click',e=>{
   }
 });
 
-function renderAll(){renderHeader();renderToday();renderGoals();renderProgress()}
-applyLook();renderEnergyPick();renderAll();
+function renderAll(){renderHeader();renderToday();renderGoals();renderProgress();renderGarden();pushWidget()}
+takeWidgetMood();applyLook();renderEnergyPick();renderAll();
 S.lastSeen=T;save();
 $('ver-line').textContent=versionLine();
 if(!S.onboarded)setTimeout(openWizard,250);else setTimeout(maybeWhatsNew,400);
 
 /* new day while open, or back to front */
-function dayCheck(){const k=dkey();if(k!==T){T=k;rollover();inject();S.lastSeen=T;save();renderAll()}else renderToday()}
+function dayCheck(){takeWidgetMood();const k=dkey();if(k!==T){T=k;rollover();inject();S.lastSeen=T;save();renderAll()}else{renderToday();pushWidget()}}
 setInterval(dayCheck,60000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)dayCheck()});
 window.onAndroidResume=dayCheck;
@@ -1979,6 +2414,16 @@ async function reschedule(){
     if(st.noon!==false){const t=at(12,30);if(t>now&&!quiet(t))list.push({id:100+i,at:t,title:'צעד קטן',body:G(NOON[(d.getDate()+i)%NOON.length])})}
     const eh=st.eveningHour||19;const t2=at(eh,0);if(t2>now&&!quiet(t2))list.push({id:200+i,at:t2,title:'צעד קטן',body:G(EVE[d.getDate()%EVE.length])});
   }
+  // morning note: today's small step (the app writes a fuller note inside)
+  const T0=ymd(new Date()),L0=(S.tasks[T0]||[]),step=(L0.find(t=>!t.done&&t.auto)||{}).text||((S.goals||[]).map(g=>!g.achievedAt&&(g.steps||[]).find(x=>!x.done)).find(Boolean)||{}).text;
+  const name=st.name?' '+st.name:'';
+  const MORN=['☀️ בוקר טוב'+name+'. אין לחץ, רק צעד קטן אחד','🌱 בוקר טוב'+name+'. מה הדבר הכי קטן שאפשר היום?','💛 בוקר טוב'+name+'. {אתה|את} לא {צריך|צריכה} להספיק הכל','🌤️ בוקר טוב'+name+'. יום חדש, דף חדש'];
+  if(st.morning!==false)for(let i=0;i<7;i++){const d=new Date();d.setDate(d.getDate()+i);d.setHours(9,15,0,0);const t=+d;
+    if(t>now&&!quiet(t))list.push({id:500+i,at:t,title:'💌 הודעת בוקר',body:G(i<=1&&step?'☀️ בוקר טוב'+name+'. הצעד הקטן של היום: '+step:MORN[(d.getDate()+i)%MORN.length])})}
+  // "we thought of you": these are pushed forward on every visit, so they only arrive after a few days away
+  if(st.missYou!==false){const away=(days,id,title,body)=>{let t=new Date();t.setDate(t.getDate()+days);t.setHours(12,0,0,0);t=+t;let n=0;while(quiet(t)&&n++<8)t+=36e5*3;list.push({id,at:t,title,body:G(body)})};
+    away(3,400,'חשבנו עליך 💛','אין מה להשלים ואין מה להסביר. אפשר לחזור מתי {שתרצה|שתרצי}, אפילו רק לסמן איך {אתה מרגיש|את מרגישה} 🌱');
+    away(7,401,'עדיין כאן בשבילך 🤗','הגינה שלך מחכה, בלי שום לחץ. צעד אחד קטן מספיק כדי להתחיל מחדש.')}
   w.forEach(([a],i)=>{const t=a-36e5;if(t>now&&new Date(a).getDay()===5)list.push({id:300+i,at:t,title:'שבת שלום 🕯️',body:G('עוד מעט שבת. כל מה {שעשית|שעשית} השבוע נחשב. מגיע לך לנוח 💛')})});
   try{app.schedule(JSON.stringify(list))}catch(e){}
 }
@@ -2064,6 +2509,7 @@ function actionCard(a,i,mi){
 }
 function bubbles(){
   return chat.map((m,mi)=>{if(m.role==='user')return `<div class="ai-msg me">${esc(m.text)}</div>`;
+    if(m.role==='help')return `<div class="ai-help">${G('נשמע שקשה לך מאוד עכשיו 💜 {אתה לא לבד|את לא לבד}. אפשר לדבר עם אדם אמיתי, עכשיו:')}${TK.helpHTML?TK.helpHTML():''}</div>`;
     const {clean,actions}=parse(m.text);
     return `<div class="ai-msg bot">${esc(clean)||'<span class="thinking">חושב...</span>'}</div>${actions.map((a,i)=>m.done&&m.done.includes(i)?'<div class="ai-act done">✓ נוסף</div>':actionCard(a,i,mi)).join('')}`}).join('');
 }
@@ -2088,11 +2534,11 @@ function draw(){
 function refresh(){const lg=$('ai-log');if(!lg)return;lg.innerHTML=bubbles();lg.scrollTop=lg.scrollHeight}
 async function send(text){
   text=(text||'').trim();if(!text||busy)return;busy=true;
-  chat.push({role:'user',text});const bot={role:'model',text:''};chat.push(bot);keep();draw();$('ai-send').disabled=true;
+  chat.push({role:'user',text});if(TK.isDistress&&TK.isDistress(text))chat.push({role:'help'});const bot={role:'model',text:''};chat.push(bot);keep();draw();$('ai-send').disabled=true;
   try{
     const {data:{session}}=await TKcloud.client.auth.getSession();
     const r=await fetch(SB_URL+'/functions/v1/coach',{method:'POST',headers:{'Content-Type':'application/json',apikey:SB_KEY,Authorization:'Bearer '+session.access_token},
-      body:JSON.stringify({messages:chat.slice(0,-1).map(m=>({role:m.role,text:m.text})),context:context()})});
+      body:JSON.stringify({messages:chat.slice(0,-1).filter(m=>m.role!=='help').map(m=>({role:m.role,text:m.text})),context:context()})});
     if(!r.ok){const e=await r.json().catch(()=>({}));
       bot.text=e.error==='limit'?G('היום כבר {שאלת|שאלת} '+e.limit+' שאלות, וזה המון 💛 מחר יש עוד.'):e.error==='no_key'?'המאמן עוד לא הופעל. זה יקרה בקרוב 🌱':'🌧️ המאמן לא זמין כרגע. אפשר לנסות שוב עוד רגע.';
     }else{
@@ -2104,6 +2550,16 @@ async function send(text){
   busy=false;keep();draw();
 }
 
+// one full answer without the chat window (the morning note, the weekly letter); uses one question of the day
+async function ask(prompt){
+  if(!TKcloud.user()||!navigator.onLine)throw {code:'unavailable'};
+  const {data:{session}}=await TKcloud.client.auth.getSession();if(!session)throw {code:'unavailable'};
+  const r=await fetch(SB_URL+'/functions/v1/coach',{method:'POST',headers:{'Content-Type':'application/json',apikey:SB_KEY,Authorization:'Bearer '+session.access_token},
+    body:JSON.stringify({messages:[{role:'user',text:prompt}],context:context()})});
+  if(!r.ok)throw {code:'busy'};
+  const x=r.headers.get('x-remaining');if(x)left=+x;
+  const t=await r.text();return parse(t).clean.trim();
+}
 // short answers the app asks for by itself: steps for a new goal, tiny actions for a stuck task
 async function quick(mode,payload){
   if(!TKcloud.user()||!navigator.onLine)throw {code:'unavailable'};
@@ -2195,10 +2651,131 @@ function drawPlanner(){
 
 const pb=document.getElementById('plan-btn');if(pb)pb.onclick=openPlanner;
 
-window.TKai={plan:openPlanner,ready:()=>!!TKcloud.user()&&navigator.onLine,steps:(title,why,days)=>quick('steps',{title,why,days}),smaller:text=>quick('smaller',{text}),open:draw};
+window.TKai={ask,plan:openPlanner,ready:()=>!!TKcloud.user()&&navigator.onLine,steps:(title,why,days)=>quick('steps',{title,why,days}),smaller:text=>quick('smaller',{text}),open:draw};
 
 const fab=document.createElement('button');fab.className='ai-fab';fab.id='ai-fab';fab.setAttribute('aria-label','המאמן העדין');fab.innerHTML='<span class="e">✨</span><span class="l">המאמן</span>';
 fab.onclick=draw;document.body.appendChild(fab);
+})();
+</script>
+<script>
+/* "חבר לדרך": a close person gets a secret link, sees only what was chosen (no task texts), and can send a heart or a kind word.
+   Server: buddy_links (owner's links + the shared snapshot), buddy_cheers, buddy_view()/buddy_cheer() for the buddy's page. */
+(function(){
+if(!window.TK||!window.TKcloud)return;
+const $=id=>document.getElementById(id);
+const {G,esc,toast,openSheet,closeSheet,sheetHead}=TK;
+const SITE=window.TK_SITE||(location.origin+location.pathname.replace(/[^/]*$/,''));
+const sb=TKcloud.client;
+const linkOf=t=>SITE+'buddy.html#'+t;
+const z=n=>String(n).padStart(2,'0'),ymd=d=>d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate());
+const conf=()=>{const S=TK.get();return S.buddies||(S.buddies={})};
+let links=null,missing=false;
+
+function snapshot(c){
+  const S=TK.get(),st=S.settings,T=TK.T(),out={name:st.name||'',address:st.address||'m',pet:st.mascot||'plant',at:Date.now()};
+  if(c.day){const L=S.tasks[T]||[];out.today={done:L.filter(t=>t.done).length,total:L.length};
+    out.week=Array.from({length:7},(_,i)=>{const d=new Date();d.setDate(d.getDate()-6+i);const k=ymd(d);const x={d:k,c:(S.tasks[k]||[]).filter(t=>t.done).length};if(c.mood&&S.moods[k]!=null)x.m=S.moods[k];return x});
+    out.good30=Array.from({length:30},(_,i)=>{const d=new Date();d.setDate(d.getDate()-i);return ymd(d)}).filter(k=>TK.goodDay(k)).length}
+  if(c.mood&&S.moods[T]!=null)out.mood=S.moods[T];
+  if(c.goals&&c.goals!=='none'){const pick=c.goals==='all'?S.goals:S.goals.filter(g=>(c.goals||[]).includes(g.id));
+    out.goals=pick.map(g=>({e:g.emoji||'🌱',t:g.title,got:g.steps.filter(s=>s.done).length,total:g.steps.length,won:!!g.achievedAt}))}
+  return out;
+}
+let pushT=0;
+async function pushAll(){
+  if(!TKcloud.user()||!navigator.onLine)return;
+  const c=conf(),tokens=Object.keys(c).filter(t=>!c[t].off);if(!tokens.length)return;
+  for(const t of tokens){const {error}=await sb.from('buddy_links').update({snapshot:snapshot(c[t]),updated_at:new Date().toISOString()}).eq('token',t);if(error&&/relation|schema cache|does not exist/i.test(error.message||'')){missing=true;return}}
+}
+const schedule=ms=>{clearTimeout(pushT);pushT=setTimeout(pushAll,ms==null?15000:ms)};
+const dirty=TKcloud.dirty;TKcloud.dirty=function(){dirty.apply(this,arguments);if(Object.keys(conf()).length)schedule()};
+
+async function load(){
+  const {data,error}=await sb.from('buddy_links').select('token,label,revoked,created_at').order('created_at');
+  if(error){missing=/relation|schema cache|does not exist/i.test(error.message||'');links=null;return false}
+  links=(data||[]).filter(l=>!l.revoked);return true;
+}
+function shareInvite(l){
+  const S=TK.get(),me=S.settings.name;
+  const text=G(`היי${l.label?' '+l.label:''} 💛 הוספתי אותך כ"חבר לדרך" שלי באפליקציה צעד קטן 🌱\nבקישור אפשר לראות איך אני {מתקדם|מתקדמת}, ולשלוח לי לב או מילה טובה כשבא לך:\n`)+linkOf(l.token)+(me?'\n'+me:'');
+  if(window.TsaadApp&&TsaadApp.shareText){TsaadApp.shareText(text);return}
+  if(navigator.share){navigator.share({text}).catch(()=>{});return}
+  window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank','noopener');
+}
+function shareForm(c){
+  const S=TK.get();const gsel=c.goals==='all'?S.goals.map(g=>g.id):c.goals==='none'?[]:(c.goals||[]);
+  return `<div class="fieldcol">מה לשתף?
+    <label class="check-row"><input type="checkbox" id="bd-day" ${c.day?'checked':''}>📊 כמה עשיתי היום והשבוע (בלי מה בדיוק)</label>
+    <label class="check-row"><input type="checkbox" id="bd-mood" ${c.mood?'checked':''}>😊 מצב הרוח</label></div>
+    ${S.goals.length?`<div class="fieldcol">🎯 אילו מטרות (שם והתקדמות)<div class="bd-goals">${S.goals.map(g=>`<label class="check-row"><input type="checkbox" data-bg="${g.id}" ${gsel.includes(g.id)?'checked':''}>${g.emoji||'🌱'} ${esc(g.title)}</label>`).join('')}</div></div>`:''}
+    <p class="hint">${G('המשימות עצמן, היומן והמכתבים לא משותפים אף פעם.')}</p>`;
+}
+function readForm(){
+  const S=TK.get(),ids=[...document.querySelectorAll('[data-bg]')].filter(x=>x.checked).map(x=>x.dataset.bg);
+  return {day:$('bd-day').checked,mood:$('bd-mood').checked,goals:ids.length&&ids.length===S.goals.length?'all':ids};
+}
+async function open(){
+  if(!TKcloud.user()){openSheet(sheetHead('🤝 חבר לדרך')+`<p>${G('שולחים קישור לאדם קרוב: חבר, הורה, בן או בת זוג, מטפל. הוא רואה רק מה {שבחרת|שבחרת} לשתף, ויכול לשלוח לך לב או מילה טובה שתקפוץ אצלך כהפתעה 💌')}</p><p>${G('כדי להשתמש בזה צריך להתחבר (זה בחינם).')}</p><button class="btn wide" data-cloud="login">${G('{התחבר|התחברי}')}</button>`);return}
+  openSheet(sheetHead('🤝 חבר לדרך')+'<div class="thinking">טוען...</div>');
+  const ok=await load();
+  if(!ok){openSheet(sheetHead('🤝 חבר לדרך')+`<div class="big-e">🌱</div><p style="text-align:center">${missing?'הפיצ׳ר הזה יופעל ממש בקרוב. עוד רגע זה כאן 💛':navigator.onLine?'🌧️ משהו לא הסתדר. אפשר לנסות שוב עוד רגע.':'📴 צריך אינטרנט בשביל זה.'}</p>`);return}
+  const c=conf();
+  openSheet(sheetHead('🤝 חבר לדרך')+`<p>${G('אדם קרוב מקבל קישור סודי. הוא רואה רק מה {שבחרת|שבחרת}, ויכול לשלוח לך לב או מילה טובה 💌')}</p>
+    ${links.length?`<div class="bd-list">${links.map(l=>{const x=c[l.token]||{};return `<div class="bd-card" data-t="${l.token}"><div class="r"><b>🤝 ${esc(l.label||'חבר לדרך')}</b><span class="hint" style="margin:0">${[x.day&&'📊',x.mood&&'😊',x.goals&&x.goals!=='none'&&(x.goals==='all'||x.goals.length)&&'🎯'].filter(Boolean).join(' ')}</span></div>
+      <div class="actions"><button class="btn small" data-bd="share">📤 לשלוח את הקישור</button><button class="btn small ghost" data-bd="edit">✏️ מה משותף</button><button class="btn small ghost" data-bd="stop">✋ להפסיק</button></div></div>`}).join('')}</div>`:''}
+    <button class="btn wide" id="bd-new">+ ${links.length?'עוד חבר לדרך':'להוסיף חבר לדרך'}</button>`);
+  $('bd-new').onclick=()=>edit(null);
+  $('sheet').querySelectorAll('[data-bd]').forEach(b=>b.onclick=async()=>{const t=b.closest('[data-t]').dataset.t,l=links.find(x=>x.token===t);
+    if(b.dataset.bd==='share')shareInvite(l);
+    else if(b.dataset.bd==='edit')edit(l);
+    else{if(b.dataset.armed!=='1'){b.dataset.armed='1';b.textContent='בטוח? הקישור יפסיק לעבוד';return}
+      await sb.from('buddy_links').update({revoked:true,snapshot:{}}).eq('token',t);delete conf()[t];TK.save();toast('✋ הקישור הופסק');open()}});
+}
+function edit(l){
+  const c=l?(conf()[l.token]||{day:true,mood:false,goals:'all'}):{day:true,mood:false,goals:'all'};
+  openSheet(sheetHead(l?'✏️ מה משותף':'🤝 חבר לדרך חדש')+`<div class="form" style="box-shadow:none;padding:0">
+    ${l?'':`<label for="bd-name">${G('למי? (רק {בשבילך|בשבילך}, כדי לזכור)')}<input id="bd-name" placeholder="למשל: אמא, דני, המטפלת" autocomplete="off"></label>`}
+    ${shareForm(c)}
+    <button class="btn wide" id="bd-save">${l?'לשמור':'ליצור קישור ולשלוח'}</button></div>`);
+  $('bd-save').onclick=async()=>{const nc=readForm();$('bd-save').disabled=true;
+    let link=l;
+    if(!l){const label=($('bd-name').value||'').trim().slice(0,40);
+      const {data,error}=await sb.from('buddy_links').insert({label,snapshot:snapshot(nc)}).select('token,label').single();
+      if(error){$('bd-save').disabled=false;toast(/relation|schema cache|does not exist/i.test(error.message||'')?'הפיצ׳ר יופעל ממש בקרוב 💛':'🌧️ לא הצלחנו ליצור קישור. אפשר לנסות שוב');return}
+      link=data}
+    conf()[link.token]=nc;TK.save();
+    await sb.from('buddy_links').update({snapshot:snapshot(nc),updated_at:new Date().toISOString()}).eq('token',link.token);
+    if(!l){shareInvite(link);toast('🤝 נוצר! עכשיו רק לשלוח את הקישור')}else toast('✅ נשמר');
+    open()};
+}
+
+/* ---------- cheers that arrived: a small surprise ---------- */
+let showing=false;
+async function cheers(){
+  if(showing||!TKcloud.user()||!navigator.onLine||!Object.keys(conf()).length)return;
+  const {data,error}=await sb.from('buddy_cheers').select('id,from_name,emoji,body,created_at').is('seen_at',null).order('created_at').limit(10);
+  if(error||!data||!data.length)return;
+  showing=true;let i=0;
+  const next=()=>{
+    if(!$('sheet').hidden){setTimeout(next,2500);return}
+    const c=data[i];if(!c){showing=false;return}
+    const from=c.from_name||'מישהו שאוהב אותך';
+    TK.celebrate(null,c.emoji+' '+from+' '+G('{שולח|שולחת}')+' לך עידוד',true);
+    openSheet(`<div class="cheer-pop"><div class="big e">${esc(c.emoji||'💛')}</div><h2 id="sheet-title">💌 ${esc(from)} ${G('{חושב|חושבת}')} עליך</h2>
+      ${c.body?`<div class="msg">${esc(c.body)}</div>`:`<p>${G('{קיבלת|קיבלת} '+esc(c.emoji||'💛')+' מחבר לדרך')}</p>`}
+      <p class="hint">${data.length>1?(i+1)+' מתוך '+data.length+' · ':''}${G('נשמר ביומן, תחת "עידוד"')}</p>
+      <button class="btn wide" id="ch-ok">${i+1<data.length?'עוד אחד 💛':'תודה 💛'}</button></div>`);
+    TK.addJournal('cheer',(c.emoji||'💛')+' '+from+(c.body?': '+c.body:''));
+    sb.from('buddy_cheers').update({seen_at:new Date().toISOString()}).eq('id',c.id).then(()=>{});
+    $('ch-ok').onclick=()=>{closeSheet();i++;setTimeout(next,300)};
+  };
+  next();
+}
+let tries=0;const wait=setInterval(()=>{if(TKcloud.user()){clearInterval(wait);setTimeout(()=>{cheers();schedule(3000)},2500)}else if(++tries>40)clearInterval(wait)},1500);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(cheers,1500);else{clearTimeout(pushT);pushAll()}});
+setInterval(cheers,5*60*1000);
+
+window.TKbuddy={open,push:pushAll};
 })();
 </script>
 <script>
