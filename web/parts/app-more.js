@@ -2,21 +2,68 @@
 
 /* ---------- calm corner: breathing with the companion, grounding 5-4-3-2-1, soft sound ---------- */
 let calmTimer=null,calmAudio=null;
-function calmSound(on){
-  if(!on){if(calmAudio){const a=calmAudio;calmAudio=null;clearInterval(a.iv);try{a.g.gain.cancelScheduledValues(a.ctx.currentTime);a.g.gain.setValueAtTime(a.g.gain.value,a.ctx.currentTime);a.g.gain.linearRampToValueAtTime(0,a.ctx.currentTime+1.2);setTimeout(()=>a.ctx.close(),1500)}catch(e){}}return}
-  if(calmAudio)return;
-  try{
-    const ctx=new (window.AudioContext||window.webkitAudioContext)(),g=ctx.createGain();g.gain.value=0;
-    const lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=900;g.connect(lp);lp.connect(ctx.destination);
-    // a slow, warm pad: three soft notes that drift from chord to chord
-    const chords=[[220,277.18,329.63],[196,246.94,293.66],[174.61,220,261.63],[196,246.94,329.63]];
-    const oscs=[0,1,2].map(i=>{const o=ctx.createOscillator(),og=ctx.createGain();o.type=i===1?'triangle':'sine';o.frequency.value=chords[0][i];o.detune.value=(i-1)*4;og.gain.value=i===1?.07:.11;o.connect(og);og.connect(g);o.start();return o});
-    const lfo=ctx.createOscillator(),lg=ctx.createGain();lfo.frequency.value=.1;lg.gain.value=.035;lfo.connect(lg);lg.connect(g.gain);lfo.start();
-    g.gain.linearRampToValueAtTime(.16,ctx.currentTime+2.5);
-    let ci=0;const iv=setInterval(()=>{ci=(ci+1)%chords.length;oscs.forEach((o,i)=>o.frequency.linearRampToValueAtTime(chords[ci][i],ctx.currentTime+4))},10000);
-    calmAudio={ctx,g,iv};
-  }catch(e){}
+/* soft background sounds, all made right here with WebAudio (no files): a warm pad, rain, waves, a crackling fire, birds */
+const SOUNDS=[['pad','🎵','רך'],['rain','🌧️','גשם'],['waves','🌊','גלים'],['fire','🔥','אש'],['birds','🐦','ציפורים']];
+function noiseBuf(ctx,kind){
+  const n=ctx.sampleRate*3,b=ctx.createBuffer(1,n,ctx.sampleRate),d=b.getChannelData(0);let l=0,p0=0,p1=0,p2=0;
+  for(let i=0;i<n;i++){const w=Math.random()*2-1;
+    if(kind==='brown'){l=(l+.02*w)/1.02;d[i]=l*3.5}
+    else if(kind==='pink'){p0=.997*p0+w*.029591;p1=.985*p1+w*.032534;p2=.95*p2+w*.048056;d[i]=(p0+p1+p2+w*.05)*1.6}
+    else d[i]=w}
+  return b;
 }
+function calmSound(on){
+  if(!on){if(calmAudio){const a=calmAudio;calmAudio=null;a.timers.forEach(t=>{clearInterval(t);clearTimeout(t)});a.alive=false;try{a.g.gain.cancelScheduledValues(a.ctx.currentTime);a.g.gain.setValueAtTime(a.g.gain.value,a.ctx.currentTime);a.g.gain.linearRampToValueAtTime(0,a.ctx.currentTime+1.2);setTimeout(()=>a.ctx.close(),1500)}catch(e){}}return}
+  const kind=typeof on==='string'?on:'pad';
+  if(calmAudio&&calmAudio.kind===kind)return;
+  if(calmAudio)calmSound(false);
+  try{
+    const ctx=new (window.AudioContext||window.webkitAudioContext)(),g=ctx.createGain();g.gain.value=0;g.connect(ctx.destination);
+    const A={ctx,g,kind,timers:[],alive:true};calmAudio=A;
+    const loop=(type,fType,freq,q,vol,dest)=>{const src=ctx.createBufferSource();src.buffer=noiseBuf(ctx,type);src.loop=true;const f=ctx.createBiquadFilter();f.type=fType;f.frequency.value=freq;if(q)f.Q.value=q;const v=ctx.createGain();v.gain.value=vol;src.connect(f);f.connect(v);v.connect(dest||g);src.start();return {src,f,v}};
+    const later=(fn,ms)=>{const t=setTimeout(()=>{if(A.alive)fn()},ms);A.timers.push(t)};
+    let target=.16;
+    if(kind==='pad'){
+      const lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=900;lp.connect(g);
+      const chords=[[220,277.18,329.63],[196,246.94,293.66],[174.61,220,261.63],[196,246.94,329.63]];
+      const oscs=[0,1,2].map(i=>{const o=ctx.createOscillator(),og=ctx.createGain();o.type=i===1?'triangle':'sine';o.frequency.value=chords[0][i];o.detune.value=(i-1)*4;og.gain.value=i===1?.07:.11;o.connect(og);og.connect(lp);o.start();return o});
+      const lfo=ctx.createOscillator(),lg=ctx.createGain();lfo.frequency.value=.1;lg.gain.value=.035;lfo.connect(lg);lg.connect(g.gain);lfo.start();
+      let ci=0;A.timers.push(setInterval(()=>{ci=(ci+1)%chords.length;oscs.forEach((o,i)=>o.frequency.linearRampToValueAtTime(chords[ci][i],ctx.currentTime+4))},10000));
+    }else if(kind==='rain'){
+      loop('pink','lowpass',5200,0,.55);loop('white','bandpass',2600,.6,.05);
+      // single drops on a roof, now and then
+      const drop=()=>{const o=ctx.createOscillator(),og=ctx.createGain(),t=ctx.currentTime,f=1800+Math.random()*2400;o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(f*.55,t+.04);og.gain.setValueAtTime(.05*Math.random()+.015,t);og.gain.exponentialRampToValueAtTime(.0005,t+.06);o.connect(og);og.connect(g);o.start(t);o.stop(t+.07);later(drop,40+Math.random()*220)};drop();
+      target=.3;
+    }else if(kind==='waves'){
+      const w=loop('brown','lowpass',600,0,1),sw=ctx.createGain();sw.gain.value=.25;w.v.disconnect();w.v.connect(sw);sw.connect(g);
+      const foam=loop('pink','highpass',1400,0,0);
+      const wave=()=>{const t=ctx.currentTime,len=7+Math.random()*4;
+        sw.gain.cancelScheduledValues(t);sw.gain.setValueAtTime(sw.gain.value,t);sw.gain.linearRampToValueAtTime(1,t+len*.45);sw.gain.linearRampToValueAtTime(.18,t+len);
+        w.f.frequency.cancelScheduledValues(t);w.f.frequency.setValueAtTime(w.f.frequency.value,t);w.f.frequency.linearRampToValueAtTime(1300,t+len*.45);w.f.frequency.linearRampToValueAtTime(450,t+len);
+        foam.v.gain.cancelScheduledValues(t);foam.v.gain.setValueAtTime(0,t+len*.35);foam.v.gain.linearRampToValueAtTime(.05,t+len*.5);foam.v.gain.linearRampToValueAtTime(0,t+len*.95);
+        later(wave,len*1000)};wave();
+      target=.32;
+    }else if(kind==='fire'){
+      loop('brown','lowpass',380,0,.7);loop('pink','bandpass',900,.8,.05);
+      const pop=()=>{const t=ctx.currentTime,src=ctx.createBufferSource(),len=.004+Math.random()*.02;const b=ctx.createBuffer(1,Math.ceil(ctx.sampleRate*len),ctx.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);
+        src.buffer=b;const f=ctx.createBiquadFilter();f.type='bandpass';f.frequency.value=1500+Math.random()*4000;f.Q.value=1.2;const v=ctx.createGain();v.gain.value=.08+Math.random()*.35;src.connect(f);f.connect(v);v.connect(g);src.start(t);
+        later(pop,Math.random()<.25?20+Math.random()*60:120+Math.random()*700)};pop();
+      target=.34;
+    }else if(kind==='birds'){
+      loop('pink','lowpass',700,0,.12);
+      const pan=ctx.createStereoPanner?()=>{const p=ctx.createStereoPanner();p.pan.value=Math.random()*1.6-.8;p.connect(g);return p}:()=>g;
+      const song=()=>{const out=pan(),base=2200+Math.random()*1800,n=2+Math.floor(Math.random()*5),sp=.09+Math.random()*.08;let t=ctx.currentTime+.05;
+        for(let i=0;i<n;i++){const o=ctx.createOscillator(),og=ctx.createGain(),f=base*(1+(Math.random()-.4)*.25),up=Math.random()<.6;
+          o.frequency.setValueAtTime(up?f*.8:f*1.2,t);o.frequency.exponentialRampToValueAtTime(up?f*1.25:f*.85,t+sp*.8);
+          og.gain.setValueAtTime(0,t);og.gain.linearRampToValueAtTime(.09,t+.012);og.gain.exponentialRampToValueAtTime(.0005,t+sp*.9);o.connect(og);og.connect(out);o.start(t);o.stop(t+sp);t+=sp*1.25}
+        later(song,700+Math.random()*2600)};later(song,300);
+      target=.5;
+    }
+    g.gain.linearRampToValueAtTime(target,ctx.currentTime+2.5);
+  }catch(e){calmAudio=null}
+}
+const soundRow=()=>`<div class="snd-row" role="group" aria-label="צליל רקע">${SOUNDS.map(([k,e,n])=>`<button data-snd="${k}" aria-pressed="${!!calmAudio&&calmAudio.kind===k}"><span class="e">${e}</span>${n}</button>`).join('')}</div>`;
+function wireSounds(root){root.querySelectorAll('[data-snd]').forEach(b=>b.onclick=()=>{const k=b.dataset.snd;calmSound(calmAudio&&calmAudio.kind===k?false:k);root.querySelectorAll('[data-snd]').forEach(x=>x.setAttribute('aria-pressed',!!calmAudio&&calmAudio.kind===x.dataset.snd))})}
 const GROUND=[[5,'👀','דברים {שאתה רואה|שאת רואה} סביבך'],[4,'✋','דברים {שאתה יכול|שאת יכולה} לגעת בהם'],[3,'👂','קולות {שאתה שומע|שאת שומעת} עכשיו'],[2,'👃','ריחות {שאתה מריח|שאת מריחה}, או ריח {שאתה אוהב|שאת אוהבת}'],[1,'💛','דבר אחד טוב {שתגיד|שתגידי} לעצמך']];
 const CALM_WORDS=['🌊 הרגש הזה הוא גל. הוא יעלה, ואז הוא ירד.','🫧 לא צריך לעשות שום דבר עכשיו. רק לנשום.','🧸 {אתה בטוח|את בטוחה} כאן, ברגע הזה.','🌙 גם הלילה הכי ארוך נגמר בבוקר.','🍃 מותר לעצור. העולם יחכה.','💛 {אתה לא לבד|את לא לבד}. יש אנשים שרוצים לשמוע אותך.','🌱 {עברת|עברת} רגעים קשים בעבר, ויצאת מהם.','☁️ מחשבות הן עננים. הן עוברות.','🕯️ אור קטן מספיק כדי לראות את הצעד הבא.','🫶 {תניח|תניחי} יד על הלב. {תרגיש|תרגישי} אותו פועם. {אתה|את} כאן.'];
 function openCalm(tab){
@@ -27,7 +74,8 @@ function openCalm(tab){
     let body='';
     if(tab==='breath')body=`<div class="breath"><div class="b-stage"><div class="b-ring" id="b-ring"></div><div class="b-pet">${petIcon(S.settings.mascot)}</div></div>
       <div class="b-word" id="b-word">${G('נושמים ביחד, בקצב רגוע')}</div><div class="b-count" id="b-count">${G('שאיפה 4 שניות · להחזיק 4 · נשיפה 6')}</div>
-      <div class="actions" style="justify-content:center"><button class="btn" id="b-go">▶️ להתחיל</button><button class="btn ghost" id="b-snd">${calmAudio?'🔇 בלי צליל':'🎵 צליל רך'}</button></div></div>`;
+      <div class="actions" style="justify-content:center"><button class="btn" id="b-go">▶️ להתחיל</button></div>
+      <p class="hint snd-h">🎧 ${G('צליל רקע (עדיף עם אוזניות)')}</p>${soundRow()}</div>`;
     else if(tab==='ground'){
       if(gi>=GROUND.length)body=`<div class="ground-done"><div class="big-e">🌿</div><h3>${G('{חזרת|חזרת} לכאן ועכשיו')}</h3><p>${G('כל הכבוד. {אתה|את} כאן, נושם'+(S.settings.address==='f'?'ת':'')+', וזה מה שחשוב עכשיו.')}</p><button class="btn ghost" id="g-again">עוד פעם</button></div>`;
       else{const [n,e,t]=GROUND[gi];body=`<div class="ground"><p class="hint" style="text-align:center">${G('תרגיל קרקוע: מחזיר את הגוף לרגע הזה. לא צריך לכתוב, רק לשים לב.')}</p>
@@ -35,12 +83,12 @@ function openCalm(tab){
         <div class="g-dots">${Array.from({length:n},(_,i)=>`<button data-gd="${i}" aria-pressed="${i<gn}" aria-label="${i+1}"></button>`).join('')}</div>
         <p class="hint" style="text-align:center">${G('{לחץ|לחצי} על עיגול על כל דבר {שמצאת|שמצאת}')}</p></div>`}
     }else if(tab==='people')body=peopleHTML();
-    else body=`<div class="calm-words"><p class="cw" id="cw">${esc(G(CALM_WORDS[wi]))}</p><div class="actions" style="justify-content:center"><button class="btn ghost small" id="cw-next">עוד משפט</button>${S.journal.some(j=>j.type==='letter')?'<button class="btn ghost small" data-act="read-letter">💌 מכתב שכתבתי לעצמי</button>':''}</div>${helpCard()}</div>`;
+    else body=`<div class="calm-words"><p class="cw" id="cw">${esc(G(CALM_WORDS[wi]))}</p><div class="actions" style="justify-content:center"><button class="btn ghost small" id="cw-next">עוד משפט</button><button class="btn ghost small" id="cw-card">🖼️ לכרטיס</button>${S.journal.some(j=>j.type==='letter')?'<button class="btn ghost small" data-act="read-letter">💌 מכתב שכתבתי לעצמי</button>':''}</div>${helpCard()}</div>`;
     openSheet(sheetHead('🫧 פינת הרגעה')+tabs+body+(tab!=='words'?`<p class="hint calm-help">🫂 ${G('צריך לדבר עם מישהו? ער"ן')} <a href="tel:1201" dir="ltr">1201</a> · ${G('סה"ר')} <a href="https://sahar.org.il" target="_blank" rel="noopener">sahar.org.il</a></p>`:''),()=>{stop();calmSound(false)});
     const s=$('sheet');
     s.querySelectorAll('[data-ct]').forEach(b=>b.onclick=()=>{tab=b.dataset.ct;draw()});
     if(tab==='breath'){
-      $('b-snd').onclick=()=>{calmSound(!calmAudio);$('b-snd').textContent=calmAudio?'🔇 בלי צליל':'🎵 צליל רך'};
+      wireSounds(s);
       $('b-go').onclick=()=>{if(calmTimer){stop();draw();return}$('b-go').textContent='⏸️ לעצור';breathe()};
     }
     if(tab==='ground'){
@@ -50,7 +98,7 @@ function openCalm(tab){
       if($('g-again'))$('g-again').onclick=()=>{gi=0;gn=0;draw()};
     }
     if(tab==='people')wirePeople(draw);
-    if(tab==='words')$('cw-next').onclick=()=>{wi=(wi+1)%CALM_WORDS.length;$('cw').textContent=G(CALM_WORDS[wi])};
+    if(tab==='words'){$('cw-next').onclick=()=>{wi=(wi+1)%CALM_WORDS.length;$('cw').textContent=G(CALM_WORDS[wi])};$('cw-card').onclick=()=>openCard($('cw').textContent)}
   };
   const PH=[['שאיפה...',4000,1],['להחזיק',4000,1],['נשיפה...',6000,0]];
   const breathe=()=>{let n=0,pi=0;
@@ -259,7 +307,7 @@ function morningCard(){
 /* ---------- the living garden: every goal is a plant that grows with each step ---------- */
 const hashN=s=>{let h=2166136261;for(const c of String(s)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}h^=h>>>13;h=Math.imul(h,0x5bd1e995);h^=h>>>15;return h>>>0};
 function plantG(stage,col,em,seed){
-  const sway=reduce?'':' class="sway"';const fl=(x,y,r)=>`<g transform="translate(${x} ${y})">${[0,72,144,216,288].map(a=>`<ellipse cx="0" cy="${-r}" rx="${r*.6}" ry="${r}" fill="var(--petal)" transform="rotate(${a})"/>`).join('')}<circle r="${r*.7}" fill="var(--core)"/></g>`;
+  const sway=noMotion()?'':' class="sway"';const fl=(x,y,r)=>`<g transform="translate(${x} ${y})">${[0,72,144,216,288].map(a=>`<ellipse cx="0" cy="${-r}" rx="${r*.6}" ry="${r}" fill="var(--petal)" transform="rotate(${a})"/>`).join('')}<circle r="${r*.7}" fill="var(--core)"/></g>`;
   let p='';
   if(stage===0)p=`<ellipse cx="0" cy="0" rx="13" ry="4" fill="var(--soil)"/><ellipse cx="0" cy="-3" rx="3.5" ry="2.6" fill="#8B5E3C"/>`;
   else if(stage===1)p=`<ellipse cx="0" cy="0" rx="12" ry="3.5" fill="var(--soil)"/><g${sway}><path d="M0 0 V-14" stroke="var(--stem)" stroke-width="2.4" stroke-linecap="round"/><ellipse cx="-5" cy="-14" rx="6" ry="3" fill="var(--leaf)" transform="rotate(-30 -5 -14)"/><ellipse cx="5" cy="-15" rx="6" ry="3" fill="var(--leaf)" transform="rotate(30 5 -15)"/></g>`;
@@ -371,3 +419,202 @@ function wirePeople(redraw){
     if(!waNum(p)){err.textContent='המספר לא נראה תקין. למשל 050-1234567';err.hidden=false;return}
     L.push({n,p});save();toast('🫂 '+n+' '+G('נוסף לאנשים שלך'));redraw()};
 }
+
+/* ================= 7.3: look and feel ================= */
+
+/* ---------- color palettes (on top of the theme; the accent color stays the user's own) ---------- */
+const PALETTES={
+  pastel:{n:'פסטל',sw:['#FFF7EF','#FFC6DC','#BFE0FF']},
+  forest:{n:'יער',sw:['#F3F8EE','#B4E3B8','#6FB58A']},
+  sea:{n:'ים',sw:['#EFF8FB','#A9DDF0','#5AA9D6']},
+  sunset:{n:'שקיעה',sw:['#FFF4EA','#FFC29E','#E98AA8']},
+  lilac:{n:'לילך',sw:['#F8F4FF','#D9C9FF','#A88BEB']},
+};
+
+/* ---------- small helpers ---------- */
+function haptic(p){try{if(window.TsaadApp&&TsaadApp.vibrate)TsaadApp.vibrate(Array.isArray(p)?30:p);else if(navigator.vibrate)navigator.vibrate(p)}catch(e){}}
+const gardenEl=()=>document.querySelector('#v-today .garden');
+const tod=h=>h>=5&&h<11?'morning':h>=11&&h<17?'day':h>=17&&h<20?'eve':'night';
+
+/* ---------- Hebrew date, holidays and seasons ---------- */
+const HEB_FMT=(()=>{try{return new Intl.DateTimeFormat('en-u-ca-hebrew',{day:'numeric',month:'long'})}catch(e){return null}})();
+function hebDate(d){if(!HEB_FMT)return null;try{const p=HEB_FMT.formatToParts(d);return {d:+p.find(x=>x.type==='day').value,m:p.find(x=>x.type==='month').value}}catch(e){return null}}
+// after 17:00 the Hebrew day (and the holiday) already begins
+function holiday(now){
+  now=now||new Date();const eff=new Date(now);if(now.getHours()>=17)eff.setDate(eff.getDate()+1);
+  const h=hebDate(eff);if(!h)return null;const {d,m}=h,is=(mm,a,b)=>m===mm&&d>=a&&d<=(b||a);
+  for(let k=0;k<8;k++){const x=new Date(eff);x.setDate(x.getDate()-k);const y=hebDate(x);if(y&&y.m==='Kislev'&&y.d===25)return {k:'hanukkah',n:k+1,e:'🕎',t:'חנוכה שמח, נר '+['ראשון','שני','שלישי','רביעי','חמישי','שישי','שביעי','שמיני'][k]}}
+  if(is('Tishri',1,2))return {k:'rosh',e:'🍎',t:'שנה טובה ומתוקה'};
+  if(is('Tishri',10))return {k:'kippur',e:'🤍',t:'גמר חתימה טובה',quiet:1};
+  if(is('Tishri',15,21))return {k:'sukkot',e:'🌿',t:'חג סוכות שמח'};
+  if(is('Tishri',22))return {k:'torah',e:'📜',t:'שמחת תורה שמחה'};
+  if(is('Shevat',15))return {k:'tubishvat',e:'🌳',t:'ט״ו בשבט, חג לעצים'};
+  if(is('Adar',14,15)||is('Adar II',14,15))return {k:'purim',e:'🎭',t:'פורים שמח'};
+  if(is('Nisan',15,21))return {k:'pesach',e:'🌾',t:'חג פסח שמח'};
+  if(m==='Iyar'&&d>=3&&d<=6){const dow=eff.getDay();const ok=(d===5&&dow>=2&&dow<=4)||(d===4&&dow===4)||(d===3&&dow===4)||(d===6&&dow===2);if(ok)return {k:'atzmaut',e:'🇮🇱',t:'חג עצמאות שמח'}}
+  if(is('Iyar',18))return {k:'lag',e:'🔥',t:'ל״ג בעומר שמח'};
+  if(is('Sivan',6))return {k:'shavuot',e:'🌸',t:'חג שבועות שמח'};
+  return null;
+}
+const season=(d=new Date())=>{const m=d.getMonth();return m===11||m<2?'winter':m<5?'spring':m<8?'summer':'autumn'};
+let decorKey='';
+function decorOn(){return S.settings.seasons!==false}
+// behind the plant: flowers on the hills in spring, and the holiday's little picture
+function sceneExtras(){
+  if(!decorOn()){decorKey='off';return ''}
+  const hd=holiday(),se=season();decorKey=se+'|'+(hd?hd.k+(hd.n||''):'');
+  let out='';
+  if(se==='spring')out+=[[18,124],[44,118],[120,126],[168,120],[214,127],[248,118],[300,121]].map(([x,y],i)=>`<g transform="translate(${x} ${y})">${[0,72,144,216,288].map(a=>`<ellipse cx="0" cy="-2.6" rx="1.8" ry="2.8" fill="${['#FF8FB1','#FFD24D','#FFFFFF','#C9A7FF'][i%4]}" transform="rotate(${a})"/>`).join('')}<circle r="1.4" fill="#FFC93C"/></g>`).join('');
+  if(se==='winter')out+=`<g class="cloud rainc"><ellipse cx="66" cy="44" rx="20" ry="8"/><ellipse cx="78" cy="38" rx="12" ry="9"/></g>`;
+  if(hd&&!hd.quiet){
+    if(hd.k==='hanukkah'){const xs=[232,242,252,262,277,287,297,307],sh=270;
+      out+=`<g class="menorah" transform="translate(-112 52) scale(.5)"><rect x="248" y="128" width="44" height="5" rx="2.5" fill="#E2B33C"/><path d="M270 128 V100" stroke="#E2B33C" stroke-width="3"/><path d="M232 100 Q232 116 270 116 Q308 116 308 100" stroke="#E2B33C" stroke-width="2.4" fill="none"/>`+
+        `<path d="M242 100 Q242 110 270 110 Q298 110 298 100 M252 100 Q252 104 270 104 Q288 104 288 100" stroke="#E2B33C" stroke-width="2" fill="none"/>`+
+        [...xs,sh].map((x,i)=>{const isSh=x===sh,lit=isSh||i>=8-hd.n;const top=isSh?88:96;return `<rect x="${x-1.6}" y="${top}" width="3.2" height="${isSh?12:6}" rx="1" fill="#FFFFFF" stroke="#E7D7B0" stroke-width=".5"/>${lit?`<ellipse class="flame" cx="${x}" cy="${top-3}" rx="2.2" ry="3.6" fill="#FFB020"/><ellipse cx="${x}" cy="${top-2.4}" rx="1" ry="1.8" fill="#FFF3B0"/>`:''}`}).join('')+'</g>';}
+    else{const E={rosh:'🍎🍯',sukkot:'🌿🍋',torah:'📜✨',tubishvat:'🌳🌰',purim:'🎭🎉',pesach:'🌾🍷',atzmaut:'🇮🇱🎈',lag:'🔥',shavuot:'🌸🥛'}[hd.k]||hd.e;
+      out+=`<text class="holi" x="4" y="138" font-size="${[...E].length>2?13:16}" style="font-family:var(--emoji);direction:ltr" text-anchor="start">${E}</text>`}
+  }
+  return out;
+}
+// in front: falling leaves in autumn, soft drops in winter, a butterfly in spring and summer
+function sceneFront(){
+  if(!decorOn())return '';
+  const se=season(),R=(i,a,b)=>a+((i*7919)%97)/97*(b-a);
+  if(se==='autumn')return `<g class="fall">${[0,1,2,3,4].map(i=>`<ellipse class="fl" cx="${R(i,20,140)}" cy="-6" rx="4" ry="2.2" fill="${['#F2A541','#E07A3F','#F6C344','#C8553D','#E9B44C'][i]}" style="animation-delay:${(i*1.7).toFixed(1)}s;animation-duration:${(7+i%3*1.5).toFixed(1)}s"/>`).join('')}</g>`;
+  if(se==='winter')return `<g class="rain">${Array.from({length:9},(_,i)=>`<path class="dr" d="M${R(i,50,92).toFixed(0)} 50 l-2 7" style="animation-delay:${(i*.33).toFixed(2)}s"/>`).join('')}</g>`;
+  return `<g class="bfly"><g class="bf-in"><ellipse cx="-3" cy="0" rx="3.6" ry="2.6" fill="#FFB3D9"/><ellipse cx="3" cy="0" rx="3.6" ry="2.6" fill="#BFE0FF"/><path d="M0 -3 V3" stroke="#6B4E71" stroke-width="1" stroke-linecap="round"/></g></g>`;
+}
+
+/* ---------- a line for the day, under the greeting ---------- */
+const DAY_LINES=['כל צעד נחשב','היום מתחיל בנשימה אחת','מותר ללכת לאט','מספיק להתחיל קטן','{אתה|את} עושה יותר ממה {שאתה חושב|שאת חושבת}','יום חדש, דף חדש','גם מנוחה היא צעד','לאט לאט, אבל קדימה','{אתה לא לבד|את לא לבד} בזה','הנה עוד הזדמנות קטנה','קודם כל, כוס מים 💧','לא חייבים מושלם, רק קצת','{תהיה עדין|תהיי עדינה} עם עצמך היום','כל דבר קטן מצטבר','{אתה|את} בדרך הנכונה','מותר לבקש עזרה','גם יום רגיל הוא יום טוב','חיוך קטן זה גם התחלה','צעד אחד, ואז עוד אחד','הגינה שלך גדלה בשקט','{מגיע לך|מגיע לך} יום רך','אין לחץ, יש כיוון','{אתה חשוב|את חשובה} פה','עוד יום שאפשר לצמוח בו','גם עננים עוברים','{תהיה גאה|תהיי גאה} בכל ניסיון','מה הדבר הכי קטן שאפשר היום?','{אתה מספיק|את מספיקה} בדיוק כמו {שאתה|שאת}','השמש עוד תצא','לפעמים ההישג הוא פשוט לקום','לב פתוח, צעד קטן'];
+function dayLine(){
+  if(decorOn()){const hd=holiday();if(hd)return hd.t+' '+hd.e}
+  const n=new Date(),dw=n.getDay(),h=n.getHours();
+  if((dw===5&&h>=12)||(dw===6&&h<19))return 'שבת שלום 🕯️';
+  return DAY_LINES[between('2026-01-01',T)%DAY_LINES.length];
+}
+
+/* ---------- the companion lives: blinks, sleeps at night, jumps for joy, hugs on a hard day ---------- */
+let joyT=0;
+function petMood(){
+  const g=gardenEl();if(!g)return;const h=new Date().getHours(),t=tod(h);
+  ['morning','day','eve','night'].forEach(x=>g.classList.toggle('tod-'+x,x===t));
+  const sleep=(h>=22||h<6)&&!g.classList.contains('pet-joy'),hug=isHard();
+  g.classList.toggle('pet-sleep',sleep);g.classList.toggle('pet-hug',hug&&!sleep);
+  const m=$('mascot');if(m){m.querySelectorAll('.pz,.phg').forEach(x=>x.remove());
+    if(sleep)m.insertAdjacentHTML('beforeend','<i class="pz" aria-hidden="true">z</i><i class="pz" aria-hidden="true">z</i>');
+    else if(hug)m.insertAdjacentHTML('beforeend','<i class="phg" aria-hidden="true">💜</i>');
+    if(!m.dataset.tap){m.dataset.tap='1';m.setAttribute('role','button');m.tabIndex=0;m.setAttribute('aria-label','ללטף את החבר שלך');
+      m.addEventListener('click',petTap);m.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();petTap()}})}}
+  // the day or the season changed: draw the scene again
+  const wantKey=decorOn()?season()+'|'+((x=>x?x.k+(x.n||''):'')(holiday())):'off';
+  if(wantKey!==decorKey){lastStage=-1;renderToday()}
+}
+function petJoy(){
+  const g=gardenEl();if(!g||noMotion())return;
+  g.classList.remove('pet-sleep');g.classList.remove('pet-joy');void g.offsetWidth;g.classList.add('pet-joy');
+  clearTimeout(joyT);joyT=setTimeout(()=>{g.classList.remove('pet-joy');petMood()},1300);
+}
+const PET_TAP=['💛 נעים לי איתך','🐾 אני כאן {איתך|איתך}','✨ {אתה עושה|את עושה} עבודה יפה','🌱 גדלים ביחד','🤗 חיבוק קטן','😊 היי! שמחתי {שבאת|שבאת}','💤 רגע, נרדמתי קצת...','🍃 {בוא|בואי} ננשום ביחד','🌸 {אתה מיוחד|את מיוחדת}','🎈 יאללה, צעד קטן?'];
+let tapI=-1;
+function petTap(){
+  const g=gardenEl(),h=new Date().getHours(),asleep=g&&g.classList.contains('pet-sleep');
+  petJoy();haptic(12);
+  const m=$('mascot');if(m&&!noMotion()){const hrt=document.createElement('i');hrt.className='pheart';hrt.textContent=pick(['💛','💗','💜','✨','🌸']);hrt.setAttribute('aria-hidden','true');m.appendChild(hrt);setTimeout(()=>hrt.remove(),1100)}
+  let line;if(asleep)line=pick(['😴 ששש... אני ישן קצת. לילה טוב 🌙','💤 גם {אתה צריך|את צריכה} לנוח. לילה טוב']);
+  else if(isHard())line=pick(['💜 אני פה {איתך|איתך}. יום קשה עובר','🫂 חיבוק גדול. מספיק משהו אחד קטן היום']);
+  else{do{tapI=Math.floor(Math.random()*PET_TAP.length)}while(PET_TAP.length>1&&PET_TAP[tapI].startsWith('💤')&&h>8&&h<20);line=PET_TAP[tapI]}
+  toast(line);
+}
+
+/* ---------- little things when a task is checked: the check pops and leaves fly ---------- */
+function leaves(el,big){
+  if(!el||noMotion()||S.settings.confetti===false)return;
+  el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');
+  const r=el.getBoundingClientRect();if(!r.width)return;const x=r.left+r.width/2,y=r.top+r.height/2;
+  const se=decorOn()?season():'spring',E=se==='autumn'?['🍂','🍁','🍃','✨']:se==='winter'?['🍃','💧','✨','🌿']:['🍃','🌿','✨','🌸'];
+  const n=big?12:7;
+  for(let i=0;i<n;i++){const s=document.createElement('span');s.className='leafp';s.textContent=E[i%E.length];s.setAttribute('aria-hidden','true');
+    const a=-Math.PI/2+(Math.random()-.5)*Math.PI*1.1,d=40+Math.random()*(big?110:60);
+    s.style.left=x+'px';s.style.top=y+'px';s.style.setProperty('--dx',(Math.cos(a)*d).toFixed(0)+'px');s.style.setProperty('--dy',(Math.sin(a)*d).toFixed(0)+'px');s.style.setProperty('--r',((Math.random()-.5)*260).toFixed(0)+'deg');s.style.animationDelay=(i*25)+'ms';
+    document.body.appendChild(s);setTimeout(()=>s.remove(),1400)}
+}
+
+/* ---------- a small personal greeting when the app opens (once a day) ---------- */
+function splash(){
+  if(!S.onboarded||S.settings.splash===false||S.splashDay===T)return;
+  S.splashDay=T;save();
+  const h=new Date().getHours(),greet=(h<5?'לילה טוב':h<12?'בוקר טוב':h<17?'צהריים טובים':h<21?'ערב טוב':'לילה טוב')+(S.settings.name?', '+S.settings.name:'');
+  const sky={morning:'🌤️',day:'☀️',eve:'🌇',night:'🌙'}[tod(h)];
+  const d=document.createElement('div');d.className='splash tod-'+tod(h);d.setAttribute('role','status');
+  d.innerHTML=`<div class="sp-in"><div class="sp-pet">${petIcon(S.settings.mascot)}</div><h2>${esc(greet)} ${sky}</h2><p>${esc(G(dayLine()))}</p></div>`;
+  const bye=()=>{if(!d.isConnected)return;d.classList.add('out');setTimeout(()=>d.remove(),noMotion()?0:450)};
+  d.onclick=bye;document.body.appendChild(d);setTimeout(bye,2300);
+}
+
+/* ---------- "a beautiful moment": any line becomes a designed card to keep or send ---------- */
+const CARD_BG={
+  garden:{n:'🌿 גינה',c:['#E8F8EE','#BFE6CF','#8FD3B0'],ink:'#23402F',dots:'#FFFFFF'},
+  dawn:{n:'🌸 זריחה',c:['#FFF2E6','#FFD0DD','#FFB8A3'],ink:'#4A2B3A',dots:'#FFFFFF'},
+  sea:{n:'🌊 ים',c:['#EAF7FF','#B9E2F7','#86C7EA'],ink:'#1F3A52',dots:'#FFFFFF'},
+  sunset:{n:'🌇 שקיעה',c:['#FFE0B8','#FFB59A','#D98BB5'],ink:'#3E2236',dots:'#FFF1D6'},
+  night:{n:'🌙 לילה',c:['#2A2A5C','#4B3F86','#7A5DA8'],ink:'#FFF8F2',dots:'#FFF3B0'},
+};
+function wrapLines(ctx,text,maxW){const words=text.split(/\s+/),out=[];let line='';
+  words.forEach(w=>{const t=line?line+' '+w:w;if(ctx.measureText(t).width>maxW&&line){out.push(line);line=w}else line=t});if(line)out.push(line);return out}
+async function drawCard(cv,text,who,bgk){
+  const W=1080,H=1350,ctx=cv.getContext('2d'),B=CARD_BG[bgk]||CARD_BG.garden;cv.width=W;cv.height=H;
+  try{await Promise.all([document.fonts.load('64px "Suez One"','שלום'),document.fonts.load('40px "Varela Round"','שלום')])}catch(e){}
+  const gr=ctx.createLinearGradient(0,0,W*.4,H);gr.addColorStop(0,B.c[0]);gr.addColorStop(.55,B.c[1]);gr.addColorStop(1,B.c[2]);ctx.fillStyle=gr;ctx.fillRect(0,0,W,H);
+  // soft light circles
+  let sd=hashN(text);const rnd=()=>(sd=(sd*1103515245+12345)>>>0)/4294967296;
+  for(let i=0;i<14;i++){ctx.globalAlpha=.08+rnd()*.14;ctx.fillStyle=B.dots;ctx.beginPath();ctx.arc(rnd()*W,rnd()*H,20+rnd()*120,0,Math.PI*2);ctx.fill()}
+  ctx.globalAlpha=1;
+  // the companion on top
+  const pet=MASCOTS[S.settings.mascot]?S.settings.mascot:'plant';
+  if(hasArt(pet)){const svg=petSVG(pet).replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" ');
+    await new Promise(res=>{const im=new Image();im.onload=()=>{ctx.drawImage(im,W/2-130,120,260,260);res()};im.onerror=res;im.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg)})}
+  else{ctx.font='200px "Noto Color Emoji","Apple Color Emoji",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(MASCOTS[pet].e,W/2,250)}
+  // the words
+  ctx.direction='rtl';ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillStyle=B.ink;
+  let fs=84,lines;do{ctx.font=`${fs}px "Suez One","Varela Round",sans-serif`;lines=wrapLines(ctx,text,W-200);fs-=4}while((lines.length*fs*1.35>620)&&fs>44);
+  fs+=4;const lh=fs*1.38,top=440+(620-lines.length*lh)/2+fs;
+  lines.forEach((l,i)=>ctx.fillText(l,W/2,top+i*lh));
+  if(who){ctx.font='42px "Varela Round",sans-serif';ctx.globalAlpha=.8;ctx.fillText('· '+who+' ·',W/2,top+lines.length*lh+30);ctx.globalAlpha=1}
+  ctx.font='38px "Varela Round",sans-serif';ctx.globalAlpha=.75;ctx.fillText('צעד קטן · כל צעד נחשב 🌱',W/2,H-80);ctx.globalAlpha=1;
+}
+function cardB64(cv){return cv.toDataURL('image/png').split(',')[1]}
+function openCard(text,who){
+  text=String(text||'').trim();if(!text)return;let bg=Object.keys(CARD_BG)[hashN(text)%5];
+  const draw=()=>{
+    openSheet(sheetHead('🖼️ רגע יפה')+`<div class="card-prev"><canvas id="card-cv" aria-label="כרטיס עם המשפט"></canvas></div>
+      <div class="card-bgs" role="group" aria-label="רקע">${Object.entries(CARD_BG).map(([k,v])=>`<button data-cbg="${k}" aria-pressed="${k===bg}" style="background:linear-gradient(135deg,${v.c.join(',')})" aria-label="${v.n}"></button>`).join('')}</div>
+      <div class="actions" style="justify-content:center"><button class="btn" id="card-share">📤 לשלוח למישהו</button><button class="btn ghost" id="card-save">💾 לשמור</button></div>
+      <p class="hint" style="text-align:center">${G('אפשר לשים כרקע לטלפון, או לשלוח למישהו שצריך את זה היום 💛')}</p>`);
+    const cv=$('card-cv');drawCard(cv,text,who,bg);
+    $('sheet').querySelectorAll('[data-cbg]').forEach(b=>b.onclick=()=>{bg=b.dataset.cbg;$('sheet').querySelectorAll('[data-cbg]').forEach(x=>x.setAttribute('aria-pressed',x===b));drawCard(cv,text,who,bg)});
+    const name='tsaad-katan-'+T+'.png';
+    const needUpdate=()=>{toast('📲 כדי לשמור תמונות צריך לעדכן את האפליקציה');return true};
+    $('card-save').onclick=()=>{
+      if(window.TsaadApp){if(!TsaadApp.saveImage)return needUpdate();TsaadApp.saveImage(cardB64(cv),name);return}
+      const a=document.createElement('a');a.href=cv.toDataURL('image/png');a.download=name;document.body.appendChild(a);a.click();a.remove();toast('💾 הכרטיס נשמר')};
+    $('card-share').onclick=()=>{
+      if(window.TsaadApp){if(!TsaadApp.shareImage)return needUpdate();TsaadApp.shareImage(cardB64(cv),name);return}
+      cv.toBlob(async b=>{const f=new File([b],name,{type:'image/png'});
+        if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],text:'💛'})}catch(e){}return}
+        $('card-save').click()},'image/png')};
+  };
+  draw();
+}
+$('q-card').onclick=e=>{e.stopPropagation();openCard($('quote').textContent,$('quote-who').hidden?'':$('quote-who').textContent)};
+
+/* what's new: try it */
+NEW_TRY.petlive=()=>{showTab('today');setTimeout(()=>{window.scrollTo({top:0,behavior:'smooth'});petTap()},200)};
+NEW_TRY.sky=()=>openSettings();
+NEW_TRY.pal=()=>openSettings();
+NEW_TRY.access=()=>openSettings();
+NEW_TRY.bell=()=>{if(!S.settings.sound){S.settings.sound=true;save()}chime(true);petJoy();toast('🔔 '+G('הפעלנו צליל פעמון רך. אפשר לכבות בהגדרות'))};
+NEW_TRY.sounds=()=>openCalm('breath');
+NEW_TRY.seasons=()=>{showTab('today');window.scrollTo({top:0,behavior:'smooth'})};
+NEW_TRY.card=()=>{showTab('today');openCard($('quote').textContent,$('quote-who').hidden?'':$('quote-who').textContent)};
+setInterval(()=>{if(!document.hidden)petMood()},5*60*1000);
