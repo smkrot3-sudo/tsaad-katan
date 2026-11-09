@@ -618,3 +618,20 @@ NEW_TRY.sounds=()=>openCalm('breath');
 NEW_TRY.seasons=()=>{showTab('today');window.scrollTo({top:0,behavior:'smooth'})};
 NEW_TRY.card=()=>{showTab('today');openCard($('quote').textContent,$('quote-who').hidden?'':$('quote-who').textContent)};
 setInterval(()=>{if(!document.hidden)petMood()},5*60*1000);
+
+/* ================= 7.4: Nivi the walrus says hello (once, right after the update) ================= */
+function openNivi(){
+  const was=S.settings.mascot;
+  openSheet(`<div class="nivi-pop"><div class="nv-sea"><span class="nv-b" style="--x:18%;--d:0s">🫧</span><span class="nv-b" style="--x:78%;--d:1.1s">🫧</span><span class="nv-b" style="--x:60%;--d:2s">🫧</span><span class="nv-ice e">🧊</span><div class="nv-pet">${petSVG('nivi')}</div></div>
+    <h2 id="sheet-title">${G('שלום! אני ניבי הניבתן! 🦭')}</h2>
+    <p>${G('הרגע הגעתי מהקוטב הצפוני. שחיתי 4,000 קילומטר רק כדי לפגוש {אותך|אותך}! (טוב, את חצי הדרך עשיתי על קרחון שהתבלבל בכיוון 🧊)')}</p>
+    <p>${G('אני מומחה עולמי בשלושה דברים: לשכב על הצד, לאכול דגים, ולהאמין {בך|בך} בלי הפסקה 💙')}</p>
+    <p>${G('השפם מסורק, הניבים מצוחצחים, ואני מוכן ללוות {אותך|אותך} בכל צעד קטן. גם בצעדים ממש־ממש קטנים. סמכו עליי, אני ניבתן, אני מבין בזחילה 😄')}</p>
+    <div class="nv-tip">🐟 ${G('טיפ מניבי: אף ניבתן לא שוחה את כל האוקיינוס בבת אחת. סנפיר אחד, ועוד סנפיר. ופתאום {אתה|את} כבר בצד השני!')}</div>
+    <button class="btn wide" id="nv-yes">${G('🦭 {בחר|בחרי} בי ללוות {אותך|אותך}!')}</button>
+    <button class="linkbtn" id="nv-later" style="align-self:center">${G('אולי אחר כך, ניבי')}</button></div>`);
+  $('nv-yes').onclick=()=>{S.settings.mascot='nivi';save();closeSheet();lastStage=-1;renderAll();
+    setTimeout(()=>{celebrate(document.querySelector('.garden'),G('🦭 ניבי: יששש! {בחרת|בחרת} בי! כבר מצחצח את הניבים לכבוד זה 🦷✨'),true)},150)};
+  $('nv-later').onclick=()=>{closeSheet();toast(G('🐟 ניבי מבין לגמרי. הוא יחכה בגלריית החברים, ויאכל דג בינתיים'))};
+}
+NEW_TRY.nivi=()=>openNivi();
