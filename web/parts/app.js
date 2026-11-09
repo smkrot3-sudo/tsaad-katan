@@ -217,6 +217,7 @@ const PETS2={
   sukaria:{g:'sweet',n:'סוכריה הוורודה',e:'🍬',body:'fluff',c1:'#FFFFFF',c2:'#FFD6EC',c3:'#F27BB8',eye:'#8C1D5A'},
   menta:{g:'sweet',n:'מנטה',e:'🍃',body:'fluff',c1:'#FFFFFF',c2:'#D3F7EA',c3:'#3FBF96',eye:'#145C46'},
   /* birds and sea */
+  nivi:{g:'sea',n:'ניבי הניבתן',e:'🦭',body:'bean',c1:'#F6E9DF',c2:'#CDA68E',c3:'#8E6650',tusks:1,wings:'flip',top:'tuft'},
   efrochi:{g:'sea',n:'אפרוחי',e:'🐥',body:'bean',c1:'#FFFDE6',c2:'#FFE680',c3:'#F4C20D',beak:1,top:'tuft',wings:'tiny'},
   pingi:{g:'sea',n:'פינגי הפינגווין',e:'🐧',body:'bean',c1:'#5D6B9A',c2:'#3F4A75',c3:'#262E52',belly:'#FFFFFF',beak:1,wings:'tiny',eye:'#111'},
   inbi:{g:'sea',n:'ינשופי',e:'🦉',body:'bean',c1:'#F6E7D3',c2:'#C9A27E',c3:'#8A6240',ear:'tufts',beak:1,belly:1,bigeyes:1},
@@ -237,7 +238,8 @@ function cuteSVG(p,id){
       <circle cx="${fx-14.5}" cy="${fy-5.5}" r="2.8" fill="#fff"/><circle cx="${fx+9.5}" cy="${fy-5.5}" r="2.8" fill="#fff"/><circle cx="${fx-10}" cy="${fy+1.5}" r="1.2" fill="#fff"/><circle cx="${fx+14}" cy="${fy+1.5}" r="1.2" fill="#fff"/>`;
   const patch=p.patch?`<ellipse cx="${fx-12}" cy="${fy-1}" rx="11" ry="12" fill="#3B3B4F" transform="rotate(-18 ${fx-12} ${fy-1})"/><ellipse cx="${fx+12}" cy="${fy-1}" rx="11" ry="12" fill="#3B3B4F" transform="rotate(18 ${fx+12} ${fy-1})"/>`:'';
   const blush=`<ellipse cx="${fx-21}" cy="${fy+9}" rx="5.5" ry="3.3" fill="#FF8FA3" opacity=".55"/><ellipse cx="${fx+21}" cy="${fy+9}" rx="5.5" ry="3.3" fill="#FF8FA3" opacity=".55"/>`;
-  const mouth=p.beak?`<path d="M${fx-5} ${fy+7} L${fx+5} ${fy+7} L${fx} ${fy+13}Z" fill="#FFA62B" stroke="#E08A12" stroke-width=".8" stroke-linejoin="round"/>`
+  const muzzle=p.tusks?`<path d="M${fx-4} ${fy+16} Q${fx-6} ${fy+26} ${fx-10} ${fy+31} Q${fx-5} ${fy+29} ${fx-1} ${fy+17}Z" fill="#FFFDF7" stroke="#D8CBB6" stroke-width="1" stroke-linejoin="round"/><path d="M${fx+4} ${fy+16} Q${fx+6} ${fy+26} ${fx+10} ${fy+31} Q${fx+5} ${fy+29} ${fx+1} ${fy+17}Z" fill="#FFFDF7" stroke="#D8CBB6" stroke-width="1" stroke-linejoin="round"/><ellipse cx="${fx-7}" cy="${fy+11}" rx="8.5" ry="6.5" fill="${p.c1}" stroke="${p.c3}" stroke-opacity=".35"/><ellipse cx="${fx+7}" cy="${fy+11}" rx="8.5" ry="6.5" fill="${p.c1}" stroke="${p.c3}" stroke-opacity=".35"/>${[[-10,10],[-6,13],[-11,14],[10,10],[6,13],[11,14]].map(([x,y])=>`<circle cx="${fx+x}" cy="${fy+y}" r=".9" fill="${p.c3}"/>`).join('')}<ellipse cx="${fx}" cy="${fy+5.5}" rx="4.2" ry="3" fill="#5A3E31"/>`:'';
+  const mouth=p.tusks?'':p.beak?`<path d="M${fx-5} ${fy+7} L${fx+5} ${fy+7} L${fx} ${fy+13}Z" fill="#FFA62B" stroke="#E08A12" stroke-width=".8" stroke-linejoin="round"/>`
     :p.mouth==='w'?`<path d="M${fx-5} ${fy+9} q2.5 3 5 0 q2.5 3 5 0" stroke="${p.c3}" stroke-width="1.7" fill="none" stroke-linecap="round"/>`
     :p.mouth==='o'?`<ellipse cx="${fx}" cy="${fy+10}" rx="2.6" ry="3" fill="${p.c3}"/>`
     :`<path d="M${fx-4} ${fy+9} q4 4 8 0" stroke="${p.c3}" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;
@@ -269,6 +271,7 @@ function cuteSVG(p,id){
     angel:`<path d="M24 62 Q4 52 8 38 Q18 48 26 52Z" fill="#fff" stroke="#E6DDC6" stroke-width="1"/><path d="M76 62 Q96 52 92 38 Q82 48 74 52Z" fill="#fff" stroke="#E6DDC6" stroke-width="1"/>`,
     fairy:`<ellipse cx="18" cy="56" rx="13" ry="8" fill="#DFF3FF" opacity=".85" transform="rotate(-30 18 56)" stroke="#A9D8F5"/><ellipse cx="82" cy="56" rx="13" ry="8" fill="#DFF3FF" opacity=".85" transform="rotate(30 82 56)" stroke="#A9D8F5"/>`,
     dragon:`<path d="M26 66 L6 50 L12 64 L4 66 L24 74Z" fill="${p.c2}" stroke="${p.c3}" stroke-width="1" stroke-linejoin="round"/><path d="M74 66 L94 50 L88 64 L96 66 L76 74Z" fill="${p.c2}" stroke="${p.c3}" stroke-width="1" stroke-linejoin="round"/>`,
+    flip:`<ellipse cx="20" cy="78" rx="7" ry="13" fill="${p.c3}" transform="rotate(40 20 78)"/><ellipse cx="80" cy="78" rx="7" ry="13" fill="${p.c3}" transform="rotate(-40 80 78)"/>`,
     tiny:`<ellipse cx="21" cy="70" rx="6" ry="11" fill="${p.c3}" transform="rotate(25 21 70)"/><ellipse cx="79" cy="70" rx="6" ry="11" fill="${p.c3}" transform="rotate(-25 79 70)"/>`,
   }[p.wings]||'';
   const tails={
@@ -295,7 +298,7 @@ function cuteSVG(p,id){
   const glow=p.glow?`<circle cx="50" cy="60" r="44" fill="${p.glow}" opacity=".35"/>`:'';
   return `<svg class="pet-svg" viewBox="0 0 100 100" aria-hidden="true"><defs>
     <radialGradient id="${id}b" cx=".38" cy=".3" r=".85"><stop offset="0" stop-color="${p.c1}"/><stop offset=".62" stop-color="${p.c2}"/><stop offset="1" stop-color="${p.c3}"/></radialGradient></defs>
-    ${glow}<ellipse cx="50" cy="96" rx="27" ry="3.5" fill="#000" opacity=".12"/>${wings}${tails}${ears}${body}${shine}${patch}<g class="pe">${eyes}</g>${blush}${nose}${mouth}${tops}</svg>`;
+    ${glow}<ellipse cx="50" cy="96" rx="27" ry="3.5" fill="#000" opacity=".12"/>${wings}${tails}${ears}${body}${shine}${patch}<g class="pe">${eyes}</g>${blush}${nose}${muzzle}${mouth}${tops}</svg>`;
 }
 function petSVG(k){
   if(PETS2[k])return cuteSVG(PETS2[k],'pt'+(++petN));
@@ -1106,7 +1109,8 @@ function applyLook(size){
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>applyLook());
 
 /* what's new, once per version */
-const WHATS_NEW={v:'7.3',items:[
+const WHATS_NEW={v:'7.4',items:[
+  ['🦭','ניבי הניבתן הצטרף!','חבר חדש, עם שפם מסורק וניבים מצוחצחים. {בוא|בואי} להכיר.','nivi','7.4'],
   ['🐾','החבר שלך חי!','ממצמץ, נרדם בלילה, קופץ משמחה כשמסמנים משימה, ומחבק ביום קשה. {נסה|נסי} ללחוץ עליו.','petlive','7.3'],
   ['🌅','שמיים לפי השעה','בבוקר שמיים ורודים, בערב שקיעה, ובלילה ירח וכוכבים. אפשר גם מצב כהה אוטומטי בלילה.','sky','7.3'],
   ['🎨','ערכות צבעים','פסטל, יער, ים, שקיעה ולילך. בהגדרות, תחת "מראה".','pal','7.3'],
@@ -1129,6 +1133,7 @@ function maybeWhatsNew(){
   if(S.seenNew===WHATS_NEW.v)return;
   if(!S.settings.voice){openVoicePicker(false);return}
   const prevSeen=S.seenNew;S.seenNew=WHATS_NEW.v;save();
+  if(/^7\.3/.test(prevSeen||'')){openNivi();return}
   const app=!!window.TsaadApp,hasW=app&&!!TsaadApp.setWidget;
   const tryBtn=k=>k==='pets'?`<button class="btn small" data-try="pets">🐾 לבחור חבר</button>`:k==='widget'?(hasW?'<span class="hint" style="margin:0">לחיצה ארוכה על מסך הבית ← ווידג׳טים ← צעד קטן</span>':app?'<span class="hint" style="margin:0">צריך לעדכן את האפליקציה (יש כפתור "לעדכן" למעלה)</span>':''):`<button class="btn small ghost" data-try="${k}">לנסות</button>`;
   openSheet(`<div class="wn-hero"><div class="wn-pet">${petIcon(S.settings.mascot)}</div><h2 id="sheet-title">🎁 צעד קטן ${WHATS_NEW.v}</h2><p>${G('הרבה דברים חדשים מחכים לך'+(S.settings.name?', '+esc(S.settings.name):'')+'. הנה מה שהגיע:')}</p></div>

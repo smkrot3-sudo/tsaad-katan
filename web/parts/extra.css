@@ -357,3 +357,16 @@
 .card-bgs{display:flex;gap:10px;justify-content:center;margin:12px 0 4px}
 .card-bgs button{width:34px;height:34px;border-radius:50%;border:3px solid var(--surface);box-shadow:0 0 0 2px var(--line);padding:0}
 .card-bgs button[aria-pressed="true"]{box-shadow:0 0 0 3px var(--fg)}
+
+/* 7.4 Nivi the walrus */
+.nivi-pop{display:flex;flex-direction:column;gap:8px;text-align:center}
+.nivi-pop p{margin:0}
+.nv-sea{position:relative;height:150px;border-radius:22px;overflow:hidden;background:linear-gradient(180deg,#CFEFFF 0%,#A8DDF7 62%,#7CC6EC 62%,#5FB3E0 100%);margin-bottom:4px}
+.nv-pet{position:absolute;left:50%;bottom:10px;width:128px;height:128px;transform:translateX(-50%);animation:nvWob 2.4s ease-in-out infinite;transform-origin:center bottom}
+.nv-pet .pet-svg{width:128px;height:128px;animation:petjump 1.4s cubic-bezier(.3,1.6,.5,1) .3s}
+.nv-ice{position:absolute;right:14%;bottom:30px;font-size:2rem;animation:petbob 3s ease-in-out infinite}
+.nv-b{position:absolute;left:var(--x);bottom:-20px;font-size:1.1rem;opacity:0;animation:nvBub 3.4s ease-in var(--d) infinite;font-family:var(--emoji)}
+@keyframes nvWob{0%,100%{transform:translateX(-50%) rotate(-5deg)}50%{transform:translateX(-50%) rotate(5deg)}}
+@keyframes nvBub{0%{transform:translateY(0);opacity:0}15%{opacity:.9}100%{transform:translateY(-150px);opacity:0}}
+.nv-tip{background:var(--soft);border-radius:16px;padding:10px 12px;font-size:.95rem}
+@media (prefers-reduced-motion:reduce){.nv-pet,.nv-pet .pet-svg,.nv-b,.nv-ice{animation:none}}
